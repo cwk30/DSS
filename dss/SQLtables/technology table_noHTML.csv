@@ -1,0 +1,14 @@
+id,materialId,materialRequirements,wasteSource,requiredTechnology,technologySuppliers,byProduct,landSpace,estimatedCost,costUnits,environmentalImpact,resourceId
+2,3,,Battery,Leaching using chloridic acid,Tech Dynamic ITAD,Lithium + Cobalt,20,4500,+$/day,55,7
+3,3,,Battery,Leaching using sulphric acid + glucose,Tech Dynamic ITAD,Lithium + Cobalt,20,10000,+$/day,38,7
+6,3,,E-Waste,Disassembly,TES-AMM PTE LTD,PCB,5,500,+$/day,20,
+4,3,,PCB,Precious metal recovery,SPM Refinery PTE LTD,Gold + Silver,30,8000,+$/day,157,7
+5,3,,PCB,Precious metal refinery,SPM Refinery PTE LTD,Precious metal bars,30,3500,+$/day,200,7
+1,3,,E-Waste,N.A.,N.A.,E-Waste,10,200,+$/day,20,
+7,4,,Animal Manure,N.A.,N.A.,Animal Manure,10,200,+$/day,50,10
+8,4,,Animal Manure,Anaerobic digestion + Gas engine,Lumitics,Electricity,20,2000,+$/day,170,
+11,4,,Animal Manure,Gasification + Gas engine,Linde Singapore Hydrogen Plant,Electricity,25,4700,+$/day,150,
+12,4,,Animal Manure,Gasification + Batch mixer,Linde Singapore Hydrogen Plant,Fertilizer,25,9300,+$/day,80,10
+13,4,,Animal Manure,Gasification + Upgrade,Linde Singapore Hydrogen Plant,Activated carbon,25,12000,+$/day,140,9
+9,4,,Animal Manure,Anaerobic digestion + Solid liquid separate (dryer),Chenwei Machinery,Soil amendments,15,4000,+$/day,120,10
+10,4,,Animal Manure,Anaerobic digestion + Solid liquid separate (concentration),Chenwei Machinery,Liquid fertilizer,20,6000,+$/day,110,10

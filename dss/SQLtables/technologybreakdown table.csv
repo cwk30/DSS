@@ -1,0 +1,35 @@
+id,technologyId,carouselHTML,equipmentType,landSpace,equipmentCost,costUnits,manpowerRequirements,maintenanceCost,environmentalImpact,others
+1,2,"<div class=""carousel-item active"" data-interval=""15000"">
+            <img src=""/static/technology/technologyId_2.1.jpg"" class=""d-block carouselImage"" alt=""..."">
+            <div class=""carousel-caption d-none d-md-block"">
+              <p>Leaching using chloridic acid 5t/day capacity</p>
+            </div>
+          </div>",5t/day capacity,20,40000,$,2 people,2000,38,"Power: 4KW
+Voltage: 220V
+Weight: 600kg
+Maximum input capacity: 200kg"
+2,2,"<div class=""carousel-item"" data-interval=""15000"">
+            <img src=""/static/technology/technologyId_2.2.jpg"" class=""d-block carouselImage"" alt=""..."">
+            <div class=""carousel-caption d-none d-md-block"">
+              <p>Leaching using chloridic acid 50t/day capacity</p>
+            </div>
+          </div>",50t/day capacity,100,100000,$,6 people,4000,80,
+3,2,"<div class=""carousel-item"" data-interval=""15000"">
+            <img src=""/static/technology/technologyId_2.3.jpg"" class=""d-block carouselImage"" alt=""..."">
+            <div class=""carousel-caption d-none d-md-block"">
+              <p>Leaching using chloridic acid facility lease</p>
+            </div>
+          </div>",facility lease,N/A,6000,$/day,6 people,1000,152,Include whatever specifications or description here
+4,2,,50t/day capacity (rental),100,1600,$/day,6 people,1000,196,
+5,13,"<div class=""carousel-item active"" data-interval=""15000"">
+            <img src=""/static/technology/technologyId_13.1.jpg"" class=""d-block carouselImage"" alt=""..."">
+            <div class=""carousel-caption d-none d-md-block"">
+              <p>gasification equipment 5t/day capacity</p>
+            </div>
+          </div>",gasification 5t/day (rental),25,3400,$/day,,600,140,test
+6,13,"<div class=""carousel-item"" data-interval=""15000"">
+            <img src=""/static/technology/technologyId_13.2.jpg"" class=""d-block carouselImage"" alt=""..."">
+            <div class=""carousel-caption d-none d-md-block"">
+              <p>activated carbon rotary kiln</p>
+            </div>
+          </div>",activated carbon rotary kiln (rental),47,4500,$/day,,250,155,

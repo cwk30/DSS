@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block content %}
+
+  <div class="content-section" style="margin: 0 auto">
+    <legend class="border-bottom mb-4">Filter and rank the optimal technology options</legend>
+      <form method='POST'> 
+        {{form.csrf_token}} 
+
+        <div class="form-group">
+          {{ form.byproductType.label(class="form-control-label") }}
+          {{ form.byproductType(class="form-control form-control") }}
+        </div>
+
+        <div class="form-group">
+          {{ form.landSpace.label(class="form-control-label") }}
+          {{ form.landSpace(class="form-control") }}  
+        </div>
+
+        <div class="form-group">
+          {{ form.investmentCost.label(class="form-control-label") }}
+          {{ form.investmentCost(class="form-control") }}  
+        </div>
+
+        <div class="form-group">
+          {{ form.environmentalImpact.label(class="form-control-label") }}
+          {{ form.environmentalImpact(class="form-control") }}  
+        </div>
+
+        <br>
+
+        <div class="form-group">
+          <a class="btn btn-outline-secondary" href="{{ url_for('matching') }}" role="button" onclick="return confirm('Question inputs will be lost, are you sure you want to go back?');">Back</a>
+          {{ form.submit(class="btn btn-success", style="float: right;") }}
+
+        </div>
+
+      </form>
+  </div> 
+
+{% endblock content %}
+
+
+
+
+        

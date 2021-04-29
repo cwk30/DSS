@@ -1,0 +1,814 @@
+id,label,questionHTML
+1,Are the electronic devices RoHS compliant? ,"<div class=""form-group"">
+          <label class=""form-label"" for=""Q1"">Are the electronic devices RoHS compliant? </label>
+      <br>
+          <div class=""form-check form-check-inline"" >
+            <input type=""checkbox"" class=""form-check-input"" id=""Q1"" name=""Q1"" value=""1"" onclick=""onlyOne(this,'Q1')"">
+            <label class=""form-check-label"" for=""Q1"">yes</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q1"" name=""Q1"" value=""2"" onclick=""onlyOne(this,'Q1')"">
+              <label class=""form-check-label"" for=""Q1"">no</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q1"" name=""Q1"" value=""3"" onclick=""onlyOne(this,'Q1')"">
+              <label class=""form-check-label"" for=""Q1"">not sure</label>
+          </div>
+      </div>"
+2,How is the homogeneity of the waste? ,"<div class=""form-group"">
+            <label class=""form-label"" for=""Q2"">How is the homogeneity of the waste? </label> <a href=""#"" data-toggle=""tooltip"" title=""Insert tooltip here""><IMG SRC=""/static/icons/information.png"" ALT=""logo"" WIDTH=15 HEIGHT=15></a>
+            <br>
+            <div class=""form-check form-check-inline"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q2"" name=""Q2"" value=""1"" onclick=""onlyOne(this,'Q2')"">
+              <label class=""form-check-label"" for=""Q2"">pure</label>
+            </div>
+
+            <div class=""form-check form-check-inline"">
+                <input type=""checkbox"" class=""form-check-input"" id=""Q2"" name=""Q2"" value=""2"" onclick=""onlyOne(this,'Q2')"">
+                <label class=""form-check-label"" for=""Q2"">slightly mixed</label>
+            </div>
+
+            <div class=""form-check form-check-inline"">
+                <input type=""checkbox"" class=""form-check-input"" id=""Q2"" name=""Q2"" value=""3"" onclick=""onlyOne(this,'Q2')"">
+                <label class=""form-check-label"" for=""Q2"">largely mixed</label>
+            </div>
+
+            <div class=""form-check form-check-inline"">
+                <input type=""checkbox"" class=""form-check-input"" id=""Q2"" name=""Q2"" value=""4"" onclick=""onlyOne(this,'Q2')"">
+                <label class=""form-check-label"" for=""Q2"">not sure</label>
+            </div>
+        </div>"
+3,What type of E-waste?,"<div class=""form-group"">
+          <label class=""form-label"" for=""Q3"">What type of E-waste? </label>
+          <br>
+          <div class=""form-check"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q3"" name=""Q3"" value=""1"" onclick=""onlyOne(this,'Q3')"" data-toggle='collapse' data-target='#ICT' aria-expanded=""false"">
+
+            <label class=""form-check-label"" for=""Q3"">Information and Communications Technology (ICT) Equipment</label>
+          </div>
+
+          <div class=""form-check"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q3"" name=""Q3"" value=""2"" onclick=""onlyOne(this,'Q3')""  data-toggle='collapse' data-target='#kitchen' aria-expanded=""false"">
+
+              <label class=""form-check-label"" for=""Q3"">Kitchen Equipement</label>
+          </div>
+
+          <div class=""form-check"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q3"" name=""Q3"" value=""2"" onclick=""onlyOne(this,'Q3')""  data-toggle='collapse' data-target='#lab' aria-expanded=""false"">
+
+              <label class=""form-check-label"" for=""Q3"">Laboratory Equipment</label>
+          </div>
+          
+        </div>"
+4,What kind of waste do you have?,"<div class=""form-group collapse"" id=""ICT"" >
+          <label class=""form-label"" for=""Q4"">What kind of waste do you have?</label>
+          <br>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q4"" name=""Q4"" value=""1"" onclick=""onlyOne(this,'Q4')""  data-toggle='collapse' data-target='#computer' aria-expanded=""false"">
+            <label class=""form-check-label"" for=""Q4"">Computer parts</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q4"" name=""Q4"" value=""2"" onclick=""onlyOne(this,'Q4')"">
+            <label class=""form-check-label"" for=""Q4"">Laptop</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q4"" name=""Q4"" value=""3"" onclick=""onlyOne(this,'Q4')""  data-toggle='collapse' data-target='#smartphone' aria-expanded=""false"">
+              <label class=""form-check-label"" for=""Q4"">Smartphone</label>
+          </div>
+        </div>
+"
+5,What parts are available?,"<div class=""form-group collapse"" id=""computer"">
+          <label class=""form-label"" for=""Q5"">What parts are available? </label>
+          <br>
+
+          <div class=""form-check"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q5"" name=""Q5"" value=""01"" onclick=""onlyOne(this,'Q5')"">
+            <label class=""form-check-label"" for=""Q5"">PCB</label>
+          </div>
+
+          <div class=""form-check"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q5"" name=""Q5"" value=""02"" onclick=""onlyOne(this,'Q5')"">
+            <label class=""form-check-label"" for=""Q5"">Nickel Metal Hydride Batteries</label>
+          </div>
+
+          <div class=""form-check"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q5"" name=""Q5"" value=""03"" onclick=""onlyOne(this,'Q5')"">
+              <label class=""form-check-label"" for=""Q5"">Lithium Ion Batteries</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q5"" name=""Q5"" value=""04"" onclick=""onlyOne(this,'Q5')"">
+            <label class=""form-check-label"" for=""Q5"">Polymers</label>
+          </div>
+        </div>
+
+
+
+
+
+
+
+<div class=""form-group collapse"" id=""smartphone"">
+          <label class=""form-label"" for=""Q5"">What parts are available? </label>
+          <br>
+
+          <div class=""form-check"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q5"" name=""Q5"" value=""01"" onclick=""onlyOne(this,'Q5')"">
+            <label class=""form-check-label"" for=""Q5"">PCB</label>
+          </div>
+
+          <div class=""form-check"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q5"" name=""Q5"" value=""03"" onclick=""onlyOne(this,'Q5')"">
+              <label class=""form-check-label"" for=""Q5"">Lithium Ion Batteries</label>
+          </div>
+
+        </div>"
+6,Which animal manure do you have? ,"<div class=""form-group"">
+          <label class=""form-label"" for=""Q6"">Which animal manure do you have? </label>
+          <br>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q6"" name=""Q6"" value=""1"" onclick=""onlyOne(this,'Q6')"">
+            <label class=""form-check-label"" for=""Q6"">chicken manure</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q6"" name=""Q6"" value=""2""  onclick=""onlyOne(this,'Q6')"">
+            <label class=""form-check-label"" for=""Q6"">horse manure</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q6"" name=""Q6"" value=""3""  onclick=""onlyOne(this,'Q6')"">
+              <label class=""form-check-label"" for=""Q6"">rhinoceros manure</label>
+          </div>
+
+          <br>
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q6"" name=""Q6"" value=""4""  onclick=""onlyOne(this,'Q6')"">
+            <label class=""form-check-label"" for=""Q6"">elephant manure</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q6"" name=""Q6"" value=""5""  onclick=""onlyOne(this,'Q6')"">
+            <label class=""form-check-label"" for=""Q6"">others</label>
+          </div>
+      </div>"
+7,What is the moisture level:,"<div class=""form-group"">
+          <label class=""form-label"" for=""Q7"">What is the moisture level:</label>
+          <br>
+
+          <div class=""form-check form-check"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q7"" name=""Q7"" value=""1""  onclick=""onlyOne(this,'Q7')"">
+            <label class=""form-check-label"" for=""Q7"">extremely low moisture (0%-15%)</label>
+          </div>
+
+          <div class=""form-check form-check"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q7"" name=""Q7"" value=""2"" onclick=""onlyOne(this,'Q7')"">
+            <label class=""form-check-label"" for=""Q7"">low moisture (15%-35%)</label>
+          </div>
+
+          <div class=""form-check form-check"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q7"" name=""Q7"" value=""3"" onclick=""onlyOne(this,'Q7')"">
+              <label class=""form-check-label"" for=""Q7"">mid moisture (35%-65%)</label>
+          </div>
+
+          <div class=""form-check form-check"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q7"" name=""Q7"" value=""4"" onclick=""onlyOne(this,'Q7')"">
+            <label class=""form-check-label"" for=""Q7"">high moisture (65%-85%)</label>
+          </div>
+
+          <div class=""form-check form-check"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q7"" name=""Q7"" value=""5"" onclick=""onlyOne(this,'Q7')"">
+            <label class=""form-check-label"" for=""Q7"">extremely high moisture (85%-100%)</label>
+          </div>
+
+          <div class=""form-check form-check"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q7"" name=""Q7"" value=""6"" onclick=""onlyOne(this,'Q7')"">
+            <label class=""form-check-label"" for=""Q7"">not sure</label>
+          </div>
+
+          <div>
+              <label for=""Q7"">If you know the accurate moisture level, please indicate</label>
+              <input type=""text"" class=""form-control-input"" id=""Q7"" name=""Q7"" placeholder=""--%"">
+          </div>
+        </div>"
+8,Do you have other manure characteristic information? (multiple choice),"<div class=""form-group"">
+          <label class=""form-label"" for=""Q8"">Do you have other manure characteristic information? (multiple choice)</label>
+          <br>
+
+          <div class=""form-check form-check"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q8"" name=""Q8"" value=""1"">
+            <label class=""form-check-label"" for=""Q8"">volitile solids (VS)</label>
+          </div>
+
+          <div class=""form-check form-check"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q8"" name=""Q8"" value=""2"">
+            <label class=""form-check-label"" for=""Q8"">total solids (TS)</label>
+          </div>
+
+          <div class=""form-check form-check"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q8"" name=""Q8"" value=""3"">
+              <label class=""form-check-label"" for=""Q8"">carbon content (dry basis)</label>
+          </div>
+
+          <div class=""form-check form-check"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q8"" name=""Q8"" value=""4"">
+            <label class=""form-check-label"" for=""Q8"">nitrogen content (dry basis)</label>
+          </div>
+
+          <div class=""form-check form-check"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q8"" name=""Q8"" value=""5"">
+            <label class=""form-check-label"" for=""Q8"">hydrogen content (dry basis)</label>
+          </div>
+
+          <div class=""form-check form-check"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q8"" name=""Q8"" value=""6"">
+            <label class=""form-check-label"" for=""Q8"">high heating value (HHV)</label>
+          </div>
+
+          <div class=""form-check form-check"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q8"" name=""Q8"" value=""7"">
+            <label class=""form-check-label"" for=""Q8"">low heating value (HHV)</label>
+          </div>
+
+          <div class=""form-check form-check"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q8"" name=""Q8"" value=""8"">
+            <label class=""form-check-label"" for=""Q8"">I have a lab report!</label>
+          </div>
+        </div>"
+9,Type of plastic needed:,"<div class=""form-group"">
+          <label class=""form-label"" for=""Q9"">Type of plastic needed:</label>
+          <br>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q9"" name=""Q9"" value=""1"" onclick=""onlyOne(this,'Q9')"">
+            <label class=""form-check-label"" for=""Q9"">PET (PETE)</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q9"" name=""Q9"" value=""2"" onclick=""onlyOne(this,'Q9')"">
+            <label class=""form-check-label"" for=""Q9"">HDPE</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q9"" name=""Q9"" value=""3"" onclick=""onlyOne(this,'Q9')"">
+              <label class=""form-check-label"" for=""Q9"">PVC</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q9"" name=""Q9"" value=""4"" onclick=""onlyOne(this,'Q9')"">
+            <label class=""form-check-label"" for=""Q9"">LDPE</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q9"" name=""Q9"" value=""5"" onclick=""onlyOne(this,'Q9')"">
+            <label class=""form-check-label"" for=""Q9"">PP</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q9"" name=""Q9"" value=""6"" onclick=""onlyOne(this,'Q9')"">
+            <label class=""form-check-label"" for=""Q9"">PS</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q9"" name=""Q9"" value=""7"" onclick=""onlyOne(this,'Q9')"">
+            <label class=""form-check-label"" for=""Q9"">others</label>
+          </div>
+        </div>"
+10,Acceptable purity of the recycled materials:,"<div class=""form-group"">
+          <label class=""form-label"" for=""Q10"">Acceptable purity of the recycled materials:</label>
+          <br>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q10"" name=""Q10"" value=""1"" onclick=""onlyOne(this,'Q10')"">
+            <label class=""form-check-label"" for=""Q10"">pure</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q10"" name=""Q10"" value=""2"" onclick=""onlyOne(this,'Q10')"">
+            <label class=""form-check-label"" for=""Q10"">slightly mixed</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q10"" name=""Q10"" value=""3"" onclick=""onlyOne(this,'Q10')"">
+              <label class=""form-check-label"" for=""Q10"">mixed</label>
+          </div>
+        </div>"
+11,Do you have any existing waste treatment technology installed?,"<div class=""form-group"">
+          <label class=""form-label"" for=""Q11"">Do you have any existing waste treatment technology installed?</label>
+          <br>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q11"" name=""Q11"" value=""1"" onclick=""onlyOne(this,'Q11')"">
+            <label class=""form-check-label"" for=""Q11"">yes</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q11"" name=""Q11"" value=""2"" onclick=""onlyOne(this,'Q11')"">
+            <label class=""form-check-label"" for=""Q11"">no</label>
+          </div>
+
+          <br><br>
+
+          <div class=""container"">
+            <label for=""Q11"">If yes,</label>
+            <br>
+            <div class=""container"">
+              <div>
+                  <label for=""Q11"">technology name: </label>
+                  <input type=""text"" class=""form-control-input"" id=""Q11"" name=""Q11"" placeholder=""technology"">
+              </div>
+
+              <div>
+                  <label for=""Q11"">current capacity: </label>
+                  <input type=""text"" class=""form-control-input"" id=""Q11"" name=""Q11"" placeholder=""capacity"">
+              </div>
+
+              <div>
+                  <label for=""Q11"">other specifications: </label>
+                  <input type=""text"" class=""form-control-input"" id=""Q11"" name=""Q11"" placeholder=""specifications"">
+              </div>
+            </div>
+          </div>
+        </div>"
+12,State of metal:,"<div class=""form-group"">
+          <label class=""form-label"" for=""Q12"">State of metal:</label>
+          <br>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q12"" name=""Q12"" value=""1"" onclick=""onlyOne(this,'Q12')"">
+            <label class=""form-check-label"" for=""Q12"">ore</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q12"" name=""Q12"" value=""2"" onclick=""onlyOne(this,'Q12')"">
+            <label class=""form-check-label"" for=""Q12"">precipitate</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q12"" name=""Q12"" value=""3"" onclick=""onlyOne(this,'Q12')"">
+              <label class=""form-check-label"" for=""Q12"">leachate</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q12"" name=""Q12"" value=""4"" onclick=""onlyOne(this,'Q12')"">
+              <label class=""form-check-label"" for=""Q12"">sludge</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q12"" name=""Q12"" value=""5"" onclick=""onlyOne(this,'Q12')"">
+              <label class=""form-check-label"" for=""Q12"">scrap</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q12"" name=""Q12"" value=""6"" onclick=""onlyOne(this,'Q12')"">
+              <label class=""form-check-label"" for=""Q12"">others</label>
+          </div>
+        </div>"
+13,Acceptable purity of metal:,"<div class=""form-group"">
+          <label class=""form-label"" for=""Q13"">Acceptable purity of metal:</label>
+          <br>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q13"" name=""Q13"" value=""1"">
+            <label class=""form-check-label"" for=""Q13"">pure</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q13"" name=""Q13"" value=""2"">
+            <label class=""form-check-label"" for=""Q13"">slightly mixed</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q13"" name=""Q13"" value=""3"">
+              <label class=""form-check-label"" for=""Q13"">mixed</label>
+          </div>
+        </div>"
+14,Acceptable source of resource:,"<div class=""form-group"">
+          <label class=""form-label"" for=""Q14"">Acceptable source of resource:</label>
+          <br>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q14"" name=""Q14"" value=""1"">
+            <label class=""form-check-label"" for=""Q14"">PCB</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q14"" name=""Q14"" value=""2"">
+            <label class=""form-check-label"" for=""Q14"">WEC</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q14"" name=""Q14"" value=""3"">
+              <label class=""form-check-label"" for=""Q14"">PV</label>
+          </div>
+        </div>"
+15,Acceptable impurities present:,"<div class=""form-group"">
+          <label class=""form-label"" for=""Q15"">Acceptable impurities present:</label>
+          <br>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q15"" name=""Q15"" value=""1"">
+            <label class=""form-check-label"" for=""Q15"">Si</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q15"" name=""Q15"" value=""2"">
+            <label class=""form-check-label"" for=""Q15"">Heavy metals</label>
+          </div>
+        </div>"
+16,State of fertiliser:,"<div class=""form-group"">
+          <label class=""form-label"" for=""Q16"">State of fertiliser:</label>
+          <br>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q16"" name=""Q16"" value=""1"">
+            <label class=""form-check-label"" for=""Q16"">solid</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q16"" name=""Q16"" value=""2"">
+            <label class=""form-check-label"" for=""Q16"">liquid</label>
+          </div>
+        </div>"
+17,Main elements present:,"<div class=""form-group"">
+          <label class=""form-label"" for=""Q17"">Main elements present:</label>
+          <br>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q17"" name=""Q17"" value=""1"">
+            <label class=""form-check-label"" for=""Q17"">nitrogen (N)</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q17"" name=""Q17"" value=""2"">
+            <label class=""form-check-label"" for=""Q17"">phosphorous (P)</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q17"" name=""Q17"" value=""3"">
+            <label class=""form-check-label"" for=""Q17"">potassium (K)</label>
+          </div>
+        </div>"
+18,Natural or synthetic?,"<div class=""form-group"">
+          <label class=""form-label"" for=""Q18"">Natural or synthetic?</label>
+          <br>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q18"" name=""Q18"" value=""1"">
+            <label class=""form-check-label"" for=""Q18"">natural</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q18"" name=""Q18"" value=""2"">
+            <label class=""form-check-label"" for=""Q18"">synthetic</label>
+          </div>
+        </div>"
+19,What is your desired soil pH level?,"<div class=""form-group"">
+          <label class=""form-label"" for=""Q19"">What is your desired soil pH level?</label>
+          <br>
+
+          <div class=""form-check"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q19"" name=""Q19"" value=""1"">
+            <label class=""form-check-label"" for=""Q19"">pH 5.0 - 5.5</label>
+          </div>
+
+          <div class=""form-check"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q19"" name=""Q19"" value=""2"">
+            <label class=""form-check-label"" for=""Q19"">pH 5.5 - 6.5</label>
+          </div>
+
+          <div class=""form-check"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q19"" name=""Q19"" value=""2"">
+            <label class=""form-check-label"" for=""Q19"">pH 6.5 - 7.0</label>
+          </div>
+
+          <div class=""form-check"">
+            <input type=""checkbox"" class=""form-check-input"" id=""Q19"" name=""Q19"" value=""2"">
+            <label class=""form-check-label"" for=""Q19"">pH 7.0 - 7.5</label>
+          </div>
+        </div>"
+20,Indicate your interests (material recovery supplier),"<div class=""form-group"">
+
+          <div class=""form-group"" id=""take"">
+            <label class=""form-label"" for=""Q20"">Please indicate which resource you wish to take in:</label>
+            <br>
+
+            <div class=""form-check"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q20"" name=""Q20"" value=""1"">
+              <label class=""form-check-label"" for=""Q20"">food</label>
+            </div>
+
+            <div class=""form-check"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q20"" name=""Q20"" value=""2"">
+              <label class=""form-check-label"" for=""Q20"">plastic</label>
+            </div>
+
+            <div class=""form-check"">
+                <input type=""checkbox"" class=""form-check-input"" id=""Q20"" name=""Q20"" value=""3"">
+                <label class=""form-check-label"" for=""Q20"">e-waste</label>
+            </div>
+
+            <div class=""form-check"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q20"" name=""Q20"" value=""4"">
+              <label class=""form-check-label"" for=""Q20"">animal manure</label>
+            </div>
+          </div>
+
+          <div class=""form-group"" id=""sell"">
+            <br>
+            <label class=""form-label"" for=""Q20"">Please indicate which resource you wish to sell:</label>
+            <br>
+
+            <div class=""form-check"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q20"" name=""Q20"" value=""5"">
+              <label class=""form-check-label"" for=""Q20"">plastic</label>
+            </div>
+
+            <div class=""form-check"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q20"" name=""Q20"" value=""6"">
+              <label class=""form-check-label"" for=""Q20"">chemical</label>
+            </div>
+
+            <div class=""form-check"">
+                <input type=""checkbox"" class=""form-check-input"" id=""Q20"" name=""Q20"" value=""7"">
+                <label class=""form-check-label"" for=""Q20"">metal</label>
+            </div>
+
+            <div class=""form-check"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q20"" name=""Q20"" value=""8"">
+              <label class=""form-check-label"" for=""Q20"">oil</label>
+            </div>
+
+            <div class=""form-check"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q20"" name=""Q20"" value=""9"">
+              <label class=""form-check-label"" for=""Q20"">biochar</label>
+            </div>
+
+            <div class=""form-check"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q20"" name=""Q20"" value=""10"">
+              <label class=""form-check-label"" for=""Q20"">fertiliser</label>
+            </div>
+          </div>
+
+        </div>"
+21,Homogeniety: Select the best description for the waste you have generated,"<div class=""form-group"">
+          <label class=""form-label"" for=""Q1""><u>Homogeniety</u></label>
+          <br>
+          <label class=""form-label"" for=""Q1"">Q: Select the best description for the waste you have generated </label>
+      <br>
+          <div class=""form-check form-check-inline"" >
+            <input type=""checkbox"" class=""form-check-input"" id=""Q1"" name=""Q1"" value=""1"" onclick=""onlyOne(this,'Q1')"">
+            <label class=""form-check-label"" for=""Q1"">Single type</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q1"" name=""Q1"" value=""2"" onclick=""onlyOne(this,'Q1')"">
+              <label class=""form-check-label"" for=""Q1"">Single type with a small percentage of contaminants</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q1"" name=""Q1"" value=""3"" onclick=""onlyOne(this,'Q1')"">
+              <label class=""form-check-label"" for=""Q1"">Mixed</label>
+          </div>
+      </div>"
+22,CHN/Protein/Cellulosic/Shells and bones,"<div class=""form-group"">
+          <label class=""form-label"" for=""Q2""><u>CHN/Protein/Cellulosic/Shells and bones </u></label>
+          <br>
+          <label class=""form-label"" for=""Q2"">Q: Have a lab analysis been carried out for the waste type?</label>
+      <br>
+          <div class=""form-check form-check-inline"" >
+            <input type=""checkbox"" class=""form-check-input"" id=""Q2YesNo"" name=""Q2YesNo"" value=""1"" onclick=""onlyOne(this,'Q2YesNo')"" data-toggle='collapse' data-target='#labAnalysis' aria-expanded=""false"">
+            <label class=""form-check-label"" for=""Q2YesNo"">Yes</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q2YesNo"" name=""Q2YesNo"" value=""2"" onclick=""onlyOne(this,'Q2YesNo')"">
+              <label class=""form-check-label"" for=""Q2YesNo"">No</label>
+          </div>
+        </div>
+
+        
+        <div class=""collapse"" id=""labAnalysis"">
+
+          <div class=""form-group row"">
+            <label for=""Q2"" class=""col-sm-3 col-form-label"">Please key in C:H:N ratio</label>
+            <div class=""col-sm-2"">
+              <input type=""text"" class=""form-control"" id=""Q2_chn"" name=""Q2_chn"" placeholder=""C:H:N"">
+            </div>
+          </div>
+
+        
+
+          <div class=""form-group row"">
+            <label for=""Q2"" class=""col-sm-3 col-form-label"">Please key in % weight of bones/shells (0-100%)</label>
+            <div class=""col-sm-2"">
+              <input type=""text"" class=""form-control"" id=""Q2_w"" name=""Q2_w"" placeholder=""W%"">
+            </div>
+          </div>
+
+          <div class=""form-group"">
+            <div class=""form-check form-check-inline"" >
+              <input type=""checkbox"" class=""form-check-input"" id=""Q2composition"" name=""Q2composition"" value=""1"" onclick=""onlyOne(this,'Q2composition')"">
+              <label class=""form-check-label"" for=""Q2composition"">Mainly vegetables</label>
+            </div>
+
+            <div class=""form-check form-check-inline"">
+                <input type=""checkbox"" class=""form-check-input"" id=""Q2composition"" name=""Q2composition"" value=""2"" onclick=""onlyOne(this,'Q2composition')"">
+                <label class=""form-check-label"" for=""Q2composition"">Mainly bagasse and husk</label>
+            </div>
+
+            <div class=""form-check form-check-inline"">
+                <input type=""checkbox"" class=""form-check-input"" id=""Q2composition"" name=""Q2composition"" value=""3"" onclick=""onlyOne(this,'Q2composition')"">
+                <label class=""form-check-label"" for=""Q2composition"">Mainly fruit peels</label>
+            </div>
+
+            <div class=""form-check form-check-inline"">
+                <input type=""checkbox"" class=""form-check-input"" id=""Q2composition"" name=""Q2composition"" value=""4"" onclick=""onlyOne(this,'Q2composition')"">
+                <label class=""form-check-label"" for=""Q2composition"">Mix/others</label>
+            </div>
+          </div>
+
+        </div>"
+23,Composition Mass Percentage,"<div class=""form-group"">
+          <label class=""form-label"" for=""Q3"">Q: Please select from the dropdown list to select the relevant material(s) and indicate its mass percentage</label>
+        
+          <div class=""row"">
+            <label class=""col-form-label col-sm-1"" id=""Q3_1"">1)</label>
+            <select class=""form-control col-sm-4"" id=""Q3_1"" name=""Q3_1"">
+              <option>None</option>
+              <option value=""1"">Rice (cooked)</option>
+              <option value=""2"">Noodle (cooked)</option>
+              <option value=""3"">Broccoli</option>
+              <option value=""4"">Carrot</option>
+              <option value=""5"">Clams (with shell)</option>
+              <option value=""6"">Clams (without shell)</option>
+            </select>
+
+            
+            <div class=""col-sm-1"">
+              <input type=""text"" class=""form-control"" id=""Q3_1_w"" name=""Q3_1_w"" placeholder=""w%"">
+            </div>
+            <label for=""Q3_1"" class=""col-sm-2 col-form-label"">% weight</label>
+          </div>  
+          <br>
+
+          <div class=""row"">
+            <label class=""col-form-label col-sm-1"" id=""Q3_2"">2)</label>
+            <select class=""form-control col-sm-4"" id=""Q3_2"" name=""Q3_2"">
+              <option>None</option>
+              <option value=""1"">Rice (cooked)</option>
+              <option value=""2"">Noodle (cooked)</option>
+              <option value=""3"">Broccoli</option>
+              <option value=""4"">Carrot</option>
+              <option value=""5"">Clams (with shell)</option>
+              <option value=""6"">Clams (without shell)</option>
+            </select>
+
+            
+            <div class=""col-sm-1"">
+              <input type=""text"" class=""form-control"" id=""Q3_2_w"" name=""Q3_2_w"" placeholder=""w%"">
+            </div>
+            <label for=""Q3_2"" class=""col-sm-2 col-form-label"">% weight</label>
+          </div> 
+
+          <br>
+
+          <div class=""row"">
+            <label class=""col-form-label col-sm-1"" id=""Q3_3"">3)</label>
+            <select class=""form-control col-sm-4"" id=""Q3_3"" name=""Q3_3"">
+              <option>None</option>
+              <option value=""1"">Rice (cooked)</option>
+              <option value=""2"">Noodle (cooked)</option>
+              <option value=""3"">Broccoli</option>
+              <option value=""4"">Carrot</option>
+              <option value=""5"">Clams (with shell)</option>
+              <option value=""6"">Clams (without shell)</option>
+            </select>
+
+            
+            <div class=""col-sm-1"">
+              <input type=""text"" class=""form-control"" id=""Q3_3_w"" name=""Q3_3_w"" placeholder=""w%"">
+            </div>
+            <label for=""Q3_3"" class=""col-sm-2 col-form-label"">% weight</label>
+          </div> 
+
+        </div>"
+24,Moisture,"<div class=""form-group"">
+          <label class=""form-label"" for=""Q4""><u>Moisture</u></label>
+          <br>
+          <label class=""form-label"" for=""Q4"">Q: Select the best description for the waste you have generated </label>
+      <br>
+          <div class=""form-check form-check-inline"" >
+            <input type=""checkbox"" class=""form-check-input"" id=""Q4"" name=""Q4"" value=""1"" onclick=""onlyOne(this,'Q4')"">
+            <label class=""form-check-label"" for=""Q4"">Dry/powdered</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q4"" name=""Q4"" value=""2"" onclick=""onlyOne(this,'Q4')"">
+              <label class=""form-check-label"" for=""Q4"">Slightly wet</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q4"" name=""Q4"" value=""3"" onclick=""onlyOne(this,'Q4')"">
+              <label class=""form-check-label"" for=""Q4"">Wet</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q4"" name=""Q4"" value=""4"" onclick=""onlyOne(this,'Q4')"">
+              <label class=""form-check-label"" for=""Q4"">Liquid</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q4"" name=""Q4"" value=""5"" onclick=""onlyOne(this,'Q4')"" data-toggle='collapse' data-target='#moistureLevel' aria-expanded=""false"">
+              <label class=""form-check-label"" for=""Q4"">Known value</label>
+          </div>
+
+        </div>
+
+        <div class=""collapse"" id=""moistureLevel"">
+
+          <div class=""form-group row"">
+            <label for=""Q4Moisture"" class=""col-sm-3 col-form-label"">Please key in value in %</label>
+            <div class=""col-sm-2"">
+              <input type=""text"" class=""form-control"" id=""Q4Moisture"" placeholder=""~%"">
+            </div>
+          </div>
+        </div>"
+25,pH,"<div class=""form-group"">
+          <label class=""form-label"" for=""Q5""><u>pH</u>&nbsp</label> <a href=""#"" data-toggle=""tooltip"" title=""pH is a measure of how acidic/basic water is. The range goes from 0 to 14, with 7 being neutral. 
+pHs of less than 7 indicate acidity, whereas a pH of greater than 7 indicates a base.
+
+e.g.
+Lemon pH 2
+Vinegar pH 2.5
+Baking soda pH 9""><IMG SRC=""/static/icons/information.png"" ALT=""logo"" WIDTH=15 HEIGHT=15></a>
+          <br>
+          <label class=""form-label"" for=""Q5"">Q: Does your waste contain large quantities of acids/alkali?</label>
+      <br>
+          <div class=""form-check form-check-inline"" >
+            <input type=""checkbox"" class=""form-check-input"" id=""Q5"" name=""Q5"" value=""1"" onclick=""onlyOne(this,'Q5')"">
+            <label class=""form-check-label"" for=""Q5"">Yes</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q5"" name=""Q5"" value=""2"" onclick=""onlyOne(this,'Q5')"">
+              <label class=""form-check-label"" for=""Q5"">No</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q5"" name=""Q5"" value=""3"" onclick=""onlyOne(this,'Q5')"">
+              <label class=""form-check-label"" for=""Q5"">Not sure</label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q5"" name=""Q5"" value=""4"" onclick=""onlyOne(this,'Q5')"" data-toggle='collapse' data-target='#pH' aria-expanded=""false"">
+              <label class=""form-check-label"" for=""Q5"">Known value</label>
+          </div>
+
+        </div>
+
+        <div class=""collapse"" id=""pH"">
+
+          <div class=""form-group row"">
+            <label for=""Q5pH"" class=""col-sm-3 col-form-label"">Please key in the pH value</label>
+            <div class=""col-sm-2"">
+              <input type=""text"" class=""form-control"" id=""Q5pH"" placeholder=""pH"">
+            </div>
+          </div>
+        </div>"
+26,Cellulosic,Cellulosic placeholder <br>
+27,Size,"<div class=""form-group"">
+          <label class=""form-label"" for=""Q7""><u>Size of solid particles</u></label>
+          <br>
+          <label class=""form-label"" for=""Q7"">Q: Select the best description of the solid particles in the waste</label>
+          <br>
+          <div class=""form-check form-check-inline"" >
+            <input type=""checkbox"" class=""form-check-input"" id=""Q7"" name=""Q7"" value=""1"" onclick=""onlyOne(this,'Q7')"">
+            <label class=""form-check-label"" for=""Q7"">Chunky 
+              <a href=""#"" data-toggle=""tooltip"" title="""" >
+                <IMG SRC=""/static/icons/information.png"" ALT=""logo"" WIDTH=15 HEIGHT=15>
+              </a>
+            </label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q7"" name=""Q7"" value=""2"" onclick=""onlyOne(this,'Q7')"">
+              <label class=""form-check-label"" for=""Q7"">Fine particles
+                <a href=""#"" data-toggle=""tooltip"" title="""" >
+                  <IMG SRC=""/static/icons/information.png"" ALT=""logo"" WIDTH=15 HEIGHT=15>
+                </a>
+              </label>
+          </div>
+
+          <div class=""form-check form-check-inline"">
+              <input type=""checkbox"" class=""form-check-input"" id=""Q7"" name=""Q7"" value=""3"" onclick=""onlyOne(this,'Q7')"">
+              <label class=""form-check-label"" for=""Q7"">Mix</label>
+          </div>
+
+        </div>"

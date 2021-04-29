@@ -1,0 +1,168 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+<style>
+
+/*#dispatch_matching_results tr:nth-child(even){background-color: #f2f2f2;}*/
+
+#dispatch_matching_results tr:hover {background-color: #ddd;}
+
+#dispatch_matching_results th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: center;
+  background-color: white;
+  font-size: ;
+}
+
+#dispatch_matching_results tr {
+  text-align: center;
+}
+
+span {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+</style>
+
+  <div class="content-section" style="margin: 0 auto">
+    <legend class="border-bottom mb-4">Select Dispatch Matching Report to View</legend>
+      <form method='POST'> 
+        {{form.csrf_token}} 
+
+        <div class="form-row">
+
+          <div class="col">
+            {{ form.date.label(class="form-control-label") }}
+            {{ form.date(class="form-control form-control") }}
+          </div>
+
+          <div class="col">
+            {{ form.buySell.label(class="form-control-label") }}
+            {{ form.buySell(class="form-control form-control") }}
+          </div>
+
+          <div class="col">
+            {{ form.material.label(class="form-control-label") }}
+            {{ form.material(class="form-control form-control") }}
+          </div>
+
+        </div>
+        <br>
+        <div class="form-group">
+          {{ form.submit(class="btn btn-success") }}
+        </div>
+        
+      </form>
+  </div>
+  <br>
+
+  {% if match %}
+
+    
+    <div class="content-section" style="margin: 0 auto">
+      <legend class="border-bottom mb-4">Recommended Trading Plan</legend>
+      <br>
+        
+        {% if sell %}
+          <h5 class="font-weight-normal">Selling Waste</h5>
+
+          <table class="table" id="dispatch_matching_results" >
+            <thead>
+              <tr>
+                <th scope="col">No.</th>
+                <th scope="col">Material</th>
+                <th scope="col">Buyer</th>
+                <th scope="col">Postal<br>Code</th>   
+                <th scope="col">Final Unit Selling<br>Price (SGD/t)</th>
+                <th scope="col">Selling<br>Quantity (t)</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for sell in sell%}
+                <tr>
+                  <td>{{sell.no}}</td>
+                  <td>{{sell.materialSupplyName()}}</td>
+                  <td>{{sell.usernameDemand() | safe}}</td>
+                  <td>{{sell.postalCodeDemand()}}</td>              
+                  <td>{{sell.priceDisplay()}}</td>
+                  <td>{{sell.quantityDisplay()}}</td>
+                  <td><button type="button" class="btn btn-outline-primary btn-sm">Start Chat</button></td>
+                  <td><a class="btn btn-outline-success btn-sm" href="{{ url_for('dispatch_matching_results_contact') }}" role="button">Create Synergy</a></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          {% if supplierSurplus %}
+            <div>
+              <a class="btn btn-info btn-sm" href="{{ url_for('dispatch_matching_results_savings', date=date, buySell=0) }}" role="button" style="float:right;">View Savings Breakdown</a>
+              <h5 class="font-weight-normal">Total Cost Savings: ${{supplierSurplus}}</h5>
+            <div>
+          {% endif %}
+
+        {% endif %}
+
+        <br>
+        <br>
+        <br>
+
+        {% if buy %}
+
+          <h5 class="font-weight-normal">Purchasing Resource</h5>
+
+          <table class="table" id="dispatch_matching_results" >
+            <thead>
+              <tr>
+                <th scope="col">No.</th>
+                <th scope="col">Material</th>
+                <th scope="col">Seller</th>
+                <th scope="col">Postal<br>Code</th>
+                <!-- <th scope="col">Transportation<br>Distance (km)</th>  
+                <th scope="col">Transportation<br>Cost (SGD/t/km)</th> --> 
+                <th scope="col">Final Unit Purchasing<br>Price (SGD/t)</th>
+                <th scope="col">Purchasing<br>Quantity (t)</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {% for buy in buy%}
+                <tr>
+                  <td>{{buy.no}}</td>
+                  <td>{{buy.materialSupplyName()}}</td>
+                  <td>{{buy.usernameSupply() | safe}}</td>
+                  <td>{{buy.postalCodeSupply()}}</td>
+                  <!-- <td>{{buy.transportDist()}}</td>
+                  <td>{{buy.transportationCost()}}</td> -->
+                  <td>{{buy.priceDisplay()}}</td>
+                  <td>{{buy.quantityDisplay()}}</td>
+                  <td><button type="button" class="btn btn-outline-primary btn-sm">Start Chat</button></td>
+                  <td><a class="btn btn-outline-success btn-sm" href="{{ url_for('dispatch_matching_results_contact') }}" role="button">Create Synergy</a></td>
+                  
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          
+          {% if demandSurplus %}
+              <a class="btn btn-info btn-sm" href="{{ url_for('dispatch_matching_results_savings', date=date, buySell=1) }}" role="button" style="float:right;">View Savings Breakdown</a>
+              <h5 class="font-weight-normal">Total Cost Savings: ${{demandSurplus}}</h5>
+          {% endif %}
+
+        {% endif %}
+    
+    </div>
+    <br>
+    <br>
+    <div>
+      <a class="btn btn-success" href="{{ url_for('dispatch_matching_results_contact') }}" role="button">Accept all Recommendations</a>
+    </div>
+  {% endif %}
+
+{% endblock content %}
+
+
+

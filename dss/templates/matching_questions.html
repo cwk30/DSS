@@ -1,0 +1,85 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+  <div class="content-section" style="margin: 0 auto">
+    <form method='POST' enctype="multipart/form-data"> 
+
+      <div class="container">
+        <legend class="border-bottom mb-4">Matching --> {{material.type}} --> {{material.material}}</legend>
+
+
+        <div class="form-group">
+          <label class="form-label" for="description">Product Name</label>
+          <textarea class="form-control" name="description" placeholder="Please name this waste for your recognition" required></textarea>
+        </div>
+
+
+        {{form.csrf_token}} 
+        <br>
+        {% for question in questions %}
+          {{question.questionHTML|safe}}
+          <br>
+        {% endfor %}
+        
+        
+        {% if giveOutWaste %}
+        <br>
+          <div class="form-group">
+            <label for="file">Upload lab test results</label>
+            <input type="file" class="form-control-file" name="file" id="file">
+          </div>
+        {% endif %}
+
+
+
+        <br>
+        <a class="btn btn-outline-secondary" href="{{ url_for('matching') }}" role="button" onclick="return confirm('Inputs will not be saved, are you sure you want to go back?');">Back</a>
+        <button type="submit" style="float: right;" class="btn btn-success" onclick="return confirm('Please verify your response before submitting');">Submit</button>
+      </div>
+    </form>
+
+
+
+
+<script>
+  function onlyOne(checkbox,name) {
+  var checkboxes = document.getElementsByName(name)
+  checkboxes.forEach((item) => {
+    if (item !== checkbox){
+      item.checked = false;
+      }
+    })
+  }
+
+  // $( document ).ready(function() {
+  //   $('.collapse').on('show.bs.collapse', function () {
+  //     // hide all accordion except the clicked one
+  //     $('.collapse').not(this).collapse('hide');
+  //   });
+
+    // $('#test').on('show.bs.collapse', function () {
+    //   alert("activated");
+    //   $('#no').collapse('hide');
+    // });
+
+    // $('#Q4').on('show.bs.collapse', function () {
+    //   alert("activated");
+    //   $('#yes').collapse('hide');
+    // });
+
+  // });
+
+  $('a[data-toggle="tooltip"]').tooltip({
+      animated: 'fade',
+      placement: 'bottom',
+      html: true
+  });
+
+</script>
+    
+{% endblock content %}
+
+

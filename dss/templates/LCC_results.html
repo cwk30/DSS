@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+  <div class="container">
+    <div class="content-section" style="margin: 0 auto">
+      <legend class="border-bottom mb-4">Technology Life Cycle Cost Analysis</legend>
+      <legend class="border-bottom mb-4" style="color:green">Life Cycle Cost Calculations (NPV)</legend>
+      <div>
+        <p><strong>Time period: </strong>{{tech.noOfYears}} Years<p>
+        <p><strong>Business as Usual: </strong>${{tech.originalNPV(weightPerYear, disposalCostPerTon, discountRate)}}</p>
+        <p><strong>Recycle Waste: </strong>${{tech.recycleNPV(weightPerYear, disposalCostPerTon, discountRate, price)}}</p>
+        
+      </div>
+
+    </div>
+  </div>
+
+  <br>
+
+  <div class="container">
+    <div class="content-section" style="margin: 0 auto">
+      <legend class="border-bottom mb-4" style="color:green">Cost Breakdown (/year)</legend>
+      <div>
+        <p><strong>Capital Investment: </strong> ${{tech.capitalCost}} </p>
+        <p><strong>Total Operating Cost: </strong>${{tech.rawMaterialCost + tech.utilitiesCost}}</p>
+        <li><strong>Raw Materials Cost: </strong>${{tech.rawMaterialCost}}</li>
+        <li><strong>Utilities Cost: </strong>${{tech.utilitiesCost}}</li>
+        <br>
+        <p><strong>Others:</strong><p>
+        <li><strong>Technology Lifespan: </strong>{{tech.noOfYears}} Years</li>
+        <li><strong>Maintenance Cost: </strong>${{tech.maintenanceCost}}</li>
+        <li><strong>Salvage Value: </strong>${{tech.salvageValue}}</li>
+      </div>
+
+    </div>
+  </div>
+
+  <br>
+  <div class="container">
+    <div class="content-section" style="margin: 0 auto">
+      <legend class="border-bottom mb-4" style="color:green">Mateterial Breakdown</legend>
+      <div>
+        {% for material in byproductSpecifications %}
+          <h5>{{material.0}}: </h5>
+          <p><strong>Extraction Revenue: </strong>${{material.1}}</p>
+          <li><strong>Percentage Extraction: </strong>{{material.2}}</li>
+          <li><strong>Percentage Composition: </strong>{{material.3}}</li>
+          <li><strong>Market Price/ton: </strong>${{material.4}}</li>
+          <br>
+        {% endfor %}
+      </div>
+
+    </div>
+  </div>
+
+  
+
+     
+
+
+
+     
+  </div> 
+
+{% endblock content %}
+
+
+
+
+        

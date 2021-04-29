@@ -1,0 +1,106 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<style>
+
+/*#matching_results tr:nth-child(even){background-color: #f2f2f2;}*/
+
+#matching_results tr:hover {background-color: #ddd;}
+
+#matching_results th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: center;
+  background-color: white;
+  font-size: ;
+}
+
+#matching_results tr {
+  text-align: center;
+}
+
+span {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+</style>
+
+
+  <div class="content-section" style="margin: 0 auto">
+    <legend class="border-bottom mb-4">Matching Results</legend>
+
+
+      <form method='POST' class="form-inline">
+        
+        <div class="form-group mb-2 mr-sm-2">
+          
+
+          {{ form.order.label(class="form-control-label") }}          
+            <span>
+              <select id="order", name="order", class="form-control"> 
+                <option value="{{order}}">{{orderName}}</option>
+                <option value='landSpace'>Land space</option>
+                <option value='estimatedCost'>Estimated cost</option>
+                <option value='environmentalImpact'>Environmental impact</option>
+              </select>  
+            </span>
+          
+        </div>
+        {{ form.submit(class="btn btn-primary btn-sm mb-2") }}
+      </form>
+
+
+      <br>
+
+    <table class="table" id="matching_results" >
+      <thead>
+        <tr>
+          <!-- <th scope="col">Input waste source</th> -->
+          <th scope="col">Required technology</th>
+          <th scope="col">Technology suppliers</th>
+          <th scope="col">Final output</th>
+          <th scope="col">Land space (m<sup>2</sup>/t/day)</th>
+          <th scope="col">Estimated cost starting from</th>
+          <th scope="col">Environmental impact (/t/day)</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {% for result in results.items %}
+          <tr>
+            <!-- <td>{{result.wasteSource}}</td> -->
+            <td>{{result.requiredTechnology}}</td>
+            <td>{{result.technologySuppliersHTML(result.technologySuppliers, result.id)|safe}}</td>
+            <td>{{result.byProduct}}</td>
+            <td>{{result.landSpace}}</td>
+            <td>{{result.estimatedCost}}{{result.costUnits}}</td>
+            <td>{{result.environmentalImpact}}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% for page_num in results.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %} 
+        {% if page_num %} 
+            {% if results.page == page_num %} 
+                <a class="btn btn-info mb-4" href="{{ url_for('matching_results_resource', takeinresourceId=takeinresourceId,byProduct=byProduct,landSpace=landSpace,cost=cost,env=env,page=page_num,order=order)}}">{{ page_num }}</a>
+            {% else %}
+                <a class="btn btn-outline-info mb-4" href="{{ url_for('matching_results_resource', takeinresourceId=takeinresourceId,byProduct=byProduct,landSpace=landSpace,cost=cost,env=env,page=page_num,order=order)}}">{{ page_num }}</a>
+            {% endif %}
+        {% else %}
+            ...
+        {% endif %}
+    {% endfor %}
+    <br>
+
+    <a class="btn btn-outline-secondary" href="{{ url_for('matching_filter_resource', takeinresourceId=takeinresourceId) }}" role="button">Back</a>
+
+  </div> 
+
+{% endblock content %}
+
+
+
+
+        

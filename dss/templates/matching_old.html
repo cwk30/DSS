@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+{% block content %}
+
+  <div class="jumbotron">
+    <div class='container-fluid'>
+      <h1 style="color:skyblue"><strong>Matching</strong></h1>
+      <h5><i><strong>Have you ever wanted to recycle production wastes into useful resources or to replace current virgin material
+        with alternative recycling materials? Our matching engine provides the technology solutions and partner matching for 
+        identifying and establishing potential waste streams for you.</strong></i></h5>
+        <!-- <button class="btn btn-primary btn-lg mt-4 mb-0" onclick="showForm()">Start Matching</button> -->
+        <button class="btn btn-primary btn-lg mt-4 mb-0" data-toggle="collapse" data-target="#question">Start Matching</button>
+    </div>
+  </div> 
+
+  <div class="collapse" id="question">
+    <div class="content-section" style="margin: 0 auto">
+      <form method='POST'> 
+        {{form.csrf_token}} 
+
+        <div class="form-group">
+         {{ form.type.label(class="form-control-label") }}
+         {{ form.type(class="form-control form-control-lg") }}
+        </div>
+
+        <div class="form-group">
+          {{ form.material.label(class="form-control-label") }}
+          {{ form.material(class="form-control form-control-lg") }}
+        </div>
+
+        <div class="form-group">
+          {{ form.submit(class="btn btn-success btn-lg") }}
+        </div>
+      </form>
+    </div> 
+  </div>
+
+<script>
+	function showForm(){
+		var hiddenInputs = document.getElementsByClassName('hidden');
+
+    for (var i = 0; i != hiddenInputs.length; i++) {
+      hiddenInputs[i].style.display = 'block';
+    } 
+	}
+
+  let type_select = document.getElementById('type');
+  let material_select = document.getElementById('material');
+
+  type_select.onchange = function(){
+    type = type_select.value;
+    fetch('/materials/' + type).then(function(response){
+      response.json().then(function(data){
+        console.table(data);
+        let optionHTML = '';
+        for (let material of data.materials){
+          optionHTML += '<option value="' + material.id + '">' + material.material + '</option>';
+        }
+        material_select.innerHTML = optionHTML;
+      });
+    });
+  }
+
+</script>
+
+{% endblock content %}
+
+
+

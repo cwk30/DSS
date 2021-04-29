@@ -1,0 +1,46 @@
+id,technologyId,carouselHTML,website,specifications,description,features,suitableSubstrates,realisedProject
+1,2,"<div class=""carousel-item active"" data-interval=""15000"">
+            <img src=""/static/technology/technologyId_2.1.jpg"" class=""d-block carouselImage"" alt=""..."">
+            <div class=""carousel-caption d-none d-md-block"">
+              <p>Leaching using chloridic acid 5t/day capacity</p>
+            </div>
+          </div>
+
+<div class=""carousel-item"" data-interval=""15000"">
+            <img src=""/static/technology/technologyId_2.2.jpg"" class=""d-block carouselImage"" alt=""..."">
+            <div class=""carousel-caption d-none d-md-block"">
+              <p>Leaching using chloridic acid 50t/day capacity</p>
+            </div>
+          </div>
+
+<div class=""carousel-item"" data-interval=""15000"">
+            <img src=""/static/technology/technologyId_2.3.jpg"" class=""d-block carouselImage"" alt=""..."">
+            <div class=""carousel-caption d-none d-md-block"">
+              <p>Leaching using chloridic acid facility</p>
+            </div>
+          </div>",https://www.tes-amm.com/services/environment-recycling/,Sulfuric acid hydrolysis_1 to 10 MW,"<p>The lithium-ion batteries are first made safe for mechanical treatment, with plastics, aluminium and copper separated and directed to their own recycling processes. And what is left of the battery after these processes are the chemical and mineral components, the ‘black mass’. The black mass typically consists of a mixture of lithium, manganese, cobalt and nickel in different ratios. Of these, nickel – and especially cobalt – are the most valuable and most difficult to recover.</p>
+
+      <p>The hydrometallurgical recycling process involves a chemical precipitation methodology that allows scarce minerals to be recovered and delivered to battery manufacturers for reuse in the production of new batteries. </p>",90% less CO2 emissions than traditional method_80% metal extraction efficiency_Developed by the Finnish growth company Crisolteq,Li-ion batteries_Black mass_Metal alloy,"<h3>Harjavalta Industrial Park</h1>
+      <br>
+      <p><strong>Country: </strong>  Finland</p>
+      <p><strong>Year of construction: </strong> 2013</p>
+      <p><strong>Substrates: </strong> Li-ion batteries 20 tonnes per day</p>
+      <p><strong>Power capacity: </strong> 7.5MW</p>
+      <p><strong>Tank volumes:</strong> 3 x 8200 m<sup>2</sup> + 1 x 4000 m<sup>2</sup></p>
+      <p><strong>Technology: </strong> Sulfuric acid hydrolysis</p>"
+2,9," <div class=""carousel-item active"" data-interval=""15000"">
+            <img src=""/static/technology/technologyId_9.1.jpg"" class=""d-block carouselImage"" alt=""..."">
+             <div class=""carousel-caption d-none d-md-block"">
+              <p>AOE anaerobic digestion facility</p>
+            </div>
+          </div>
+          </div>",https://www.usbiopower.com/organic-energy/anaerobic-digester,Anaerobic digestor with solid liquid seperation_10 to 20MW,"<p>Anaerobic digestion consists of multiple natural biological processes characterized by microorganisms breaking down (or eating) biodegradable aka “organic” material—plant or animal matter—without the presence of oxygen.</p>
+
+<p>This combustible anaerobic end product possesses a wide range of uses, including creating energy. Biogas generates heat and/or electricity when ignited, and can further be transformed into vehicular fuels and renewable natural gas. Other material left over following anaerobic digestion is known as “digestate”—typically a wet combination that can be separated into liquids and nutrient-rich solids.<p/>",Cuts harmful methane emissions that fuel climate change_Prevent and reduce wasted animal manure and other organic materials from ending up in landfills,Animal manure_Food waste_Human waste,"<h3>Yaphank Facility</h1>
+      <br>
+      <p><strong>Country: </strong>  USA</p>
+      <p><strong>Year of construction: </strong> 2016</p>
+      <p><strong>Substrates: </strong> 180,000 tonnes food waste per year</p>
+      <p><strong>Power capacity: </strong> 95MW</p>
+      <p><strong>Tank volumes:</strong> 4 x 19500 m<sup>2</sup> </p>
+      <p><strong>Technology: </strong> Anaerobic digestor facility</p>"

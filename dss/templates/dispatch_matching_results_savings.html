@@ -1,0 +1,122 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+<style>
+
+#dispatch_matching_results_savings tr:hover {background-color: #ddd;}
+
+#dispatch_matching_results_savings th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: center;
+  background-color: white;
+  font-size: ;
+}
+
+#dispatch_matching_results_savings tr {
+  text-align: center;
+}
+
+span {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+</style>
+
+  <div class="content-section" style="margin: 0 auto">
+
+    
+    {% if sellBreakdown %}
+      <legend class="border-bottom mb-4">Selling Cost Savings Breakdown</legend>
+      
+
+      <table class="table" id="dispatch_matching_results_savings" >
+        <thead>
+          <tr>
+            <th scope="col">Buyer</th>
+            <th scope="col">Waste</th>
+            <th scope="col">Recommended Selling Price (SGD/t)</th>
+            <th scope="col">Reserve Price (SGD/t)</th>
+            <th scope="col">Quantity (t)</th>   
+            <th scope="col">Cost Savings (SGD)</th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for sellBreakdown in sellBreakdown%}
+
+          <!-- <p>{{sellBreakdown.wasteName}}: (( {{sellBreakdown.sell.price}} SGD/t ) - ( {{sellBreakdown.sellReserve}} SGD/t )) * ( {{sellBreakdown.sell.quantity}} t ) = {{sellBreakdown.surplus}} SGD</p> -->
+          
+          <tr>
+            <td>{{sellBreakdown.sell.usernameDemand() | safe}}</td>
+            <td>{{sellBreakdown.wasteName}}</td>
+            <td>{{sellBreakdown.sell.priceDisplay()}}</td>
+            <td>{{sellBreakdown.sellReserve}}</td>
+            <td>{{sellBreakdown.sell.quantity}}</td>              
+            <td><strong>{{sellBreakdown.surplus}}</strong></td>
+          </tr>
+
+        {% endfor %}
+        </tbody>
+      </table>
+        <br>
+        <p><i>*Cost Saving: (Recommended Selling Price - Reserve Price) * Selling Quantity </i></p>
+        <p><strong>Total Cost Savings (monthly): {{supplierSurplus}} SGD</strong></p>
+      <br>    
+    {% endif %}
+
+
+    {% if buyBreakdown %}
+      <legend class="border-bottom mb-4">Purchasing Cost Savings Breakdown</legend>
+      
+
+      <table class="table" id="dispatch_matching_results_savings" >
+        <thead>
+          <tr>
+            <th scope="col">Seller</th>
+            <th scope="col">Waste</th>
+            <th scope="col">Reserve Price (SGD/t)</th>
+            <th scope="col">Recommended Purchasing Price (SGD/t)</th>
+            <th scope="col">Distance (km)</th>
+            <th scope="col">Transportation Cost (SGD/t/km)</th>
+            <th scope="col">Quantity (t)</th>   
+            <th scope="col">Cost Savings (SGD)</th>
+          </tr>
+        </thead>
+        <tbody>
+
+        {% for buyBreakdown in buyBreakdown%}
+
+
+          <!-- <p>{{buyBreakdown.wasteName}}: (( {{buyBreakdown.buyReserve}} SGD/t ) - ( {{buyBreakdown.buy.price}} SGD/t ) - ({{buyBreakdown.distance}} km * {{buyBreakdown.transportationCost}} SGD/t/km)) * ( {{buyBreakdown.buy.quantity}} t ) = {{buyBreakdown.surplus}} SGD</p> -->
+
+          <tr>
+            <td>{{buyBreakdown.buy.usernameDemand() | safe}}</td>
+            <td>{{buyBreakdown.wasteName}}</td>
+            <td>{{buyBreakdown.buyReserve}}</td>
+            <td>{{buyBreakdown.buy.priceDisplay()}}</td>
+            <td>{{buyBreakdown.distance}}</td>
+            <td>{{buyBreakdown.transportationCost}}</td>
+            <td>{{buyBreakdown.buy.quantity}}</td>              
+            <td><strong>{{buyBreakdown.surplus}}</strong></td>
+          </tr>
+          
+        {% endfor %}
+
+        </tbody>
+      </table>
+
+        <br>
+        <p><i>*Cost Saving: (Reserve Price - Recommended Purchasing Price - (Transportation Distance * Transportation Unit Cost)) * Purchasing Quantity  </i></p>
+        <p><strong>Total Cost Savings (monthly): {{demandSurplus}} SGD</strong></p>
+      <br>   
+    {% endif %}
+    
+  </div>
+  
+
+{% endblock content %}
+
+
+

@@ -1,0 +1,172 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<style>
+.carouselImage {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  height: 360px; 
+  width: auto;
+}
+
+.carousel-control-prev-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='grey' viewBox='0 0 8 8'%3E%3Cpath d='M5.25 0l-4 4 4 4 1.5-1.5-2.5-2.5 2.5-2.5-1.5-1.5z'/%3E%3C/svg%3E");
+}
+
+.carousel-control-next-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='grey' viewBox='0 0 8 8'%3E%3Cpath d='M2.75 0l-1.5 1.5 2.5 2.5-2.5 2.5 1.5 1.5 4-4-4-4z'/%3E%3C/svg%3E");
+}
+
+#matching_technology tr:hover {background-color: #ddd;}
+
+#matching_technology th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: center;
+  background-color: white;
+  font-size: ;
+}
+
+#matching_technology tr {
+  text-align: center;
+}
+
+span {
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+}
+
+</style>
+
+<div class="content-section" style="margin: 0 auto">
+  <legend class="border-bottom mb-4">{{technology.technologySuppliers}}:&emsp;{{technology.requiredTechnology}}
+    <div style="font-size:large;" class="text-muted">&emsp;&emsp;{{technology.wasteSource}} --> {{technology.byProduct}}</div>
+  </legend>
+  
+
+  <div class="row">
+    <div class="col-sm-12">
+      <div id="technologyPictures" class="carousel slide" data-ride="carousel">
+
+        <!-- indicators nav -->
+        <ol class="carousel-indicators">
+          {% if navHTML %}
+            {% for nav in navHTML %}
+              {{nav|safe}}
+            {% endfor %}
+          {% endif %}
+        </ol>
+
+        <!-- inner items -->
+        <div class="carousel-inner">
+          
+          {{technologyBreakdown.carouselHTML|safe}}
+          
+        </div>
+
+        <!-- control buttons next/prev -->
+        <a class="carousel-control-prev" href="#technologyPictures" role="button" data-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="sr-only">Previous</span>
+        </a>
+
+        <a class="carousel-control-next" href="#technologyPictures" role="button" data-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="sr-only">Next</span>
+        </a>
+
+      </div>
+    </div>
+  </div>
+
+
+  <br>
+
+<br>
+
+{% if technologyBreakdown %}
+  <div class="container">
+    <div class="content-section" style="margin: 0 auto">
+      <legend class="border-bottom mb-4" style="color:green">Technology Specifications</legend>
+      <div>
+        <p><strong>Technology supplier: </strong> <a href="{{technologyBreakdown.website}}" target="_blank">{{technology.technologySuppliers}}</a> </p>
+        <p><strong>Technology name: </strong>{{technologyBreakdown.specificationsName(technologyBreakdown.specifications)}}</p>
+        <p><strong>Power capacity: </strong>{{technologyBreakdown.specificationsPower(technologyBreakdown.specifications)}}</p>
+      </div>
+    </div>
+
+    <br>
+
+    <div class="content-section" style="margin: 0 auto">
+      <legend class="border-bottom mb-4" style="color:green">Technology Description</legend>
+      <div>
+        {{technologyBreakdown.description|safe}}
+        
+      </div>
+    </div>
+      <br>
+
+    <div class="content-section" style="margin: 0 auto">
+      <legend class="border-bottom mb-4" style="color:green">Distinctive Features</legend>
+      <div>
+        <ul style="list-style-type:circle;">
+          {% for feature in technologyBreakdown.featuresHTML(technologyBreakdown.features) %}
+            <li>{{feature}}</li>
+          {% endfor %}
+        </ul>
+        
+      </div>
+    </div>
+    <br>
+    <div class="content-section" style="margin: 0 auto">
+      <legend class="border-bottom mb-4" style="color:green">Suitable Substrates</legend>
+      <div>
+        <ul style="list-style-type:circle;">
+          {% for substrate in technologyBreakdown.substratesHTML(technologyBreakdown.suitableSubstrates) %}
+            <li>{{substrate}}</li>
+          {% endfor %}
+        </ul>
+        
+      </div>
+    </div>
+
+    <br>
+    <div class="content-section" style="margin: 0 auto">
+      <legend class="border-bottom mb-4" style="color:green">Realized Project</legend>
+      <div>
+        {{technologyBreakdown.realisedProject|safe}}
+      </div>
+    </div>
+
+    <br>
+    <div class="content-section" style="margin: 0 auto">
+      <legend class="border-bottom mb-4" style="color:green">Looking for a solution for your business?</legend>
+      <div>
+        <p><a href={{technologyBreakdown.website}} target="_blank">Click to view more about the technologies available!</a></p> 
+        <p><strong>Contact us:</strong> +65-7474741 (email_me@noreply.com)</p>
+        <h6>Or fill up the form and we will contact you as soon as possible.</h6>
+        <br>
+        <form action="/action_page.php">
+          <label for="fname">Your name:</label>
+          <input type="text" id="fname" name="fname"><br><br>
+          <label for="lname">Your email*:</label>
+          <input type="text" id="lname" name="lname"><br><br>
+          <label for="lname">Contact number:</label>
+          <input type="text" id="contact" name="contact"><br><br>
+          <p>* required field</p>
+          <form action="/action_page.php">
+            <input type="checkbox" id="consent" name="consent" value="yes">
+            <label for="consent">I consent to the processing of personal data in accordance with the privacy policy</label><br>
+          </form>       <br>
+          <input type="submit" value="Submit">
+        </form>
+      </div>
+    </div>
+
+  </div>
+{% endif %}
+{% endblock content %}
+
+
+

@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+{% block content %}
+
+  <div class="content-section" style="margin: 0 auto">
+    <legend class="border-bottom mb-4">Input Waste Details</legend>
+      <form method='POST'> 
+        {{form.csrf_token}} 
+
+        <div class="form-group">
+          {{ form.technology.label(class="form-control-label") }}
+          {{ form.technology(class="form-control form-control") }}
+        </div>
+
+        <div class="form-group">
+          {{ form.weightPerYear.label(class="form-control-label") }}
+          {{ form.weightPerYear(class="form-control form-control", placeholder="ton/year") }}
+        </div>
+
+        <div class="form-group">
+          {{ form.disposalCostPerTon.label(class="form-control-label") }}
+          {{ form.disposalCostPerTon(class="form-control", placeholder="$/ton") }}  
+        </div>
+
+        <div class="form-group">
+          {{ form.discountRate.label(class="form-control-label") }}
+          {{ form.discountRate(class="form-control", placeholder="~%") }}  
+        </div>
+
+        
+
+        <br>
+
+        <div class="form-group">
+          {{ form.submit(class="btn btn-success") }}
+
+        </div>
+
+      </form>
+  </div> 
+
+{% endblock content %}
+
+
+
+
+        

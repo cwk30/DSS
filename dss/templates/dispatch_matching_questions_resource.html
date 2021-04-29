@@ -1,0 +1,101 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+  <div class="content-section" style="margin: 0 auto">
+    <legend class="border-bottom mb-4">Dispatch Matching --> Purchasing Waste</legend>
+      <form method='POST' enctype="multipart/form-data"> 
+
+        {{form.csrf_token}} 
+        
+        <div class="form-group">
+          {{ form.wasteName.label(class="form-control-label") }}
+          {{ form.wasteName(class="form-control") }}
+
+          <small id="wasteName" class="form-text text-muted">
+            If not in the list, please<a class="ml-2" style="margin: 0 auto" href="{{ url_for('matching') }}">register your waste</a> with us first
+          </small>
+        </div>
+
+        
+        <div class="form-group">
+          {{ form.quantity.label(class="form-control-label") }}
+          {{ form.quantity(class="form-control", placeholder="t/month") }}
+        </div>
+
+    
+
+        <div class="form-group">
+          {{ form.postalCode.label(class="form-control-label") }}
+          {{ form.postalCode(class="form-control", placeholder="postal code") }}
+        </div>
+
+        <div class="form-group row" style="padding-left: 1em;">
+          <label class="col-form-label" for="reservePrice">What is your reserve purchasing price? SGD</label>
+          <label>&nbsp;</label>
+          {{ form.reservePrice(class="form-control col-md-1") }}
+
+          <label for="reservePrice" class="col-form-label">&nbsp;per tonne &nbsp; </label>
+          <button type="button" id="copy" class="btn btn-outline-secondary btn-sm">Copy Recommended Price</button>
+        </div>
+
+        <div>
+          <small id="reservePrice" class="form-text text-muted">
+            <span style="color: red;">Note: Reserve price should not include transportation costs</span>
+            <br>
+            <br>
+            Recommended reserve price: SGD <span style="color: red;">{{recommendedReservePrice}}</span> per tonne.
+          </small>
+        </div>
+
+        <br>
+
+        <div class="form-group">
+          <a class="btn btn-outline-secondary" href="{{ url_for('dispatch_matching') }}" role="button" onclick="return confirm('Inputs will not be saved, are you sure you want to go back?');">Back</a>
+          <button type="submit" style="float: right;" class="btn btn-success">Submit</button>
+        </div>
+      </form>
+
+
+
+
+<script>
+  function onlyOne(checkbox,name) {
+  var checkboxes = document.getElementsByName(name)
+  checkboxes.forEach((item) => {
+    if (item !== checkbox){
+      item.checked = false;
+      }
+    })
+  }
+
+  $( document ).ready(function() {
+    $('.collapse').on('show.bs.collapse', function() {
+      // hide all accordion except the clicked one
+      $('.collapse').not(this).collapse('hide');
+    });
+
+    // $('#test').on('show.bs.collapse', function () {
+    //   alert("activated");
+    //   $('#no').collapse('hide');
+    // });
+
+    // $('#Q3').on('show.bs.collapse', function () {
+    //   alert("activated");
+    //   $('#yes').collapse('hide');
+    // });
+
+  });
+
+  $("#copy").click(function () {
+    $("#reservePrice").val("{{recommendedReservePrice}}");
+  });
+
+
+</script>
+    
+{% endblock content %}
+
+

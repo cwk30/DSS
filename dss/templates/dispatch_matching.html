@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block content %}
+
+ 
+  <div class="content-section" style="margin: 0 auto">
+    <h2 style="color:deepskyblue"><strong>Dispatch Matching</strong></h2>
+    <br>
+
+
+    <form method='POST'> 
+      {{form.csrf_token}} 
+
+      <div class="form-group">
+        <h5>What is your purpose?</h5>
+       {{ form.type(class="form-control form-control-lg") }}
+      </div>
+
+      <div class="form-group">
+        {{ form.submit(class="btn btn-success btn-lg") }}
+      </div>
+    </form>
+  </div> 
+    <br>
+
+  <div class="content-section" style="margin: 0 auto">
+    <h5>View past matching results</h5>
+    <br>
+    <div class="form-group">
+      <a class="btn btn-outline-primary" href="{{ url_for('dispatch_matching_results') }}" role="button">View Results</a>
+    </div>
+  </div>
+
+
+
+
+{% endblock content %}
+
+
+

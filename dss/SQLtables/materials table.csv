@@ -1,0 +1,12 @@
+id,type,material,questionId
+1,Give out Waste,Food,0
+2,Give out Waste,Plastic,0
+3,Give out Waste,E-Waste,"1,2,3,4,5"
+4,Give out Waste,Animal Manure,"6,2,7,8"
+5,Take in Resource,Plastic,"9,10,11"
+6,Take in Resource,Chemical,0
+7,Take in Resource,Metal,"12,13,14,15"
+8,Take in Resource,Oil,0
+9,Take in Resource,Biochar,0
+10,Take in Resource,Fertiliser,"16,17,18,19"
+11,Material Recovery Supplier,Process Resources,0
