@@ -30,6 +30,21 @@ from .LCCTest import TechSpecifications
 #bananas test
 
 @app.route("/") 
+def landing():
+    if current_user.is_authenticated:
+        return render_template('home.html')
+    else:
+        return render_template('index.html')
+
+@app.route("/index")
+def index():
+    return render_template('index.html')
+
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    return render_template('dashboard.html')
+
 @app.route("/home") 
 def home():
     return render_template('home.html') 

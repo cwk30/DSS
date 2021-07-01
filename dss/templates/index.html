@@ -1,0 +1,358 @@
+<!DOCTYPE HTML>
+<!--
+	Landed by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+	<head>
+		<title>Easy Recycling</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="static/assets/css/main.css">
+		<noscript><link rel="stylesheet" href="{{ url_for('static', filename='assets/css/main.css') }}" /></noscript>
+	</head>
+	<body class="is-preload landing">
+		<div id="page-wrapper">
+
+			<!-- Header -->
+				<header id="header">
+					<h1 id="logo"><a href="{{ url_for('home')}}">Easy Recycling</a></h1>
+
+					<nav id="nav">
+						<ul>
+							{% if current_user.is_authenticated %}
+							<li><a href="{{ url_for('home') }}">Dashboard</a></li>
+						  	{% else %}
+						  	
+						  	{% endif %}
+							<li><a href="{{ url_for('about')}}">About</a></li>
+							
+							<li><a href="{{ url_for('posts_home')}}">Posts</a></li>
+							<li><a href="{{ url_for('login')}}" class="button">Login</a></li>
+							
+							<li><a href="{{ url_for('register')}}" class="button primary">Sign up</a></li>
+						</ul>
+					</nav>
+				</header>
+
+			<!-- Banner -->
+				<section id="banner">
+					<div class="content">
+						<header>
+							
+								{% if current_user.is_authenticated %}
+								  <h2><a href="{{ url_for('account') }}" class="teal-text"></a><h2 class="pb-1"></i><strong> Hello, <span style="color: yellowgreen;">{{ current_user.username }} </span> ! </strong></h2></a></h2>
+								{% else %}
+								<h2><a href="{{ url_for('account') }}" class="teal-text"></a><h2 class="pb-1"></i><strong> <h1>Welcome </h1></strong></h2></a></h2>
+								{% endif %}
+							  
+							<p>The future of recycling is here.<br />
+							Buy. Sell. Trading waste has never been easier.</p>
+						</header>
+						<span class="image"><img src="{{ url_for('static', filename='images/logo.png') }}" alt="" /></span>
+					</div>
+					<a href="#one" class="goto-next scrolly">Next</a>
+				</section>
+
+			<!-- One -->
+				<section id="one" class="spotlight style1 bottom">
+					<span class="image fit main"><img src="https://www.businessdestinations.com/wp-content/uploads/2017/02/E071_rt_feature.jpg" alt="" /></span>
+					<div class="content">
+						<div class="container">
+							<div class="row">
+								<div class="col-4 col-12-medium">
+									<header>
+										<h2>Welcome to Easy Recycling</h2>
+										<p>Introducing our web-based Decision Support System (DSS) platform</p>
+									</header>
+								</div>
+								<div class="col-4 col-12-medium">
+									<p>This platform has been developed 
+										to fill the knowledge gap and achieve overall optimized industrial eco-system 
+										with high recycling rates and emission avoidance.</p>
+								</div>
+								<div class="col-4 col-12-medium">
+									<p>Among various functions, this platform serves as a one-stop knowledge repository 
+										in which industrial participants can share and discover relevant recycling technology 
+										information, waste material conversion pathways, and find trading 
+										partners to make waste-to-resource exchange transactions, providing reliable 
+										decision support in different levels.</p>
+								</div>
+							</div>
+						</div>
+					</div>
+					<a href="#two" class="goto-next scrolly">Next</a>
+				</section>
+
+			<!-- Two -->
+				<section id="two" class="spotlight style2 right">
+					<span class="image fit main"><img src="https://d1q8kgt00fn2v8.cloudfront.net/files/uploads/2017/11/kids_recycling.jpg" alt="" /></span>
+					<div class="content">
+						<header>
+							<h2>Selling</h2>
+							<p>Need to get rid of waste materials? By connecting you to top industry partners, our matching algorithm quickly finds prospective buyers for your waste.</p>
+						</header>
+						<p>
+						</p>
+						<ul class="actions">
+							<li><a href="#" class="button">Learn More</a></li>
+						</ul>
+					</div>
+					<a href="#three" class="goto-next scrolly">Next</a>
+				</section>
+
+			<!-- Three -->
+				<section id="three" class="spotlight style3 left">
+					<span class="image fit main bottom"><img src="https://media.wired.com/photos/5c8864031137e42560bf3452/125:94/w_1940,h_1459,c_limit/recycling-1072467826.jpg" alt="" /></span>
+					<div class="content">
+						<header>
+							<h2>Buying</h2>
+							<p>Looking to purchase some recycling waste for your business needs? Have your needs fulfilled quickly by our matching algorithm.</p>
+						</header>
+						<p></p>
+						<ul class="actions">
+							<li><a href="#" class="button">Learn More</a></li>
+						</ul>
+					</div>
+					<a href="#four" class="goto-next scrolly">Next</a>
+				</section>
+
+			<!-- Four -->
+				<section id="four" class="wrapper style1 special fade-up">
+					<div class="container">
+						<header class="major">
+							<h2>Features</h2>
+							<p>An entire suite of services, at your fingertips</p>
+						</header>
+						<div class="box alt">
+							<div class="row gtr-uniform">
+								<section class="col-4 col-6-medium col-12-xsmall">
+									<span class="icon solid alt major fa-chart-area"></span>
+									<h3>Dashboard</h3>
+									<p>Our dashboard broadcasts the latest on environmental policies, as well as provide data on real time recycling statuses.</p>
+								</section>
+								<section class="col-4 col-6-medium col-12-xsmall">
+									<span class="icon solid alt major fa-comment"></span>
+									<h3>Matching</h3>
+									<p>Our matching algorithms quickly provides technology and partner matching for your business needs.</p>
+								</section>
+								<section class="col-4 col-6-medium col-12-xsmall">
+									<span class="icon solid alt major fa-flask"></span>
+									<h3>Analytics</h3>
+									<p>Using analytical tools, quickly gain insights drawn from data, forecasting and machine learning.</p>
+								</section>
+								<section class="col-4 col-6-medium col-12-xsmall">
+									<span class="icon solid alt major fa-paper-plane"></span>
+									<h3>Simulator</h3>
+									<p>Our simulation tool allows businesses to quickly visualise market performances under a wide range of scenarios.</p>
+								</section>
+								<section class="col-4 col-6-medium col-12-xsmall">
+									<span class="icon solid alt major fa-file"></span>
+									<h3>Planning</h3>
+									<p>An indepth overview of the waste geography allows for better central planning.</p>
+								</section>
+								<section class="col-4 col-6-medium col-12-xsmall">
+									<span class="icon solid alt major fa-lock"></span>
+									<h3>Dispatch Matching</h3>
+									<p>Using our matching algorithm, get connected to industry partners to collaborate and trade recycling materials.</p>
+								</section>
+							</div>
+						</div>
+						<footer class="major">
+							<ul class="actions special">
+								<li><a href="{{ url_for('register') }}" class="button">Get Started</a></li>
+							</ul>
+						</footer>
+					</div>
+				</section>
+<!-- tiles -->
+				<div id="main">
+					<header class="major">
+						<h2>Latest Posts</h2>
+						<p></p>
+					</header>
+				<div class="inner">
+				<section id="five" class="tiles">
+					<article class="style2">
+						<span class="image2">
+							<img src="https://www.recycleinme.com/userimg/thumb200/65110.jpg" alt="" />
+						</span>
+						<a href="generic.html">
+							<h2>Sell Offer: Old Aluminum Sheet...</h2>
+							<div class="content">
+								<p>Currently, we are supplying Old Aluminum Sheet Scrap of 90 MT every month...
+								</p>
+							</div>
+						</a>
+					</article>
+					<article class="style2">
+						<span class="image2">
+							<img src="https://www.recycleinme.com/userimg/thumb200/63948.jpg" alt="" />
+						</span>
+						<a href="generic.html">
+							<h2>Sell Offer: 50 Tons of OCC Paper</h2>
+							<div class="content">
+								<p>We are selling 50 Tons of OCC Paper Scrap on a regular monthly basis...</p>
+							</div>
+						</a>
+					</article>
+					<article class="style2">
+						<span class="image2">
+							<img src="https://www.recycleblu.com/img/products/86-614-1.jpg?size=big" alt="" />
+						</span>
+						<a href="generic.html">
+							<h2>Sell Offer: HDPE Blue Drum Regrind</h2>
+							<div class="content">
+								<p>HDPE blue regrind available regularly. Offers welcome.</p>
+							</div>
+						</a>
+					</article>
+					<article class="style4">
+						<span class="image2">
+							<img src="static/assets2/images/pic04.jpg" alt="" />
+						</span>
+						<a href="generic.html">
+							<h2>Tempus</h2>
+							<div class="content">
+								<p>Sed nisl arcu euismod sit amet nisi lorem etiam dolor veroeros et feugiat.</p>
+							</div>
+						</a>
+					</article>
+					<article class="style5">
+						<span class="image2">
+							<img src="static/assets2/images/pic05.jpg" alt="" />
+						</span>
+						<a href="generic.html">
+							<h2>Aliquam</h2>
+							<div class="content">
+								<p>Sed nisl arcu euismod sit amet nisi lorem etiam dolor veroeros et feugiat.</p>
+							</div>
+						</a>
+					</article>
+					<article class="style6">
+						<span class="image2">
+							<img src="static/assets2/images/pic06.jpg" alt="" />
+						</span>
+						<a href="generic.html">
+							<h2>Veroeros</h2>
+							<div class="content">
+								<p>Sed nisl arcu euismod sit amet nisi lorem etiam dolor veroeros et feugiat.</p>
+							</div>
+						</a>
+					</article>
+					<article class="style2">
+						<span class="image2">
+							<img src="static/assets2/images/pic07.jpg" alt="" />
+						</span>
+						<a href="generic.html">
+							<h2>Ipsum</h2>
+							<div class="content">
+								<p>Sed nisl arcu euismod sit amet nisi lorem etiam dolor veroeros et feugiat.</p>
+							</div>
+						</a>
+					</article>
+					<article class="style3">
+						<span class="image2">
+							<img src="static/assets2/images/pic08.jpg" alt="" />
+						</span>
+						<a href="generic.html">
+							<h2>Dolor</h2>
+							<div class="content">
+								<p>Sed nisl arcu euismod sit amet nisi lorem etiam dolor veroeros et feugiat.</p>
+							</div>
+						</a>
+					</article>
+					<article class="style1">
+						<span class="image2">
+							<img src="static/assets2/images/pic09.jpg" alt="" />
+						</span>
+						<a href="generic.html">
+							<h2>Nullam</h2>
+							<div class="content">
+								<p>Sed nisl arcu euismod sit amet nisi lorem etiam dolor veroeros et feugiat.</p>
+							</div>
+						</a>
+					</article>
+					<article class="style5">
+						<span class="image2">
+							<img src="static/assets2/images/pic10.jpg" alt="" />
+						</span>
+						<a href="generic.html">
+							<h2>Ultricies</h2>
+							<div class="content">
+								<p>Sed nisl arcu euismod sit amet nisi lorem etiam dolor veroeros et feugiat.</p>
+							</div>
+						</a>
+					</article>
+					<article class="style6">
+						<span class="image2">
+							<img src="static/assets2/images/pic11.jpg" alt="" />
+						</span>
+						<a href="generic.html">
+							<h2>Dictum</h2>
+							<div class="content">
+								<p>Sed nisl arcu euismod sit amet nisi lorem etiam dolor veroeros et feugiat.</p>
+							</div>
+						</a>
+					</article>
+					<article class="style4">
+						<span class="image2">
+							<img src="static/assets2/images/pic12.jpg" alt="" />
+						</span>
+						<a href="generic.html">
+							<h2>Pretium</h2>
+							<div class="content">
+								<p>Sed nisl arcu euismod sit amet nisi lorem etiam dolor veroeros et feugiat.</p>
+							</div>
+						</a>
+					</article>
+				</section>
+				</div>
+				</div>
+
+			<!-- Five -->
+				<section id="six" class="wrapper style2 special fade">
+					<div class="container">
+						<header>
+							<h2>No waste is truly waste.</h2>
+							<p>Join now to make a difference.</p>
+						</header>
+						<form method="post" action="#" class="cta">
+							
+								<!--<div class="col-8 col-12-xsmall"><input type="email" name="email" id="email" placeholder="Your Email Address" /></div>-->
+								<a href="{{ url_for('register')}}" class="button primary">Get Started</a>
+							
+						</form>
+					</div>
+				</section>
+
+			<!-- Footer -->
+				<footer id="footer">
+					<ul class="icons">
+						<!--<li><a href="#" class="icon brands alt fa-twitter"><span class="label">Twitter</span></a></li>
+						<li><a href="#" class="icon brands alt fa-facebook-f"><span class="label">Facebook</span></a></li>
+						<li><a href="#" class="icon brands alt fa-linkedin-in"><span class="label">LinkedIn</span></a></li>
+						<li><a href="#" class="icon brands alt fa-instagram"><span class="label">Instagram</span></a></li>-->
+						<li><a href="#" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+						<li><a href="mailto:eriwz@nus.edu.sg" class="icon solid alt fa-envelope"><span class="label">Email</span></a></li>
+					</ul>
+					<ul class="copyright">
+						<li>&copy;  <a href="https://www.create.edu.sg/about-create/research-centres/e2s2/"> NUS E2S2 Programme. </a> All rights reserved.</li>
+					</ul>
+				</footer>
+
+		</div>
+
+		<!-- Scripts -->
+			<script src="{{ url_for('static', filename='assets/js/jquery.min.js') }}"></script>
+			<script src="{{ url_for('static', filename='assets/js/jquery.scrolly.min.js') }}"></script>
+			<script src="{{ url_for('static', filename='assets/js/jquery.dropotron.min.js') }}"></script>
+			<script src="{{ url_for('static', filename='assets/js/jquery.scrollex.min.js') }}"></script>
+			<script src="{{ url_for('static', filename='assets/js/browser.min.js') }}"></script>
+			<script src="{{ url_for('static', filename='assets/js/breakpoints.min.js') }}"></script>
+			<script src="{{ url_for('static', filename='assets/js/util.js') }}"></script>
+			<script src="{{ url_for('static', filename='assets/js/main.js') }}"></script>
+
+	</body>
+</html>
