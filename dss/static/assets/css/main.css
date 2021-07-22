@@ -3790,7 +3790,7 @@ input, select, textarea {
 	#banner {
 		background-attachment: fixed;
 		background-color: #272833;
-		background-image: url("https://n-o-v-a.com/wp-content/uploads/2018/09/Recycle-blog-image.jpg");
+		background-image: url("/static/images/recycle.jpg");
 		background-position: center center;
 		background-size: cover;
 		box-shadow: 0 0.25em 0.5em 0 rgba(0, 0, 0, 0.25);
