@@ -23,6 +23,10 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(60), nullable=False)
     website = db.Column(db.String(100))
     posts = db.relationship('Post', backref='author', lazy=True)
+    totalposts=db.Column(db.Integer,nullable=False)
+    totalsuccess=db.Column(db.Integer,nullable=False)
+    totalwaste=db.Column(db.Integer,nullable=False)
+
 
     def get_reset_token(self, expires_sec=1800):
         s = Serializer(app.config['SECRET_KEY'], expires_sec)

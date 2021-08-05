@@ -43,6 +43,7 @@ def index():
 @app.route("/dashboard")
 @login_required
 def dashboard():
+    posts=db.execute("SELECT * FROM post order by id")
     return render_template('dashboard.html')
 
 @app.route("/home") 
