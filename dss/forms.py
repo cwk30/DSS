@@ -90,10 +90,13 @@ class ResetPasswordForm(FlaskForm):
 #matching
 class MaterialsForm(FlaskForm):
     wasteID = SelectField('Existing Waste Profile ID', choices=[])
-
     type = SelectField('Type', choices=[])
     material = SelectField('Material', choices=[])
     submit = SubmitField('Next')
+
+class RSPForm(FlaskForm):
+    subcategory=SelectField('Subcategory',choices=[])
+    
 
 
 class FilterForm(FlaskForm):

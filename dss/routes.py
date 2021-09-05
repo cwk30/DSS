@@ -12,7 +12,7 @@ from dss import app, db, bcrypt, mail
 from dss.forms import (RegistrationForm,LoginForm, UpdateAccountForm, PostForm,RequestResetForm, ResetPasswordForm,
     MaterialsForm, FilterForm, maxRowsForm,
     dispatchMatchingForm, dispatchMatchingQuestionsForm, dispatchMatchingResultsForm,
-    LCCForm) 
+    LCCForm, RSPForm) 
 from dss.models import (User, Post, 
     Materials, Questions, Giveoutwaste, Technology, Takeinresource, Supplier, Technologybreakdown, Technologycode, 
     Dispatchmatchingresults, Dispatchmatchingsupply, Dispatchmatchingdemand)
@@ -233,7 +233,6 @@ def matching():
     form = MaterialsForm()
     form.type.choices = [(material.type, material.type) for material in Materials.query.group_by(Materials.type)]
     form.material.choices = [(material.id, material.material) for material in Materials.query.filter_by(type=Materials.query.first().type).all()]
-
     #get past waste ID
     prevEntries = [(waste.id, waste.questionCode + ': ' + waste.description + ' - ' + waste.date.strftime("%d/%m/%Y")) for waste in Giveoutwaste.query.filter_by(userId=int(current_user.id)).all()]
     prevEntries.insert(0,(None,None))
@@ -271,6 +270,9 @@ def matching_questions(materialId):
         giveOutWaste = True
     else:
         giveOutWaste = False
+    
+
+
 
     #get questions
     questionId = material.questionId.split(',')
