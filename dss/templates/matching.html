@@ -1,100 +1,64 @@
-{% extends "layout.html" %}
+{% extends "newlayout.html" %}
 {% block content %}
+        <div class="page-wrapper">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <div class="page-breadcrumb bg-white">
+                <div class="row align-items-center">
+                    <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                        <h4 class="page-title">Matching</h4>
+                    </div>
+                    <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
+                        <div class="d-md-flex">
 
-  <div class="content-section" style="margin: 0 auto">
-    <h2 style="color:deepskyblue"><strong>Matching</strong></h2>
-      <h5>Do you have an existing waste transaction listed with us? </h5>
-      <h6>If yes, please enter the waste ID: </h6>
-
-      <form method='POST'> 
-        {{form.csrf_token}} 
-        <br>
-        <div class="form-group ">
-          <h6>Select your waste ID</h6>
-         {{ form.wasteID(class="form-control form-control-sm") }}
-        </div>
-
-
-      
-        <div class="form-group">
-          <h6>Or enter your waste ID below</h6>
-          <textarea class="form-control" name="description" placeholder="Enter the waste ID here..."></textarea>
-        </div>
-
-        <div class="form-group">
-          {{ form.submit(class="btn btn-success btn-lg") }}
-        </div>
-      </form>
-      
-      <h6>If no, please create a new waste ID.</h6>
-        <button class="btn btn-primary btn-lg mt-4 mb-0" data-toggle="collapse" data-target="#question">Create New Waste ID</button>
-      <br>
-      
-  </div>
-
-  <br>
-
-  <div class="collapse" id="question">
-    <div class="content-section" style="margin: 0 auto">
-      <form method='POST'> 
-        {{form.csrf_token}} 
-
-        <div class="form-group">
-          <h5>What is your purpose?</h5>
-         {{ form.type(class="form-control form-control-lg") }}
-        </div>
-
-        <div class="form-group">
-          <h5>Material Type or Industry Area?</h5>
-          {{ form.material(class="form-control form-control-lg") }}
-        </div>
-
-        <div class="form-group">
-          {{ form.submit(class="btn btn-success btn-lg") }}
-        </div>
-      </form>
-    </div> 
-    <br>
-  </div>
-
-
-
-  <!-- <div class="content-section" style="margin: 0 auto">
-    <h2 style="color:deepskyblue"><strong>Dispatch Matching</strong></h2>
-      <h5>Click here to continue with dispatch matching</h5>
-        <a class="btn btn-success btn-lg mt-4 mb-0" href="{{ url_for('dispatch_matching_questions_waste') }}" role="button">Dispatch Matching</a>
-      <br>
-  </div> -->
-
-<script>
-	function showForm(){
-		var hiddenInputs = document.getElementsByClassName('hidden');
-
-    for (var i = 0; i != hiddenInputs.length; i++) {
-      hiddenInputs[i].style.display = 'block';
-    } 
-	}
-
-  let type_select = document.getElementById('type');
-  let material_select = document.getElementById('material');
-
-  type_select.onchange = function(){
-    type = type_select.value;
-    fetch('/materials/' + type).then(function(response){
-      response.json().then(function(data){
-        console.table(data);
-        let optionHTML = '';
-        for (let material of data.materials){
-          optionHTML += '<option value="' + material.id + '">' + material.material + '</option>';
-        }
-        material_select.innerHTML = optionHTML;
-      });
-    });
-  }
-
-</script>
-
+                        </div>
+                    </div>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- Container fluid  -->
+            <!-- ============================================================== -->
+            <div class="container-fluid">
+                <!-- ============================================================== -->
+                <!-- Start Page Content -->
+                <!-- ============================================================== -->
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="white-box">
+                            <h3 class="box-title">Select your role</h3>
+                            <div class="text-center p-20 upgrade-btn">
+                                <a href="{{ url_for('selling_waste') }}"
+                                    class="btn d-grid btn-danger text-white">
+                                    Selling Waste</a>
+                            </div>
+                            <div class="text-center p-20 upgrade-btn">
+                                <a href="{{ url_for('recycling_service_provider') }}"
+                                    class="btn d-grid btn-danger text-white">
+                                    Recycling Service Provider</a>
+                            </div>
+                            <div class="text-center p-20 upgrade-btn">
+                                <a href="{{ url_for('buying_resources') }}"
+                                    class="btn d-grid btn-danger text-white">
+                                    Buying Resources</a>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                <!-- ============================================================== -->
+                <!-- End PAge Content -->
+                <!-- ============================================================== -->
+                <!-- ============================================================== -->
+                <!-- Right sidebar -->
+                <!-- ============================================================== -->
+                <!-- .right-sidebar -->
+                <!-- ============================================================== -->
+                <!-- End Right sidebar -->
+                <!-- ============================================================== -->
+            </div>
 {% endblock content %}
-
-
-

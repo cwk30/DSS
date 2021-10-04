@@ -62,6 +62,12 @@ class Materials(db.Model):
     material = db.Column(db.String(100), nullable=False)
     questionId = db.Column(db.String(100), nullable=False)
 
+class RSP(db.Model):
+    id = db.Column(db.Integer, primary_key = True) 
+    maincat = db.Column(db.String(100), nullable=False)
+    subcat = db.Column(db.String(100), nullable=False)
+    questionId = db.Column(db.String(100), nullable=False)   
+
 class Questions(db.Model):
     id = db.Column(db.Integer, primary_key = True) 
     label = db.Column(db.String(500), nullable=False)

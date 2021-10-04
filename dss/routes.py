@@ -13,8 +13,7 @@ from dss.forms import (RegistrationForm,LoginForm, UpdateAccountForm, PostForm,R
     MaterialsForm, FilterForm, maxRowsForm,
     dispatchMatchingForm, dispatchMatchingQuestionsForm, dispatchMatchingResultsForm,
     LCCForm, RSPForm) 
-from dss.models import (User, Post, 
-    Materials, Questions, Giveoutwaste, Technology, Takeinresource, Supplier, Technologybreakdown, Technologycode, 
+from dss.models import (User, Post, RSP, Materials, Questions, Giveoutwaste, Technology, Takeinresource, Supplier, Technologybreakdown, Technologycode, 
     Dispatchmatchingresults, Dispatchmatchingsupply, Dispatchmatchingdemand)
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_mail import Message
@@ -43,7 +42,7 @@ def index():
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    posts=db.execute("SELECT * FROM post order by id")
+    #posts=db.execute("SELECT * FROM post order by id")
     return render_template('dashboard.html')
 
 @app.route("/home") 
@@ -222,8 +221,18 @@ def reset_token(token):
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+
 @app.route("/matching", methods=['GET', 'POST'])
 def matching():
+    if current_user.is_authenticated:
+        pass
+    else: 
+        flash(f'Please log in first','danger')
+        return redirect(url_for("login"))
+    return render_template('matching.html')
+
+@app.route("/matching/sellingwaste", methods=['GET', 'POST'])
+def selling_waste():
     if current_user.is_authenticated:
         pass
     else: 
@@ -246,8 +255,60 @@ def matching():
         #creates new Waste ID
         else:
             return redirect(url_for("matching_questions",materialId=form.material.data))
-    return render_template('matching.html', title="Matching", form=form)
-    
+    return render_template('sellingwaste.html', title="Matching", form=form)
+
+@app.route("/matching/recycling_service_provider", methods=['GET', 'POST'])
+def recycling_service_provider():
+    if current_user.is_authenticated:
+        pass
+    else: 
+        flash(f'Please log in first','danger')
+        return redirect(url_for("login"))
+
+    form = RSPForm()
+    form.maincat.choices = [(rsp.maincat, rsp.maincat) for rsp in RSP.query.group_by(RSP.maincat)]
+    form.subcat.choices = [(rsp.id, rsp.subcat) for rsp in RSP.query.filter_by(maincat=RSP.query.first().maincat).all()]
+    #get past technology ID
+    #prevEntries = [(waste.id, waste.questionCode + ': ' + waste.description + ' - ' + waste.date.strftime("%d/%m/%Y")) for waste in Giveoutwaste.query.filter_by(userId=int(current_user.id)).all()]
+    #prevEntries.insert(0,(None,None))
+    #form.wasteID.choices = prevEntries
+    # flash(prevEntries, 'success')
+
+    if request.method == 'POST':
+        #user selects past Waste ID
+        #if form.wasteID.data != None:
+        #    return redirect(url_for("matching_filter_waste", giveoutwasteId=form.wasteID.data))
+        #creates new Waste ID
+        #else:
+        #    
+        return redirect(url_for("matching_questions",materialId=form.subcat.data))
+    return render_template('recycling_service_provider.html', title="Matching", form=form)    
+
+@app.route("/matching/buying_resources", methods=['GET', 'POST'])
+def buying_resources():
+    if current_user.is_authenticated:
+        pass
+    else: 
+        flash(f'Please log in first','danger')
+        return redirect(url_for("login"))
+
+    form = MaterialsForm()
+    form.type.choices = [(material.type, material.type) for material in Materials.query.group_by(Materials.type)]
+    form.material.choices = [(material.id, material.material) for material in Materials.query.filter_by(type=Materials.query.first().type).all()]
+    #get past waste ID
+    prevEntries = [(waste.id, waste.questionCode + ': ' + waste.description + ' - ' + waste.date.strftime("%d/%m/%Y")) for waste in Giveoutwaste.query.filter_by(userId=int(current_user.id)).all()]
+    prevEntries.insert(0,(None,None))
+    form.wasteID.choices = prevEntries
+    # flash(prevEntries, 'success')
+
+    if request.method == 'POST':
+        #user selects past Waste ID
+        if form.wasteID.data != None:
+            return redirect(url_for("matching_filter_waste", giveoutwasteId=form.wasteID.data))
+        #creates new Waste ID
+        else:
+            return redirect(url_for("matching_questions",materialId=form.material.data))
+    return render_template('buying_resources.html', title="Matching", form=form)   
 
 @app.route("/materials/<Type>")
 def materials(Type):
@@ -261,6 +322,17 @@ def materials(Type):
         materialArray.append(materialObj)
     return jsonify({'materials' : materialArray})
 
+@app.route("/rsp/<maincat>")
+def rsp(maincat):
+    rsp = RSP.query.order_by(RSP.id.asc()).filter_by(maincat=maincat).all()
+
+    subcatArray = []
+    for subcat in rsp:
+        subcatObj = {}
+        subcatObj['id'] = subcat.id
+        subcatObj['subcat'] = subcat.subcat
+        subcatArray.append(subcatObj)
+    return jsonify({'subcats' : subcatArray})
 
 @app.route("/matching/questions/<materialId>", methods=['GET', 'POST'])
 def matching_questions(materialId):
@@ -271,9 +343,6 @@ def matching_questions(materialId):
     else:
         giveOutWaste = False
     
-
-
-
     #get questions
     questionId = material.questionId.split(',')
     questions = []

@@ -1,0 +1,100 @@
+{% extends "layout.html" %}
+{% block content %}
+
+  <div class="content-section" style="margin: 0 auto">
+    <h2 style="color:deepskyblue"><strong>Matching</strong></h2>
+      <h5>Do you have an existing recycling transaction listed with us? </h5>
+      <h6>If yes, please select the Technology ID: </h6>
+
+      <form method='POST'> 
+        {{form.csrf_token}} 
+        <br>
+        <div class="form-group ">
+          <h6>Select your Technology ID</h6>
+         {{ form.technologyID(class="form-control form-control-sm") }}
+        </div>
+
+
+      
+        <div class="form-group">
+          <h6>Or enter your technology ID below</h6>
+          <textarea class="form-control" name="description" placeholder="Enter the technology ID here..."></textarea>
+        </div>
+
+        <div class="form-group">
+          {{ form.submit(class="btn btn-success btn-lg") }}
+        </div>
+      </form>
+      
+      <h6>If no, please create a new technology ID.</h6>
+        <button class="btn btn-primary btn-lg mt-4 mb-0" data-toggle="collapse" data-target="#question">Create New Technology ID</button>
+      <br>
+      
+  </div>
+
+  <br>
+
+  <div class="collapse" id="question">
+    <div class="content-section" style="margin: 0 auto">
+      <form method='POST'> 
+        {{form.csrf_token}} 
+
+        <div class="form-group">
+          <h5>Category?</h5>
+         {{ form.maincat(class="form-control form-control-lg") }}
+        </div>
+
+        <div class="form-group">
+          <h5>Subcategory?</h5>
+          {{ form.subcat(class="form-control form-control-lg") }}
+        </div>
+
+        <div class="form-group">
+          {{ form.submit(class="btn btn-success btn-lg") }}
+        </div>
+      </form>
+    </div> 
+    <br>
+  </div>
+
+
+
+  <!-- <div class="content-section" style="margin: 0 auto">
+    <h2 style="color:deepskyblue"><strong>Dispatch Matching</strong></h2>
+      <h5>Click here to continue with dispatch matching</h5>
+        <a class="btn btn-success btn-lg mt-4 mb-0" href="{{ url_for('dispatch_matching_questions_waste') }}" role="button">Dispatch Matching</a>
+      <br>
+  </div> -->
+
+<script>
+	function showForm(){
+		var hiddenInputs = document.getElementsByClassName('hidden');
+
+    for (var i = 0; i != hiddenInputs.length; i++) {
+      hiddenInputs[i].style.display = 'block';
+    } 
+	}
+
+  let maincat_select = document.getElementById('maincat');
+  let subcat_select = document.getElementById('subcat');
+
+  maincat_select.onchange = function(){
+    maincat = maincat_select.value;
+    fetch('/rsp/' + maincat).then(function(response){
+      response.json().then(function(data){
+        console.table(data);
+        let optionHTML = '';
+        for (let subcat of data.subcats){
+          optionHTML += '<option value="' + subcat.id + '">' + subcat.subcat + '</option>';
+        }
+        subcat_select.innerHTML = optionHTML;
+      });
+    });
+  }
+
+</script>
+
+{% endblock content %}
+
+
+
