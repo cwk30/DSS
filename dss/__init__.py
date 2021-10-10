@@ -6,6 +6,7 @@ from flask_login import LoginManager
 from flask_mail import Mail
 
 app = Flask(__name__)
+app.url_map.strict_slashes = False
 
 app.config['SECRET_KEY'] = 'f9668b6e45f66487549fc7c385f063cf'
 
