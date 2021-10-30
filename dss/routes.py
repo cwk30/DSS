@@ -2,6 +2,7 @@ import secrets
 import os
 from PIL import Image 
 from datetime import datetime, timedelta
+import pandas as pd
 from flask import render_template
 from flask import url_for 
 from flask import flash 
@@ -18,6 +19,7 @@ from dss.models import (User, Post, RSP, Materials, Questions, Giveoutwaste, Tec
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_mail import Message
 from sqlalchemy import or_, and_
+from sqlalchemy import create_engine
 from flask_sqlalchemy import Pagination
 
 from dss.wasteIdGenerator import Waste
@@ -338,11 +340,20 @@ def rsp(maincat):
 def matching_questions(materialId):
     form = []
     material = Materials.query.filter_by(id=materialId).first()
+    
+    #print(df)
     if material.type == '1. Selling Waste':
         giveOutWaste = True
+        buyWaste = False
+        processWaste = False
+    else if material.type=='2. Purchase Resources':
+        giveOutWaste = False
+        buyWaste = True
+        processWaste = False
     else:
         giveOutWaste = False
-    
+        buyWaste = False
+        processWaste = True
     #get questions
     questionId = material.questionId.split(',')
     questions = []
@@ -406,6 +417,12 @@ def matching_questions(materialId):
             return redirect(url_for("matching_filter_resource", takeinresourceId=takeinresourceId))
 
     return render_template('matching_questions.html', title="Matching Questions", form=form, questions=questions, material=material, giveOutWaste=giveOutWaste)
+
+@app.route("/matching/test")
+def test():
+    cnx = create_engine('sqlite:///site.db').connect()
+    df = pd.read_sql_table('')
+    print(df)
 
 
 @app.route("/matching/filter_waste/<giveoutwasteId>", methods=['GET','POST'])

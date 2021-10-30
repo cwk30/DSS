@@ -18,11 +18,242 @@ class Waste(object):
             questionCode = WoodWaste(self.materialId, self.formData).generateId()
         elif self.materialId == 13:
             questionCode = Biochar(self.materialId, self.formData).generateId()
+        elif self.materialID == 14:
+            questionCode = RSPFood(self.materialId, self.formData).generateId()
         else:
             questionCode = Others(self.materialId, self.formData).generateId()
         return questionCode
 
 #sub classes
+class RSPFood(Waste):
+    """Q44,45,46,47,51,52,53"""
+    """docstring for RSP/Organic Waste/Food Waste"""
+    def __init__(self, materialId, formData):
+        super().__init__(materialId,formData)
+        self.acceptablemeat = '_'
+        self.acceptablefruit = '_'
+        self.acceptabledairy = '_'
+        self.acceptableeggs = '_'
+        self.acceptablebread = '_'
+        self.acceptablerice = '_'
+        self.acceptableuneaten = '_'
+        self.acceptabletea = '_'
+        self.acceptableall = '_'
+        self.acceptableothers = '_'
+        self.CRatiomin = '_'
+        self.CRatiomax = '_'
+        self.NRatiomin = '_'
+        self.NRatiomax = '_'
+        self.Moisturemin = '_'
+        self.Moisturemax = '_'
+        self.pHmin = '_'
+        self.pHmax = '_'
+        self.cellulosicmin = '_'
+        self.cellulosicmax = '_'
+        self.particleSizemin = '_'
+        self.particleSizemax = '_'
+        self.unacceptableshells = '_'
+        self.unacceptablebones = '_'
+        self.unacceptablebamboo = '_'
+        self.unacceptablebanana = '_'
+        self.unacceptableothers = '_'
+        self.contaminantCRatiomin = '_'
+        self.contaminantCRatiomax = '_'
+        self.contaminantNRatiomin = '_'
+        self.contaminantNRatiomax = '_'
+        self.contaminantMoisturemin = '_'
+        self.contaminantMoisturemax = '_'
+        self.contaminantpHmin = '_'
+        self.contaminantpHmax = '_'
+        self.contaminantCellulosicmin = '_'
+        self.contaminantCellulosicmax = '_'
+        self.contaminantparticleSizemin = '_'
+        self.contaminantparticleSizemax = '_'
+        self.byproductBiogas = '_'
+        self.byproductChemical = '_'
+        self.byproductMetal = '_'
+        self.byproductBiochar = '_'
+        self.byproductDigestate = '_'
+        self.byproductOil = '_'
+        self.byproductOthers = '_'
+        self.outputBiogas = '_'
+        self.outputDigestate = '_'
+        self.outputDeviation = '_'
+
+
+    def generateId(self):
+        self.populate()
+        questionCode = ["F" + 
+        self.acceptablemeat +
+        self.acceptablefruit +
+        self.acceptabledairy +
+        self.acceptableeggs +
+        self.acceptablebread +
+        self.acceptablerice +
+        self.acceptableuneaten +
+        self.acceptabletea +
+        self.acceptableall +
+        self.acceptableothers +
+        self.CRatiomin +
+        self.CRatiomax +
+        self.NRatiomin +
+        self.NRatiomax +
+        self.Moisturemin +
+        self.Moisturemax +
+        self.pHmin +
+        self.pHmax +
+        self.cellulosicmin +
+        self.cellulosicmax +
+        self.particleSizemin +
+        self.particleSizemax +
+        self.unacceptableshells +
+        self.unacceptablebones +
+        self.unacceptablebamboo +
+        self.unacceptablebanana +
+        self.unacceptableothers +
+        self.byproductBiogas +
+        self.byproductChemical +
+        self.byproductMetal +
+        self.byproductBiochar +
+        self.byproductDigestate +
+        self.byproductOil +
+        self.byproductOthers +
+        self.outputBiogas +
+        self.outputDigestate +
+        self.outputDeviation]
+        return ''.join(map(str, questionCode))
+
+    def populate(self):
+        #get from the food breakdown
+        # self.homogeneity = self.formData.form['Q1']
+
+        if self.formData.form['Q44_1']==1:
+            self.acceptablemeat=1
+        else:
+            self.acceptablemeat=0
+        
+        if self.formData.form['Q44_2']==1:
+            self.acceptablefruit=1
+        else:
+            self.acceptablefruit=0
+        
+        if self.formData.form['Q44_3']==1:
+            self.acceptabledairy=1
+        else:
+            self.acceptabledairy=0
+        
+        if self.formData.form['Q44_4']==1:
+            self.acceptableeggs=1
+        else:
+            self.acceptableeggs=0
+        
+        if self.formData.form['Q44_5']==1:
+            self.acceptablebread=1
+        else:
+            self.acceptablebread=0
+        
+        if self.formData.form['Q44_6']==1:
+            self.acceptablerice=1
+        else:
+            self.acceptablerice=0
+        
+        if self.formData.form['Q44_7']==1:
+            self.acceptableuneaten=1
+        else:
+            self.acceptableuneaten=0
+        
+        if self.formData.form['Q44_8']==1:
+            self.acceptabletea=1
+        else:
+            self.acceptabletea=0
+        
+        if self.formData.form['Q44_9']==1:
+            self.acceptableall=1
+        else:
+            self.acceptableall=0
+        
+        if self.formData.form['Q44_10']==1:
+            self.acceptableothers=1
+        else:
+            self.acceptableothers=0
+        
+        self.CRatiomin = str(self.formData.form['Q45_min_C']).zfill(2)
+        self.CRatiomax = str(self.formData.form['Q45_max_C']).zfill(2)
+        self.NRatiomin = str(self.formData.form['Q45_min_N']).zfill(2)
+        self.NRatiomax = str(self.formData.form['Q45_max_N']).zfill(2)
+        
+        self.Moisturemin = str(self.formData.form['Q46_min_moisture']).zfill(2)
+        self.Moisturemax = str(self.formData.form['Q46_max_moisture']).zfill(2)
+        self.pHmin = str(self.formData.form['Q46_min_ph']).zfill(1)
+        self.pHmax = str(self.formData.form['Q46_max_ph']).zfill(1)
+        self.cellulosicmin = str(self.formData.form['Q46_min_Cellulosic']).zfill(2)
+        self.cellulosicmax = str(self.formData.form['Q46_max_Cellulosic']).zfill(2)
+        self.particleSizemin = str(self.formData.form['Q46_min_Size']).zfill(2)
+        self.particleSizemax = str(self.formData.form['Q46_max_Size']).zfill(2)
+        if self.formData.form['Q47_1']==1:
+            self.unacceptableshells=1
+        else:
+            self.unacceptableshells=0        
+        if self.formData.form['Q47_2']==1:
+            self.unacceptablebones=1
+        else:
+            self.unacceptablebones=0        
+        if self.formData.form['Q47_3']==1:
+            self.unacceptablebamboo=1
+        else:
+            self.unacceptablebamboo=0        
+        if self.formData.form['Q47_4']==1:
+            self.unacceptablebanana=1
+        else:
+            self.unacceptablebanana=0        
+        if self.formData.form['Q47_5']==1:
+            self.unacceptableothers=1
+        else:
+            self.unacceptableothers=0              
+        
+        if self.formData.form['Q51_Biogas']==1:
+            self.byproductBiogas=1
+        else:
+            self.byproductBiogas=0
+        if self.formData.form['Q51_Chemical']==1:
+            self.byproductChemical=1
+        else:
+            self.byproductChemical=0
+        if self.formData.form['Q51_Metal']==1:
+            self.byproductMetal=1
+        else:
+            self.byproductMetal=0
+        if self.formData.form['Q51_Biochar']==1:
+            self.byproductBiochar=1
+        else:
+            self.byproductBiochar=0
+        if self.formData.form['Q51_Digestate']==1:
+            self.byproductDigestate=1
+        else:
+            self.byproductDigestate=0
+        if self.formData.form['Q51_Oil']==1:
+            self.byproductOil=1
+        else:
+            self.byproductOil=0
+        if self.formData.form['Q51_Others']==1:
+            self.byproductOthers=1
+        else:
+            self.byproductOthers=0   
+
+        if self.formData.form['Q52_biogas']==1:
+            self.outputBiogas=1
+        else:
+            self.outputBiogas=0   
+        if self.formData.form['Q52_digestate']==1:
+            self.outputDigestate=1
+        else:
+            self.outputDigestate=0   
+        if self.formData.form['Q52_deviation']==1:
+            self.outputDeviation=1
+        else:
+            self.outputDeviation=0   
+        return
+
 class Food(Waste):
     """docstring for Food"""
     def __init__(self, materialId, formData):
