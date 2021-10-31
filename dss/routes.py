@@ -1,4 +1,7 @@
+import traceback
 import secrets
+from collections import defaultdict
+from sqlalchemy.inspection import inspect
 import os
 from PIL import Image 
 from datetime import datetime, timedelta
@@ -14,7 +17,7 @@ from dss.forms import (RegistrationForm,LoginForm, UpdateAccountForm, PostForm,R
     MaterialsForm, FilterForm, maxRowsForm,
     dispatchMatchingForm, dispatchMatchingQuestionsForm, dispatchMatchingResultsForm,
     LCCForm, RSPForm) 
-from dss.models import (User, Post, RSP, Materials, Questions, Giveoutwaste, Technology, Takeinresource, Supplier, Technologybreakdown, Technologycode, 
+from dss.models import (User, Post, RSP, Materials, Questions, Giveoutwaste, Processwaste, Technology, Takeinresource, Supplier, Technologybreakdown, Technologycode, 
     Dispatchmatchingresults, Dispatchmatchingsupply, Dispatchmatchingdemand)
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_mail import Message
@@ -218,9 +221,6 @@ def reset_token(token):
 
 
 
-
-
-
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
@@ -253,6 +253,7 @@ def selling_waste():
     if request.method == 'POST':
         #user selects past Waste ID
         if form.wasteID.data != None:
+            print(form.wasteID.data)
             return redirect(url_for("matching_filter_waste", giveoutwasteId=form.wasteID.data))
         #creates new Waste ID
         else:
@@ -271,19 +272,19 @@ def recycling_service_provider():
     form.maincat.choices = [(rsp.maincat, rsp.maincat) for rsp in RSP.query.group_by(RSP.maincat)]
     form.subcat.choices = [(rsp.id, rsp.subcat) for rsp in RSP.query.filter_by(maincat=RSP.query.first().maincat).all()]
     #get past technology ID
-    #prevEntries = [(waste.id, waste.questionCode + ': ' + waste.description + ' - ' + waste.date.strftime("%d/%m/%Y")) for waste in Giveoutwaste.query.filter_by(userId=int(current_user.id)).all()]
-    #prevEntries.insert(0,(None,None))
-    #form.wasteID.choices = prevEntries
+    prevEntries = [(waste.id, waste.questionCode + ': ' + waste.description + ' - ' + waste.date.strftime("%d/%m/%Y")) for waste in Processwaste.query.filter_by(userId=int(current_user.id)).all()]
+    prevEntries.insert(0,(None,None))
+    form.technologyID.choices = prevEntries
     # flash(prevEntries, 'success')
 
     if request.method == 'POST':
         #user selects past Waste ID
-        #if form.wasteID.data != None:
-        #    return redirect(url_for("matching_filter_waste", giveoutwasteId=form.wasteID.data))
+        if form.technologyID.data != None:
+            print(form.technologyID.data)
+            return redirect(url_for("matching_filter_recycling", processwasteId=form.technologyID.data))
         #creates new Waste ID
-        #else:
-        #    
-        return redirect(url_for("matching_questions",materialId=form.subcat.data))
+        else:
+            return redirect(url_for("matching_questions",materialId=form.subcat.data))
     return render_template('recycling_service_provider.html', title="Matching", form=form)    
 
 @app.route("/matching/buying_resources", methods=['GET', 'POST'])
@@ -298,7 +299,7 @@ def buying_resources():
     form.type.choices = [(material.type, material.type) for material in Materials.query.group_by(Materials.type)]
     form.material.choices = [(material.id, material.material) for material in Materials.query.filter_by(type=Materials.query.first().type).all()]
     #get past waste ID
-    prevEntries = [(waste.id, waste.questionCode + ': ' + waste.description + ' - ' + waste.date.strftime("%d/%m/%Y")) for waste in Giveoutwaste.query.filter_by(userId=int(current_user.id)).all()]
+    prevEntries = [(waste.id, waste.questionCode + ': ' + waste.description + ' - ' + waste.date.strftime("%d/%m/%Y")) for waste in Processwaste.query.filter_by(userId=int(current_user.id)).all()]
     prevEntries.insert(0,(None,None))
     form.wasteID.choices = prevEntries
     # flash(prevEntries, 'success')
@@ -346,7 +347,7 @@ def matching_questions(materialId):
         giveOutWaste = True
         buyWaste = False
         processWaste = False
-    else if material.type=='2. Purchase Resources':
+    elif material.type=='2. Purchase Resources':
         giveOutWaste = False
         buyWaste = True
         processWaste = False
@@ -374,13 +375,18 @@ def matching_questions(materialId):
         
         #convert output to a code    
         try:
-            wasteObj = Waste(materialId, request)
-            questionCode = wasteObj.getId()
-        except:
+            if giveOutWaste:
+                wasteObj = Waste(materialId, request)
+                questionCode = wasteObj.getId()
+            if processWaste:
+                techObj = Waste(materialId, request)
+                questionCode = techObj.getId()
+        except Exception: 
+            traceback.print_exc()
             flash(f'Please ensure that the form is filled in correctly first before submitting','danger')
             return redirect(url_for("matching_questions", materialId=materialId))
 
-        flash(f'Waste ID: {questionCode}', 'success')
+        flash(f'ID: {questionCode}', 'success')
 
         #if logged in (bring outside in the future)
         if current_user.is_authenticated:
@@ -397,33 +403,24 @@ def matching_questions(materialId):
             
             #get wasteId:
             flash('Your response has been recorded!','success')
-            return redirect(url_for("matching"))
+            return redirect(url_for("selling_waste"))
 
-        elif material.type == '3. Recycling Service Provider':
-            for interest in questionCode:
-                supplier = Supplier(materialId=int(materialId), userId=int(current_user.id), suppliedMaterials=interest, description=request.form['description'] or None)
-                db.session.add(supplier)
+        elif processWaste:
+            techID = Processwaste(materialId=int(materialId), questionCode=questionCode, reportCode=str(reportCode), userId=int(current_user.id), description=request.form['description'] or None,technologyName=request.form['Q50_tech'], date=datetime.now())
+            db.session.add(techID)
             db.session.commit()
             flash('Your response has been recorded!','success')
-            return redirect(url_for("matching"))
+            return redirect(url_for("recycling_service_provider"))
 
         else:
             resource = Takeinresource(materialId=int(materialId), questionCode=questionCode, userId=int(current_user.id), description=request.form['description'] or None, date=datetime.now())
             db.session.add(resource)
             db.session.commit()
-
             #get resourceId:
             takeinresourceId = Takeinresource.query.order_by(Takeinresource.id.desc()).first().id
             return redirect(url_for("matching_filter_resource", takeinresourceId=takeinresourceId))
 
     return render_template('matching_questions.html', title="Matching Questions", form=form, questions=questions, material=material, giveOutWaste=giveOutWaste)
-
-@app.route("/matching/test")
-def test():
-    cnx = create_engine('sqlite:///site.db').connect()
-    df = pd.read_sql_table('')
-    print(df)
-
 
 @app.route("/matching/filter_waste/<giveoutwasteId>", methods=['GET','POST'])
 def matching_filter_waste(giveoutwasteId):
@@ -437,6 +434,39 @@ def matching_filter_waste(giveoutwasteId):
     if request.method == 'POST':
         return redirect(url_for("matching_results_waste", giveoutwasteId=giveoutwasteId, byProduct=form.byproductType.data, landSpace=form.landSpace.data, cost=form.investmentCost.data, env=form.environmentalImpact.data))
     return render_template('matching_filter_waste.html', title="Matching Filter", form=form)
+
+@app.route("/matching/filter_recycling/<processwasteId>", methods=['GET','POST'])
+def matching_filter_recycling(processwasteId):
+    techID = Processwaste.query.filter_by(id=processwasteId).first().questionCode
+    techmaterialID = Processwaste.query.filter_by(id=processwasteId).first().materialId
+    rset = Giveoutwaste.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    df = pd.DataFrame(result)
+    print(df)
+    counter=0
+    result=[]
+    print(techmaterialID)
+    for i in range(len(df)):
+        wasteID = (df.loc[i,'questionCode'])
+        wastematerialID=int(df.loc[i,'materialId'])
+        
+        if techmaterialID==14 and wastematerialID==1:
+            print(wasteID)
+            
+            counter+=1
+            index=(counter)
+            desc=(df.loc[i,'description'])
+            
+            supplier=(User.query.filter_by(id=int(df.loc[i,'userId'])).first().username)
+            print(supplier)
+            rawdate=str(df.loc[i,'date'])
+            rawdate=rawdate[:10]
+            result.append([index,desc,supplier,rawdate])
+    return render_template('matching_results_recycling.html', result=result )
 
 
 @app.route("/matching/results_waste/<giveoutwasteId>/<byProduct>/<landSpace>/<cost>/<env>", methods=['GET','POST'])

@@ -8,9 +8,6 @@ from onemapsg import OneMap
 email = "e0175262@u.nus.edu"
 passw = "Password1"
 
-
-
-
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
@@ -81,6 +78,16 @@ class Giveoutwaste(db.Model):
     userId = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     description = db.Column(db.String(1000), nullable=False)
     date = db.Column(db.DateTime)
+
+class Processwaste(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    materialId = db.Column(db.Integer, db.ForeignKey('materials.id'), nullable=False)
+    questionCode = db.Column(db.String(100), nullable=False)
+    reportCode = db.Column(db.String(100), nullable=False)
+    userId = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    description = db.Column(db.String(1000), nullable=False)
+    technologyName = db.Column(db.String(1000), nullable=False)
+    date = db.Column(db.DateTime)    
 
 class Takeinresource(db.Model):
     id = db.Column(db.Integer, primary_key = True) 

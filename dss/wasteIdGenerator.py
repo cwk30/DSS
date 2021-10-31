@@ -18,7 +18,7 @@ class Waste(object):
             questionCode = WoodWaste(self.materialId, self.formData).generateId()
         elif self.materialId == 13:
             questionCode = Biochar(self.materialId, self.formData).generateId()
-        elif self.materialID == 14:
+        elif self.materialId == 14:
             questionCode = RSPFood(self.materialId, self.formData).generateId()
         else:
             questionCode = Others(self.materialId, self.formData).generateId()
@@ -128,54 +128,54 @@ class RSPFood(Waste):
         # self.homogeneity = self.formData.form['Q1']
 
         if self.formData.form['Q44_1']==1:
-            self.acceptablemeat=1
+            self.acceptablemeat="1"
         else:
-            self.acceptablemeat=0
+            self.acceptablemeat="0"
         
         if self.formData.form['Q44_2']==1:
-            self.acceptablefruit=1
+            self.acceptablefruit="1"
         else:
-            self.acceptablefruit=0
+            self.acceptablefruit="0"
         
         if self.formData.form['Q44_3']==1:
-            self.acceptabledairy=1
+            self.acceptabledairy="1"
         else:
-            self.acceptabledairy=0
+            self.acceptabledairy="0"
         
         if self.formData.form['Q44_4']==1:
-            self.acceptableeggs=1
+            self.acceptableeggs="1"
         else:
-            self.acceptableeggs=0
+            self.acceptableeggs="0"
         
         if self.formData.form['Q44_5']==1:
-            self.acceptablebread=1
+            self.acceptablebread="1"
         else:
-            self.acceptablebread=0
+            self.acceptablebread="0"
         
         if self.formData.form['Q44_6']==1:
-            self.acceptablerice=1
+            self.acceptablerice="1"
         else:
-            self.acceptablerice=0
+            self.acceptablerice="0"
         
         if self.formData.form['Q44_7']==1:
-            self.acceptableuneaten=1
+            self.acceptableuneaten="1"
         else:
-            self.acceptableuneaten=0
+            self.acceptableuneaten="0"
         
         if self.formData.form['Q44_8']==1:
-            self.acceptabletea=1
+            self.acceptabletea="1"
         else:
-            self.acceptabletea=0
+            self.acceptabletea="0"
         
         if self.formData.form['Q44_9']==1:
-            self.acceptableall=1
+            self.acceptableall="1"
         else:
-            self.acceptableall=0
+            self.acceptableall="0"
         
         if self.formData.form['Q44_10']==1:
-            self.acceptableothers=1
+            self.acceptableothers="1"
         else:
-            self.acceptableothers=0
+            self.acceptableothers="0"
         
         self.CRatiomin = str(self.formData.form['Q45_min_C']).zfill(2)
         self.CRatiomax = str(self.formData.form['Q45_max_C']).zfill(2)
@@ -191,67 +191,67 @@ class RSPFood(Waste):
         self.particleSizemin = str(self.formData.form['Q46_min_Size']).zfill(2)
         self.particleSizemax = str(self.formData.form['Q46_max_Size']).zfill(2)
         if self.formData.form['Q47_1']==1:
-            self.unacceptableshells=1
+            self.unacceptableshells="1"
         else:
-            self.unacceptableshells=0        
+            self.unacceptableshells="0"       
         if self.formData.form['Q47_2']==1:
-            self.unacceptablebones=1
+            self.unacceptablebones="1"
         else:
-            self.unacceptablebones=0        
+            self.unacceptablebones="0"        
         if self.formData.form['Q47_3']==1:
-            self.unacceptablebamboo=1
+            self.unacceptablebamboo="1"
         else:
-            self.unacceptablebamboo=0        
+            self.unacceptablebamboo="0"        
         if self.formData.form['Q47_4']==1:
-            self.unacceptablebanana=1
+            self.unacceptablebanana="1"
         else:
-            self.unacceptablebanana=0        
+            self.unacceptablebanana="0"       
         if self.formData.form['Q47_5']==1:
-            self.unacceptableothers=1
+            self.unacceptableothers="1"
         else:
-            self.unacceptableothers=0              
+            self.unacceptableothers="0"              
         
         if self.formData.form['Q51_Biogas']==1:
-            self.byproductBiogas=1
+            self.byproductBiogas="1"
         else:
-            self.byproductBiogas=0
+            self.byproductBiogas="0"
         if self.formData.form['Q51_Chemical']==1:
-            self.byproductChemical=1
+            self.byproductChemical="1"
         else:
-            self.byproductChemical=0
+            self.byproductChemical="0"
         if self.formData.form['Q51_Metal']==1:
-            self.byproductMetal=1
+            self.byproductMetal="1"
         else:
-            self.byproductMetal=0
+            self.byproductMetal="0"
         if self.formData.form['Q51_Biochar']==1:
-            self.byproductBiochar=1
+            self.byproductBiochar="1"
         else:
-            self.byproductBiochar=0
+            self.byproductBiochar="0"
         if self.formData.form['Q51_Digestate']==1:
-            self.byproductDigestate=1
+            self.byproductDigestate="1"
         else:
-            self.byproductDigestate=0
+            self.byproductDigestate="0"
         if self.formData.form['Q51_Oil']==1:
-            self.byproductOil=1
+            self.byproductOil="1"
         else:
-            self.byproductOil=0
+            self.byproductOil="0"
         if self.formData.form['Q51_Others']==1:
-            self.byproductOthers=1
+            self.byproductOthers="1"
         else:
-            self.byproductOthers=0   
+            self.byproductOthers="0"   
 
         if self.formData.form['Q52_biogas']==1:
-            self.outputBiogas=1
+            self.outputBiogas="1"
         else:
-            self.outputBiogas=0   
+            self.outputBiogas="0"   
         if self.formData.form['Q52_digestate']==1:
-            self.outputDigestate=1
+            self.outputDigestate="1"
         else:
-            self.outputDigestate=0   
+            self.outputDigestate="0"   
         if self.formData.form['Q52_deviation']==1:
-            self.outputDeviation=1
+            self.outputDeviation="1"
         else:
-            self.outputDeviation=0   
+            self.outputDeviation="0"   
         return
 
 class Food(Waste):
@@ -322,13 +322,6 @@ class Food(Waste):
             #phValue placeholder
         self.particleSize = self.formData.form['Q7']
         return
-
-
-
-
-
-
-
 
 
 
