@@ -446,26 +446,84 @@ def matching_filter_recycling(processwasteId):
         for key, x in instance.attrs.items():
             result[key].append(x.value)    
     df = pd.DataFrame(result)
-    print(df)
+    #print(df)
     counter=0
     result=[]
-    print(techmaterialID)
+    acceptablemeat=techID[1]
+    acceptablemeat=techID[2]
+    acceptablefruit=techID[3]
+    acceptabledairy=techID[4]
+    acceptableeggs=techID[5]
+    acceptablebread=techID[6]
+    acceptablerice=techID[7]
+    acceptableuneaten=techID[8]
+    acceptabletea=techID[9]
+    acceptableall=techID[10]
+    acceptableothers=techID[11]
+    CRatiomin=techID[12:14]
+    CRatiomax=techID[14:16]
+    NRatiomin=techID[16:18]
+    NRatiomax=techID[18:20]
+    Moisturemin=techID[20:22]
+    Moisturemax=techID[22:24]
+    pHmin=techID[24:26]
+    pHmax=techID[26:28]
+    cellulosicmin=techID[28:30]
+    cellulosicmax=techID[30:32]
+    particleSizemin=techID[32:34]
+    particleSizemax=techID[34:36]
+    unacceptableshells=techID[36]
+    unacceptablebones=techID[37]
+    unacceptablebamboo=techID[38]
+    unacceptablebanana=techID[39]
+    unacceptableothers=techID[40]
+    byproductBiogas=techID[41]
+    byproductChemical=techID[42]
+    byproductMetal=techID[43]
+    byproductBiochar=techID[44]
+    byproductDigestate=techID[45]
+    byproductOil=techID[46]
+    byproductOthers=techID[47]
+    outputBiogas=techID[48:50]
+    outputDigestate=techID[50:52]
+    outputDeviation=techID[52:54]
+
+    
+    #print(techmaterialID)
     for i in range(len(df)):
-        wasteID = (df.loc[i,'questionCode'])
-        wastematerialID=int(df.loc[i,'materialId'])
-        
+        wastematerialID=int(df.loc[i,'materialId'])      
         if techmaterialID==14 and wastematerialID==1:
+            wasteID = (df.loc[i,'questionCode'])
             print(wasteID)
-            
-            counter+=1
-            index=(counter)
-            desc=(df.loc[i,'description'])
-            
-            supplier=(User.query.filter_by(id=int(df.loc[i,'userId'])).first().username)
-            print(supplier)
-            rawdate=str(df.loc[i,'date'])
-            rawdate=rawdate[:10]
-            result.append([index,desc,supplier,rawdate])
+            homogeneity=wasteID[1]
+            wCHNType=wasteID[2]
+            wCRatio=wasteID[3:5]
+            wHRatio=wasteID[5:7]
+            wNRatio=wasteID[7:9]
+            wproteinType=wasteID[9]
+            wproteinRatio=wasteID[10:12]
+            wcellulosic=wasteID[12]
+            wshellAndBones=wasteID[13:15]
+            wmoistureType=wasteID[15]
+            wmoistureContent=wasteID[16:18]
+            wsaltType=wasteID[18]
+            wsaltContent=wasteID[19:21]
+            wpHType=wasteID[21]
+            wphValue=wasteID[22:24]
+            wparticleSize=wasteID[24]
+            #print(wCRatio)
+            #print(wNRatio)
+            #print(wphValue)
+            #print(pHmin)        
+            if (wCRatio=='__' or (int(wCRatio)>=int(CRatiomin) and int(wCRatio)<=int(CRatiomax))) and ((wNRatio)=='__' or (int(wNRatio)>=int(NRatiomin) and int(wNRatio)<=int(NRatiomax))) and ((wphValue)=='__' or (int(wphValue)>=int(pHmin) and int(wphValue)<=int(pHmax))):
+                counter+=1
+                index=(counter)
+                desc=(df.loc[i,'description'])
+                supplier=(User.query.filter_by(id=int(df.loc[i,'userId'])).first().username)
+                #print(supplier)
+                rawdate=str(df.loc[i,'date'])
+                rawdate=rawdate[:10]
+                result.append([index,desc,supplier,rawdate])
     return render_template('matching_results_recycling.html', result=result )
 
 
