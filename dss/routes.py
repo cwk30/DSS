@@ -278,11 +278,11 @@ def recycling_service_provider():
     # flash(prevEntries, 'success')
 
     if request.method == 'POST':
-        #user selects past Waste ID
+        #user selects past Tech ID
         if form.technologyID.data != None:
             print(form.technologyID.data)
             return redirect(url_for("matching_filter_recycling", processwasteId=form.technologyID.data))
-        #creates new Waste ID
+        #creates new Tech ID
         else:
             return redirect(url_for("matching_questions",materialId=form.subcat.data))
     return render_template('recycling_service_provider.html', title="Matching", form=form)    
@@ -381,7 +381,10 @@ def matching_questions(materialId):
             if processWaste:
                 techObj = Waste(materialId, request)
                 questionCode = techObj.getId()
-        except Exception: 
+            if questionCode == Exception:
+                flash(f'Please ensure that the form is filled in correctly first before submitting','danger')
+                return redirect(url_for("matching_questions", materialId=materialId))
+        except Exception:
             traceback.print_exc()
             flash(f'Please ensure that the form is filled in correctly first before submitting','danger')
             return redirect(url_for("matching_questions", materialId=materialId))
@@ -424,16 +427,103 @@ def matching_questions(materialId):
 
 @app.route("/matching/filter_waste/<giveoutwasteId>", methods=['GET','POST'])
 def matching_filter_waste(giveoutwasteId):
-    form = FilterForm()
-    materialId = Giveoutwaste.query.filter_by(id=giveoutwasteId).first().materialId
+    # form = FilterForm()
+    # materialId = Giveoutwaste.query.filter_by(id=giveoutwasteId).first().materialId
 
-    #get possible by-products
-    form.byproductType.choices = [(technology.byProduct, technology.byProduct) for technology in Technology.query.filter_by(materialId=materialId).group_by(Technology.byProduct)]
-    form.byproductType.choices.insert(0,('All','Display all'))
+    # #get possible by-products
+    # form.byproductType.choices = [(technology.byProduct, technology.byProduct) for technology in Technology.query.filter_by(materialId=materialId).group_by(Technology.byProduct)]
+    # form.byproductType.choices.insert(0,('All','Display all'))
 
-    if request.method == 'POST':
-        return redirect(url_for("matching_results_waste", giveoutwasteId=giveoutwasteId, byProduct=form.byproductType.data, landSpace=form.landSpace.data, cost=form.investmentCost.data, env=form.environmentalImpact.data))
-    return render_template('matching_filter_waste.html', title="Matching Filter", form=form)
+    # if request.method == 'POST':
+    #     return redirect(url_for("matching_results_waste", giveoutwasteId=giveoutwasteId, byProduct=form.byproductType.data, landSpace=form.landSpace.data, cost=form.investmentCost.data, env=form.environmentalImpact.data))
+    # return render_template('matching_filter_waste.html', title="Matching Filter", form=form)
+    wasteID = Giveoutwaste.query.filter_by(id=giveoutwasteId).first().questionCode
+    wastematerialID = Giveoutwaste.query.filter_by(id=giveoutwasteId).first().materialId
+    rset = Processwaste.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    df = pd.DataFrame(result)
+    #print(df)
+    counter=0
+    result=[]
+    homogeneity=wasteID[1]
+    wCHNType=wasteID[2]
+    wCRatio=wasteID[3:5]
+    wHRatio=wasteID[5:7]
+    wNRatio=wasteID[7:9]
+    wproteinType=wasteID[9]
+    wproteinRatio=wasteID[10:12]
+    wcellulosic=wasteID[12]
+    wshellAndBones=wasteID[13:15]
+    wmoistureType=wasteID[15]
+    wmoistureContent=wasteID[16:18]
+    wsaltType=wasteID[18]
+    wsaltContent=wasteID[19:21]
+    wpHType=wasteID[21]
+    wphValue=wasteID[22:24]
+    wparticleSize=wasteID[24]
+
+    #print(wastematerialID)
+    for i in range(len(df)):
+        techmaterialID=int(df.loc[i,'materialId'])      
+        if wastematerialID==1 and techmaterialID==14:
+            techID = (df.loc[i,'questionCode'])
+            print(df.loc[i,'description'])
+            print(techID)
+            acceptablemeat=techID[1]
+            acceptablefruit=techID[2]
+            acceptabledairy=techID[3]
+            acceptableeggs=techID[4]
+            acceptablebread=techID[5]
+            acceptablerice=techID[6]
+            acceptableuneaten=techID[7]
+            acceptabletea=techID[8]
+            acceptableall=techID[9]
+            acceptableothers=techID[10]
+            CRatiomin=techID[11:13]
+            CRatiomax=techID[13:15]
+            NRatiomin=techID[15:17]
+            NRatiomax=techID[17:19]
+            Moisturemin=techID[19:21]
+            Moisturemax=techID[21:23]
+            pHmin=techID[23:25]
+            pHmax=techID[25:27]
+            cellulosicmin=techID[27:29]
+            cellulosicmax=techID[29:31]
+            particleSizemin=techID[31:33]
+            particleSizemax=techID[33:35]
+            unacceptableshells=techID[35]
+            unacceptablebones=techID[36]
+            unacceptablebamboo=techID[37]
+            unacceptablebanana=techID[38]
+            unacceptableothers=techID[39]
+            byproductBiogas=techID[40]
+            byproductChemical=techID[41]
+            byproductMetal=techID[42]
+            byproductBiochar=techID[43]
+            byproductDigestate=techID[44]
+            byproductOil=techID[45]
+            byproductOthers=techID[46]
+            outputBiogas=techID[47:49]
+            outputDigestate=techID[49:51]
+            outputDeviation=techID[51:53]
+            print(wCRatio)
+            print(wNRatio)
+            print(wphValue)
+            print(pHmin)        
+            if (wCRatio=='__' or (int(wCRatio)>=int(CRatiomin) and int(wCRatio)<=int(CRatiomax))) and ((wNRatio)=='__' or (int(wNRatio)>=int(NRatiomin) and int(wNRatio)<=int(NRatiomax))) and ((wphValue)=='__' or (int(wphValue)>=int(pHmin) and int(wphValue)<=int(pHmax))):
+                counter+=1
+                index=(counter)
+                desc=(df.loc[i,'description'])
+                supplier=(User.query.filter_by(id=int(df.loc[i,'userId'])).first().username)
+                #print(supplier)
+                rawdate=str(df.loc[i,'date'])
+                rawdate=rawdate[:10]
+                result.append([index,desc,supplier,rawdate])
+    return render_template('matching_results_waste.html', result=result )
 
 @app.route("/matching/filter_recycling/<processwasteId>", methods=['GET','POST'])
 def matching_filter_recycling(processwasteId):
@@ -527,46 +617,46 @@ def matching_filter_recycling(processwasteId):
     return render_template('matching_results_recycling.html', result=result )
 
 
-@app.route("/matching/results_waste/<giveoutwasteId>/<byProduct>/<landSpace>/<cost>/<env>", methods=['GET','POST'])
-def matching_results_waste(giveoutwasteId,byProduct,landSpace,cost,env):
-    form = maxRowsForm()
-    page = request.args.get('page', 1, type=int)
-    order = request.args.get('order','id',type=str)
-    orderName = 'None' if order == 'id' else order
+# @app.route("/matching/results_waste/<giveoutwasteId>/<byProduct>/<landSpace>/<cost>/<env>", methods=['GET','POST'])
+# def matching_results_waste(giveoutwasteId,byProduct,landSpace,cost,env):
+#     form = maxRowsForm()
+#     page = request.args.get('page', 1, type=int)
+#     order = request.args.get('order','id',type=str)
+#     orderName = 'None' if order == 'id' else order
 
-    #get material info
-    material = Giveoutwaste.query.filter_by(id=giveoutwasteId).first()
-    materialId = material.materialId
-    materialCode = material.questionCode
-    materialType = Materials.query.filter_by(id=materialId).first().material
+#     #get material info
+#     material = Giveoutwaste.query.filter_by(id=giveoutwasteId).first()
+#     materialId = material.materialId
+#     materialCode = material.questionCode
+#     materialType = Materials.query.filter_by(id=materialId).first().material
 
-    #technology matching
-    techCode = Technologycode.query.all() #if can add the filter here will be more efficient
-    feasibleTech = []
-    for tech in techCode:
-        #checks if feasibility set matches
-        feasible = Giveoutwaste.query.filter(Giveoutwaste.id==giveoutwasteId , Giveoutwaste.questionCode.like(tech.wasteCode)).all()
-        if feasible != []:
-            technology = Technology.query.filter_by(id=tech.technologyId).first()
-            #filter based on landspace/cost/env
-            if byProduct == 'All':
-                if technology.landSpace <= int(landSpace) and technology.estimatedCost <= int(cost) and technology.environmentalImpact <= int(env):
-                    feasibleTech.append(technology)
-            else:
-                if technology.byProduct == byProduct and technology.landSpace <= int(landSpace) and technology.estimatedCost <= int(cost) and technology.environmentalImpact <= int(env):
-                    feasibleTech.append(technology)
+#     #technology matching
+#     techCode = Technologycode.query.all() #if can add the filter here will be more efficient
+#     feasibleTech = []
+#     for tech in techCode:
+#         #checks if feasibility set matches
+#         feasible = Giveoutwaste.query.filter(Giveoutwaste.id==giveoutwasteId , Giveoutwaste.questionCode.like(tech.wasteCode)).all()
+#         if feasible != []:
+#             technology = Technology.query.filter_by(id=tech.technologyId).first()
+#             #filter based on landspace/cost/env
+#             if byProduct == 'All':
+#                 if technology.landSpace <= int(landSpace) and technology.estimatedCost <= int(cost) and technology.environmentalImpact <= int(env):
+#                     feasibleTech.append(technology)
+#             else:
+#                 if technology.byProduct == byProduct and technology.landSpace <= int(landSpace) and technology.estimatedCost <= int(cost) and technology.environmentalImpact <= int(env):
+#                     feasibleTech.append(technology)
 
-    #sort results
-    if order != 'id':
-        feasibleTech.sort(key=lambda x: getattr(x,order) )
+#     #sort results
+#     if order != 'id':
+#         feasibleTech.sort(key=lambda x: getattr(x,order) )
 
-    #convert to pagination object  
-    per_page = 3
-    feasibleTech = Pagination(query=feasibleTech, page=page, per_page=per_page, total=len(feasibleTech), items=feasibleTech[per_page*(page-1):(per_page*page)]) #items is results to show in current page
+#     #convert to pagination object  
+#     per_page = 3
+#     feasibleTech = Pagination(query=feasibleTech, page=page, per_page=per_page, total=len(feasibleTech), items=feasibleTech[per_page*(page-1):(per_page*page)]) #items is results to show in current page
 
-    if request.method == 'POST':
-        return redirect(url_for('matching_results_waste', giveoutwasteId=giveoutwasteId,byProduct=byProduct,landSpace=landSpace,cost=cost,env=env,page=page,order=form.order.data))
-    return render_template('matching_results_waste.html', title="Matching Results", results=feasibleTech, materialType=materialType, form=form, order=order, orderName=orderName, giveoutwasteId=giveoutwasteId,byProduct=byProduct,landSpace=landSpace,cost=cost,env=env)   
+#     if request.method == 'POST':
+#         return redirect(url_for('matching_results_waste', giveoutwasteId=giveoutwasteId,byProduct=byProduct,landSpace=landSpace,cost=cost,env=env,page=page,order=form.order.data))
+#     return render_template('matching_results_waste.html', title="Matching Results", results=feasibleTech, materialType=materialType, form=form, order=order, orderName=orderName, giveoutwasteId=giveoutwasteId,byProduct=byProduct,landSpace=landSpace,cost=cost,env=env)   
 
 @app.route("/matching/filter_resource/<takeinresourceId>", methods=['GET','POST'])
 def matching_filter_resource(takeinresourceId):

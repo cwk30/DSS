@@ -22,7 +22,10 @@ class Waste(object):
             questionCode = RSPFood(self.materialId, self.formData).generateId()
         else:
             questionCode = Others(self.materialId, self.formData).generateId()
-        return questionCode
+        if questionCode == "Error":
+            return Exception
+        else:
+            return questionCode
 
 #sub classes
 class RSPFood(Waste):
@@ -82,7 +85,8 @@ class RSPFood(Waste):
 
 
     def generateId(self):
-        self.populate()
+        error=0
+        error=self.populate()
         questionCode = ["F" + 
         self.acceptablemeat +
         self.acceptablefruit +
@@ -121,12 +125,15 @@ class RSPFood(Waste):
         self.outputBiogas +
         self.outputDigestate +
         self.outputDeviation]
-        return ''.join(map(str, questionCode))
+        if error==1:
+            return "Error"
+        else:
+            return ''.join(map(str, questionCode))
 
     def populate(self):
         #get from the food breakdown
         # self.homogeneity = self.formData.form['Q1']
-
+        error=0
         if self.formData.form['Q44_1']==1:
             self.acceptablemeat="1"
         else:
@@ -184,8 +191,12 @@ class RSPFood(Waste):
         
         self.Moisturemin = str(self.formData.form['Q46_min_moisture']).zfill(2)
         self.Moisturemax = str(self.formData.form['Q46_max_moisture']).zfill(2)
-        self.pHmin = str(self.formData.form['Q46_min_ph']).zfill(1)
-        self.pHmax = str(self.formData.form['Q46_max_ph']).zfill(1)
+        if int(self.formData.form['Q46_min_ph'])<0 or int(self.formData.form['Q46_min_ph'])>14 or int(self.formData.form['Q46_max_ph'])<0 or int(self.formData.form['Q46_max_ph'])>14:
+            print('ohno')
+            error=1
+        self.pHmin = str(self.formData.form['Q46_min_ph']).zfill(2)
+        self.pHmax = str(self.formData.form['Q46_max_ph']).zfill(2)
+        
         self.cellulosicmin = str(self.formData.form['Q46_min_Cellulosic']).zfill(2)
         self.cellulosicmax = str(self.formData.form['Q46_max_Cellulosic']).zfill(2)
         self.particleSizemin = str(self.formData.form['Q46_min_Size']).zfill(2)
@@ -239,20 +250,10 @@ class RSPFood(Waste):
             self.byproductOthers="1"
         else:
             self.byproductOthers="0"   
-
-        if self.formData.form['Q52_biogas']==1:
-            self.outputBiogas="1"
-        else:
-            self.outputBiogas="0"   
-        if self.formData.form['Q52_digestate']==1:
-            self.outputDigestate="1"
-        else:
-            self.outputDigestate="0"   
-        if self.formData.form['Q52_deviation']==1:
-            self.outputDeviation="1"
-        else:
-            self.outputDeviation="0"   
-        return
+        self.outputBiogas = str(self.formData.form['Q52_biogas']).zfill(2)
+        self.outputDigestate = str(self.formData.form['Q52_digestate']).zfill(2)
+        self.outputDeviation = str(self.formData.form['Q52_deviation']).zfill(2)
+        return error
 
 class Food(Waste):
     """docstring for Food"""
