@@ -25,7 +25,7 @@ app.config['MAIL_USERNAME'] = os.environ.get('EMAIL_USER')
 app.config['MAIL_PASSWORD'] = os.environ.get('EMAIL_PASS')
 mail = Mail(app)
 
-app.config['UPLOAD'] = 'C:/Users/Samuel/Desktop/DSS Prototype/dss/uploads'
+app.config['UPLOAD'] = 'dss/uploads'
 
 
 from dss import routes 
