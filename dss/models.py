@@ -19,6 +19,8 @@ class User(db.Model, UserMixin):
     image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
     password = db.Column(db.String(60), nullable=False)
     website = db.Column(db.String(100))
+    listings = db.Column(db.Integer,nullable=False)
+    transacted = db.Column(db.Integer,nullable=False)
     posts = db.relationship('Post', backref='author', lazy=True)
     totalposts=db.Column(db.Integer,nullable=False)
     totalsuccess=db.Column(db.Integer,nullable=False)
