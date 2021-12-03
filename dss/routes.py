@@ -338,6 +338,7 @@ def rsp(maincat):
     return jsonify({'subcats' : subcatArray})
 
 @app.route("/matching/questions/<materialId>", methods=['GET', 'POST'])
+@login_required
 def matching_questions(materialId):
     form = []
     material = Materials.query.filter_by(id=materialId).first()
@@ -510,10 +511,12 @@ def matching_filter_waste(giveoutwasteId):
             outputBiogas=techID[47:49]
             outputDigestate=techID[49:51]
             outputDeviation=techID[51:53]
-            print(wCRatio)
-            print(wNRatio)
+            print('Waste CRatio:'+wCRatio)
+            print('Waste NRatio:'+wNRatio)
             print(wphValue)
-            print(pHmin)        
+            print(pHmin)
+            print(CRatiomin)
+            print(CRatiomax)        
             if (wCRatio=='__' or (int(wCRatio)>=int(CRatiomin) and int(wCRatio)<=int(CRatiomax))) and ((wNRatio)=='__' or (int(wNRatio)>=int(NRatiomin) and int(wNRatio)<=int(NRatiomax))) and ((wphValue)=='__' or (int(wphValue)>=int(pHmin) and int(wphValue)<=int(pHmax))):
                 counter+=1
                 index=(counter)
