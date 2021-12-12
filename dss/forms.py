@@ -94,6 +94,10 @@ class MaterialsForm(FlaskForm):
     material = SelectField('Material', choices=[])
     submit = SubmitField('Next')
 
+class BuyingForm(FlaskForm):
+    dropdown = SelectField('Resource Purchase', choices=[])
+    submit = SubmitField('Next')
+
 class RSPForm(FlaskForm):
     technologyID = SelectField('Existing Technology Profile ID', choices=[])
     maincat = SelectField('Main Category', choices=[])

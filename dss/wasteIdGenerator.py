@@ -22,10 +22,7 @@ class Waste(object):
             questionCode = RSPFood(self.materialId, self.formData).generateId()
         else:
             questionCode = Others(self.materialId, self.formData).generateId()
-        if questionCode == "Error":
-            return Exception
-        else:
-            return questionCode
+        return questionCode
 
 #sub classes
 class RSPFood(Waste):
@@ -125,15 +122,15 @@ class RSPFood(Waste):
         self.outputBiogas +
         self.outputDigestate +
         self.outputDeviation]
-        if error==1:
-            return "Error"
+        if error!="0":
+            return error
         else:
             return ''.join(map(str, questionCode))
 
     def populate(self):
         #get from the food breakdown
         # self.homogeneity = self.formData.form['Q1']
-        error=0
+        error="0"
         if self.formData.form['Q44_1']==1:
             self.acceptablemeat="1"
         else:
@@ -193,7 +190,7 @@ class RSPFood(Waste):
         self.Moisturemax = str(self.formData.form['Q46_max_moisture']).zfill(2)
         if int(self.formData.form['Q46_min_ph'])<0 or int(self.formData.form['Q46_min_ph'])>14 or int(self.formData.form['Q46_max_ph'])<0 or int(self.formData.form['Q46_max_ph'])>14:
             print('ohno')
-            error=1
+            error="Error: Check pH value!"
         self.pHmin = str(self.formData.form['Q46_min_ph']).zfill(2)
         self.pHmax = str(self.formData.form['Q46_max_ph']).zfill(2)
         

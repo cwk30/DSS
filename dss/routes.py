@@ -14,7 +14,7 @@ from flask import request, abort
 from flask import jsonify
 from dss import app, db, bcrypt, mail
 from dss.forms import (RegistrationForm,LoginForm, UpdateAccountForm, PostForm,RequestResetForm, ResetPasswordForm,
-    MaterialsForm, FilterForm, maxRowsForm,
+    MaterialsForm, FilterForm, maxRowsForm, BuyingForm,
     dispatchMatchingForm, dispatchMatchingQuestionsForm, dispatchMatchingResultsForm,
     LCCForm, RSPForm) 
 from dss.models import (User, Post, RSP, Materials, Questions, Giveoutwaste, Processwaste, Technology, Takeinresource, Supplier, Technologybreakdown, Technologycode, 
@@ -295,22 +295,15 @@ def buying_resources():
         flash(f'Please log in first','danger')
         return redirect(url_for("login"))
 
-    form = MaterialsForm()
-    form.type.choices = [(material.type, material.type) for material in Materials.query.group_by(Materials.type)]
-    form.material.choices = [(material.id, material.material) for material in Materials.query.filter_by(type=Materials.query.first().type).all()]
-    #get past waste ID
-    prevEntries = [(waste.id, waste.questionCode + ': ' + waste.description + ' - ' + waste.date.strftime("%d/%m/%Y")) for waste in Processwaste.query.filter_by(userId=int(current_user.id)).all()]
-    prevEntries.insert(0,(None,None))
-    form.wasteID.choices = prevEntries
-    # flash(prevEntries, 'success')
+    form = BuyingForm()
+    form.dropdown.choices = ['Biogas','Chemical','Metal','Biochar','Digestate','Oil','Others']
+    
 
     if request.method == 'POST':
-        #user selects past Waste ID
-        if form.wasteID.data != None:
-            return redirect(url_for("matching_filter_waste", giveoutwasteId=form.wasteID.data))
-        #creates new Waste ID
+        if form.dropdown.data == None:
+            return redirect(url_for("buying_resources"))
         else:
-            return redirect(url_for("matching_questions",materialId=form.material.data))
+            return redirect(url_for("matching_filter_resource",byproduct=form.dropdown.data))
     return render_template('buying_resources.html', title="Matching", form=form)   
 
 @app.route("/materials/<Type>")
@@ -382,8 +375,8 @@ def matching_questions(materialId):
             if processWaste:
                 techObj = Waste(materialId, request)
                 questionCode = techObj.getId()
-            if questionCode == Exception:
-                flash(f'Please ensure that the form is filled in correctly first before submitting','danger')
+            if questionCode[0:5] == "Error":
+                flash(questionCode,'danger')
                 return redirect(url_for("matching_questions", materialId=materialId))
         except Exception:
             traceback.print_exc()
@@ -513,10 +506,11 @@ def matching_filter_waste(giveoutwasteId):
             outputDeviation=techID[51:53]
             print('Waste CRatio:'+wCRatio)
             print('Waste NRatio:'+wNRatio)
-            print(wphValue)
-            print(pHmin)
-            print(CRatiomin)
-            print(CRatiomax)        
+            print('Waste pH:'+wphValue)
+            print('RSP pH Range '+pHmin+' '+pHmax)
+            print('RSP CRatio'+CRatiomin+' '+CRatiomax)
+            print('RSP NRatio'+NRatiomin+' '+NRatiomax)
+            
             if (wCRatio=='__' or (int(wCRatio)>=int(CRatiomin) and int(wCRatio)<=int(CRatiomax))) and ((wNRatio)=='__' or (int(wNRatio)>=int(NRatiomin) and int(wNRatio)<=int(NRatiomax))) and ((wphValue)=='__' or (int(wphValue)>=int(pHmin) and int(wphValue)<=int(pHmax))):
                 counter+=1
                 index=(counter)
@@ -619,6 +613,38 @@ def matching_filter_recycling(processwasteId):
                 result.append([index,desc,supplier,rawdate])
     return render_template('matching_results_recycling.html', result=result )
 
+@app.route("/matching/filter_resource/<byproduct>", methods=['GET','POST'])
+def matching_filter_resource(byproduct):
+    rset = Processwaste.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    df = pd.DataFrame(result)
+    counter=0
+    result=[]
+    byproducts = ['Biogas','Chemical','Metal','Biochar','Digestate','Oil','Others']
+    j=41
+    for k in range(len(byproducts)):
+        if byproducts[k]==byproduct:
+            print(byproduct)
+            for i in range(len(df)):
+                techID=(df.loc[i,'questionCode'])      
+                byproductID=techID[j+k]
+                if byproductID=="1":
+                    counter+=1
+                    index=(counter)
+                    desc=(df.loc[i,'description'])
+                    supplier=(User.query.filter_by(id=int(df.loc[i,'userId'])).first().username)
+                    #print(supplier)
+                    rawdate=str(df.loc[i,'date'])
+                    rawdate=rawdate[:10]
+                    result.append([index,desc,supplier,rawdate])
+
+
+    return render_template('matching_results_buyer.html', result=result,byproduct=byproduct)
+
 
 # @app.route("/matching/results_waste/<giveoutwasteId>/<byProduct>/<landSpace>/<cost>/<env>", methods=['GET','POST'])
 # def matching_results_waste(giveoutwasteId,byProduct,landSpace,cost,env):
@@ -661,18 +687,18 @@ def matching_filter_recycling(processwasteId):
 #         return redirect(url_for('matching_results_waste', giveoutwasteId=giveoutwasteId,byProduct=byProduct,landSpace=landSpace,cost=cost,env=env,page=page,order=form.order.data))
 #     return render_template('matching_results_waste.html', title="Matching Results", results=feasibleTech, materialType=materialType, form=form, order=order, orderName=orderName, giveoutwasteId=giveoutwasteId,byProduct=byProduct,landSpace=landSpace,cost=cost,env=env)   
 
-@app.route("/matching/filter_resource/<takeinresourceId>", methods=['GET','POST'])
-def matching_filter_resource(takeinresourceId):
-    form = FilterForm()
-    resourceId = Takeinresource.query.filter_by(id=takeinresourceId).first().materialId
+# @app.route("/matching/filter_resource/<takeinresourceId>", methods=['GET','POST'])
+# def matching_filter_resource(takeinresourceId):
+#     form = FilterForm()
+#     resourceId = Takeinresource.query.filter_by(id=takeinresourceId).first().materialId
 
-    #get possible by-products
-    form.byproductType.choices = [(technology.byProduct, technology.byProduct) for technology in Technology.query.filter_by(resourceId=resourceId).group_by(Technology.byProduct)]
-    form.byproductType.choices.insert(0,('All','Display all'))
+#     #get possible by-products
+#     form.byproductType.choices = [(technology.byProduct, technology.byProduct) for technology in Technology.query.filter_by(resourceId=resourceId).group_by(Technology.byProduct)]
+#     form.byproductType.choices.insert(0,('All','Display all'))
 
-    if request.method == 'POST':
-        return redirect(url_for("matching_results_resource", takeinresourceId=takeinresourceId, byProduct=form.byproductType.data, landSpace=form.landSpace.data, cost=form.investmentCost.data, env=form.environmentalImpact.data))
-    return render_template('matching_filter_resource.html', title="Matching Filter", form=form)
+#     if request.method == 'POST':
+#         return redirect(url_for("matching_results_resource", takeinresourceId=takeinresourceId, byProduct=form.byproductType.data, landSpace=form.landSpace.data, cost=form.investmentCost.data, env=form.environmentalImpact.data))
+#     return render_template('matching_filter_resource.html', title="Matching Filter", form=form)
 
 @app.route("/matching/results_resource/<takeinresourceId>/<byProduct>/<landSpace>/<cost>/<env>", methods=['GET','POST'])
 def matching_results_resource(takeinresourceId,byProduct,landSpace,cost,env):
