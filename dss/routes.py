@@ -675,12 +675,12 @@ def matching_filter_waste(giveoutwasteId):
             #print(techID)
             for at in attrib:
                 techID[at]=df.loc[i,at]
-            print('Waste CRatio:'+wCRatio)
-            print('Waste NRatio:'+wNRatio)
-            print('Waste pH:'+wphValue)
-            print('RSP pH Range '+techID['pHmin']+' '+techID['pHmax'])
-            print('RSP CRatio'+techID['CRatiomin']+' '+techID['CRatiomax'])
-            print('RSP NRatio'+techID['NRatiomin']+' '+techID['NRatiomax'])
+            #print('Waste CRatio:'+wCRatio)
+            #print('Waste NRatio:'+wNRatio)
+            #print('Waste pH:'+wphValue)
+            #print('RSP pH Range '+techID['pHmin']+' '+techID['pHmax'])
+            #print('RSP CRatio'+techID['CRatiomin']+' '+techID['CRatiomax'])
+            #print('RSP NRatio'+techID['NRatiomin']+' '+techID['NRatiomax'])
             
             if (wCRatio=='__' or (int(wCRatio)>=int(techID['CRatiomin']) and int(wCRatio)<=int(techID['CRatiomax']))) and ((wNRatio)=='__' or (int(wNRatio)>=int(techID['NRatiomin']) and int(wNRatio)<=int(techID['NRatiomax']))) and ((wphValue)=='__' or (int(wphValue)>=int(techID['pHmin']) and int(wphValue)<=int(techID['pHmax']))):
                 counter+=1
