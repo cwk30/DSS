@@ -1,3 +1,8 @@
+from dss.models import Sample
+import pandas as pd
+from collections import defaultdict
+from sqlalchemy.inspection import inspect
+import math
 
 #super class
 class Waste(object):
@@ -30,16 +35,7 @@ class RSPFood(Waste):
     """docstring for RSP/Organic Waste/Food Waste"""
     def __init__(self, materialId, formData):
         super().__init__(materialId,formData)
-        self.acceptablemeat = '_'
-        self.acceptablefruit = '_'
-        self.acceptabledairy = '_'
-        self.acceptableeggs = '_'
-        self.acceptablebread = '_'
-        self.acceptablerice = '_'
-        self.acceptableuneaten = '_'
-        self.acceptabletea = '_'
-        self.acceptableall = '_'
-        self.acceptableothers = '_'
+        
         self.CRatiomin = '_'
         self.CRatiomax = '_'
         self.NRatiomin = '_'
@@ -53,10 +49,15 @@ class RSPFood(Waste):
         self.particleSizemin = '_'
         self.particleSizemax = '_'
         self.unacceptableshells = '_'
+        self.unacceptableshellspercent = '__'
         self.unacceptablebones = '_'
+        self.unacceptablebonespercent = '__'
         self.unacceptablebamboo = '_'
+        self.unacceptablebamboopercent = '__'
         self.unacceptablebanana = '_'
+        self.unacceptablebananaspercent = '__'
         self.unacceptableothers = '_'
+        self.unacceptableotherspercent = '__'
         self.contaminantCRatiomin = '_'
         self.contaminantCRatiomax = '_'
         self.contaminantNRatiomin = '_'
@@ -298,26 +299,102 @@ class Food(Waste):
             self.CRatio = str(round((CHN[0]/total)*100)).zfill(2)
             self.HRatio = str(round((CHN[1]/total)*100)).zfill(2)
             self.NRatio = str(round((CHN[2]/total)*100)).zfill(2)
+            self.moistureType = '1'
+            self.moistureContent = str(int(self.formData.form['Q4Moisture'])).zfill(2)
+            #salt placeholder
+            self.pHType = '1'
+            self.phValue = str(int(self.formData.form['Q5pH'])).zfill(2) 
+
         else:
-            #for estimated CHN ratio
-            pass
+            samples = Sample.query.all()
+            result = defaultdict(list)
+            for obj in samples:
+                instance = inspect(obj)
+                for key, x in instance.attrs.items():
+                    result[key].append(x.value)    
+            df = pd.DataFrame(result)
+            weightage=[]
+            Clist=[]
+            Hlist=[]
+            Nlist=[]
+            moisturelist=[]
+            pHlist=[]
+            q3=['Q3_1','Q3_2','Q3_3']
+            for i in q3:
+                if self.formData.form[i]!="None":
+                    weightage.append(int(self.formData.form[i+'_w']))
+                    Clist.append(df.at[int(self.formData.form[i]),'C'])
+                    Hlist.append(df.at[int(self.formData.form[i]),'H'])
+                    Nlist.append(df.at[int(self.formData.form[i]),'N'])
+                    moisturelist.append(df.at[int(self.formData.form[i]),'Moisture'])
+                    pHlist.append(df.at[int(self.formData.form[i]),'pH'])
+            if len(weightage)>0:
+                C=0
+                H=0
+                N=0
+                moisture=0
+                ph=0
+                for i in range(len(weightage)):
+                    #print(C)
+                    #print(int((int(weightage[0])/sum(weightage))*int(Clist[i])))
+                    C+=float((float(weightage[0])/sum(weightage))*int(Clist[i]))
+                    H+=float((weightage[0]/sum(weightage))*int(Hlist[i]))
+                    N+=float((weightage[0]/sum(weightage))*int(Nlist[i]))
+                    moisture+=float((weightage[0]/sum(weightage))*int(moisturelist[i]))
+                    if math.isnan(pHlist[i]):
+                        pass
+                    else:
+                        ph+=float((weightage[0]/sum(weightage))*int(pHlist[i]))
+                total=C+H+N
+                self.CRatio = str(round((C/total)*100)).zfill(2)
+                self.HRatio = str(round((H/total)*100)).zfill(2)
+                self.NRatio = str(round((N/total)*100)).zfill(2)
+                if self.formData.form['Q4'] == '4': #Liquid
+                    self.moistureType = '2'
+                    self.moistureContent = '75'
+                elif self.formData.form['Q4'] == '3': #Wet
+                    self.moistureType = '2'
+                    self.moistureContent = '40'
+                elif self.formData.form['Q4'] == '2': #Slightly Wet
+                    self.moistureType = '2'
+                    self.moistureContent = '20'
+                elif self.formData.form['Q4'] == '1': #Dry
+                    self.moistureType = '2'
+                    self.moistureContent = '05'
+                elif self.formData.form['Q4'] == '5': #not sure
+                    self.moistureType = '2'
+                    self.moistureContent = str(int(moisture)).zfill(2)
+                elif self.formData.form['Q4'] == '6': #known value
+                    self.moistureType = '1'
+                    self.moistureContent = str(int(self.formData.form['Q4Moisture'])).zfill(2)
+
+                if self.formData.form['Q5'] == '4': #known value
+                    self.pHType = '1'
+                    self.phValue = str(int(self.formData.form['Q5pH'])).zfill(2) 
+                elif self.formData.form['Q5'] == '1': #Highly Acidic
+                    self.pHType = '2'
+                    self.phValue = '02'
+                    #phValue placeholder
+                elif self.formData.form['Q5'] == '2': #Highly Alkaline
+                    self.pHType = '2'
+                    self.phValue = '13'
+                elif self.formData.form['Q5'] == '5': #Neutral
+                    self.pHType = '2'
+                    self.phValue = '07'        
+                elif self.formData.form['Q5'] == '3': #not sure
+                    self.pHType = '02'
+                    self.phValue = str(round(ph)).zfill(2) 
         #protein placeholder
         self.cellulosic = self.formData.form['Q6']
         #shell&bones placeholder
         #moisture placeholder
-        #salt placeholder
-        if self.formData.form['Q5'] == '4': #known value
-            self.pHType = '1'
-            self.phValue = str(int(self.formData.form['Q5pH'])).zfill(2) 
-        elif self.formData.form['Q5'] == '1': #yes
-            self.pHType = '2'
-            #phValue placeholder
-        elif self.formData.form['Q5'] == '2': #no
-            self.pHType = '2'
-            self.phValue = '07'
-        else: #not sure
-            self.pHType = '2'
-            #phValue placeholder
+        #for key in self.formData.form:
+            #print(key)
+        #print("Moisture: ",self.formData.form['Q4'])
+        
+       
+            
+
         self.particleSize = self.formData.form['Q7']
         return
 

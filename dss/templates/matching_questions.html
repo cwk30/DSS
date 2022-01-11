@@ -19,6 +19,249 @@
 
         {{form.csrf_token}} 
         <br>
+        {% if materialId=='1' %}
+        <div class="form-group">
+          <label class="form-label" for="Q2"><u>CHN/Protein/Cellulosic/Shells and bones </u></label>
+          <br>
+          <label class="form-label" for="Q2">Q: Have a lab analysis been carried out for the waste type?</label>
+          <br>
+          <div class="form-check form-check-inline" >
+            <input type="checkbox" class="form-check-input" id="Q2YesNo" name="Q2YesNo" value="1" onclick="onlyOne(this,'Q2YesNo')" data-toggle='collapse' data-target='#labAnalysis' aria-expanded="false">
+            <label class="form-check-label" for="Q2YesNo">Yes</label>
+          </div>
+
+          <div class="form-check form-check-inline">
+              <input type="checkbox" class="form-check-input" id="Q2YesNo" name="Q2YesNo" value="2" onclick="onlyOne(this,'Q2YesNo')" data-toggle='collapse' data-target='#approximation' aria-expanded="false">
+              <label class="form-check-label" for="Q2YesNo">No</label>
+          </div>
+        </div>
+
+        
+        <div class="collapse" id="labAnalysis">
+
+          <div class="form-group row">
+            <label for="Q2" class="col-sm-3 col-form-label">Please key in C:H:N ratio</label>
+            <div class="col-sm-2">
+              <input type="text" class="form-control" id="Q2_chn" name="Q2_chn" placeholder="C:H:N">
+            </div>
+          </div>
+
+        
+
+          <div class="form-group row">
+            <label for="Q2" class="col-sm-3 col-form-label">Please key in % weight of bones/shells (0-99%)</label>
+            <div class="col-sm-2">
+              <input type="text" class="form-control" id="Q2_w" name="Q2_w" placeholder="W%">
+            </div>
+          </div>
+
+          <div class="form-group">
+              <label class="form-label" for="Q4"><u>Moisture</u></label>
+              <br>
+          </div>
+
+
+          <div class="form-group row">
+            <label for="Q4Moisture" class="col-sm-3 col-form-label">Please key in % of moisture (0-99%)</label>
+            <div class="col-sm-2">
+              <input type="text" class="form-control" id="Q4Moisture" name="Q4Moisture" placeholder="~%">
+            </div>
+          </div>
+        
+		
+		      <div class="form-group">
+            <label class="form-label" for="Q5"><u>pH</u>&nbsp</label> <a href="#" data-toggle="tooltip" title="pH is a measure of how acidic/basic water is. The range goes from 0 to 14, with 7 being neutral. pHs of less than 7 indicate acidity, whereas a pH of greater than 7 indicates a base. e.g. Lemon pH 2, Vinegar pH 2.5, Baking soda pH 9"><IMG SRC="/static/icons/information.png" ALT="logo" WIDTH=15 HEIGHT=15></a>
+            <br>
+          </div>
+
+          <div class="form-group row">
+            <label for="Q5pH" class="col-sm-3 col-form-label">Please key in pH value (1-14)</label>
+            <div class="col-sm-2">
+              <input type="text" class="form-control" id="Q5pH" name="Q5pH" placeholder="pH">
+            </div>
+          </div>
+
+
+          <!--<div class="form-group">
+            <div class="form-check form-check-inline" >
+              <input type="checkbox" class="form-check-input" id="Q2composition" name="Q2composition" value="1" onclick="onlyOne(this,'Q2composition')">
+              <label class="form-check-label" for="Q2composition">Mainly vegetables</label>
+            </div>
+
+            <div class="form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" id="Q2composition" name="Q2composition" value="2" onclick="onlyOne(this,'Q2composition')">
+                <label class="form-check-label" for="Q2composition">Mainly bagasse and husk</label>
+            </div>
+
+            <div class="form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" id="Q2composition" name="Q2composition" value="3" onclick="onlyOne(this,'Q2composition')">
+                <label class="form-check-label" for="Q2composition">Mainly fruit peels</label>
+            </div>
+
+            <div class="form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" id="Q2composition" name="Q2composition" value="4" onclick="onlyOne(this,'Q2composition')">
+                <label class="form-check-label" for="Q2composition">Mix/others</label>
+            </div>
+          </div>-->
+
+        </div>
+		
+        <div class="collapse" id="approximation">
+          <div class="form-group">
+              <label class="form-label" for="Q3">Q: Please select from the dropdown list to select the relevant material(s) and indicate its mass percentage</label>
+            
+              <div class="row">
+                <label class="col-form-label col-sm-1" id="Q3_1">1)</label>
+                <select class="form-control col-sm-4" id="Q3_1" name="Q3_1">
+            
+                  <option value="None">None</option>
+                  {% for i in range(0,samplefoodlen) %}
+                  <option value="{{i}}">{{samplefood[i]}}</option>
+                  {% endfor %}
+                </select>
+
+                
+                <div class="col-sm-1">
+                  <input type="text" class="form-control" id="Q3_1_w" name="Q3_1_w" placeholder="w%">
+                </div>
+                <label for="Q3_1" class="col-sm-2 col-form-label">% weight</label>
+              </div>  
+              <br>
+
+              <div class="row">
+                <label class="col-form-label col-sm-1" id="Q3_2">2)</label>
+                <select class="form-control col-sm-4" id="Q3_2" name="Q3_2">
+                  <option value="None">None</option>
+                  {% for i in range(samplefoodlen) %}
+                  <option value="{{i}}">{{samplefood[i]}}</option>
+                  {% endfor %}
+                </select>
+
+                
+                <div class="col-sm-1">
+                  <input type="text" class="form-control" id="Q3_2_w" name="Q3_2_w" placeholder="w%">
+                </div>
+                <label for="Q3_2" class="col-sm-2 col-form-label">% weight</label>
+              </div> 
+
+              <br>
+
+              <div class="row">
+                <label class="col-form-label col-sm-1" id="Q3_3">3)</label>
+                <select class="form-control col-sm-4" id="Q3_3" name="Q3_3">
+                  <option value="None">None</option>
+                  {% for i in range(samplefoodlen) %}
+                  <option value="{{i}}">{{samplefood[i]}}</option>
+                  {% endfor %}
+                </select>
+
+                
+                <div class="col-sm-1">
+                  <input type="text" class="form-control" id="Q3_3_w" name="Q3_3_w" placeholder="w%">
+                </div>
+                <label for="Q3_3" class="col-sm-2 col-form-label">% weight</label>
+              </div>
+              
+              <div class="form-group">
+                <label class="form-label" for="Q4"><u>Moisture</u></label>
+                <br>
+                <label class="form-label" for="Q4">Q: Select the best description for the waste you have generated </label>
+            <br>
+            <div class="form-check form-check-inline" >
+              <input type="checkbox" class="form-check-input" id="Q4" name="Q4" value="1" onclick="onlyOne(this,'Q4')">
+              <label class="form-check-label" for="Q4">Dry/powdered</label>
+            </div>
+  
+            <div class="form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" id="Q4" name="Q4" value="2" onclick="onlyOne(this,'Q4')">
+                <label class="form-check-label" for="Q4">Slightly wet</label>
+            </div>
+  
+            <div class="form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" id="Q4" name="Q4" value="3" onclick="onlyOne(this,'Q4')">
+                <label class="form-check-label" for="Q4">Wet</label>
+            </div>
+  
+            <div class="form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" id="Q4" name="Q4" value="4" onclick="onlyOne(this,'Q4')">
+                <label class="form-check-label" for="Q4">Liquid</label>
+            </div>
+            
+            <div class="form-check form-check-inline">
+              <input type="checkbox" class="form-check-input" id="Q4" name="Q4" value="5" onclick="onlyOne(this,'Q4')">
+              <label class="form-check-label" for="Q4">Not sure</label>
+            </div>
+
+            <div class="form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" id="Q4" name="Q4" value="6" onclick="onlyOne(this,'Q4')" data-toggle='collapse' data-target='#moistureLevel' aria-expanded="false">
+                <label class="form-check-label" for="Q4">Known value</label>
+            </div>
+  
+          </div>
+  
+          <div class="collapse" id="moistureLevel">
+  
+            <div class="form-group row">
+              <label for="Q4Moisture" class="col-sm-3 col-form-label">Please key in value in %</label>
+              <div class="col-sm-2">
+                <input type="text" class="form-control" id="Q4Moisture" name="Q4Moisture" placeholder="~%">
+              </div>
+            </div>
+          </div>
+      
+          <div class="form-group">
+            <label class="form-label" for="Q5"><u>pH</u>&nbsp</label> <a href="#" data-toggle="tooltip" title="pH is a measure of how acidic/basic water is. The range goes from 0 to 14, with 7 being neutral. 
+  pHs of less than 7 indicate acidity, whereas a pH of greater than 7 indicates a base.
+  
+  e.g.
+  Lemon pH 2
+  Vinegar pH 2.5
+  Baking soda pH 9"><IMG SRC="/static/icons/information.png" ALT="logo" WIDTH=15 HEIGHT=15></a>
+            <br>
+            <label class="form-label" for="Q5">Q: In terms of acidity, your waste is...</label>
+            <br>
+            <div class="form-check form-check-inline" >
+              <input type="checkbox" class="form-check-input" id="Q5" name="Q5" value="1" onclick="onlyOne(this,'Q5')">
+              <label class="form-check-label" for="Q5">Highly Acidic</label>
+            </div>
+  
+            <div class="form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" id="Q5" name="Q5" value="2" onclick="onlyOne(this,'Q5')">
+                <label class="form-check-label" for="Q5">Highly Alkaline</label>
+            </div>
+  
+            <div class="form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" id="Q5" name="Q5" value="5" onclick="onlyOne(this,'Q5')">
+                <label class="form-check-label" for="Q5">Neutral</label>
+            </div>
+  
+  
+            <div class="form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" id="Q5" name="Q5" value="3" onclick="onlyOne(this,'Q5')">
+                <label class="form-check-label" for="Q5">Not sure</label>
+            </div>
+  
+            <div class="form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" id="Q5" name="Q5" value="4" onclick="onlyOne(this,'Q5')" data-toggle='collapse' data-target='#pH' aria-expanded="false">
+                <label class="form-check-label" for="Q5">Known value</label>
+            </div>
+  
+          </div>
+  
+          <div class="collapse" id="pH">
+  
+            <div class="form-group row">
+              <label for="Q5pH" class="col-sm-3 col-form-label">Please key in the pH value</label>
+              <div class="col-sm-2">
+                <input type="text" class="form-control" id="Q5pH" name="Q5pH" placeholder="pH">
+              </div>
+            </div>
+          </div>
+  
+
+            </div>
+        </div>
+        {% endif %}
         {% for question in questions %}
           {{question.questionHTML|safe}}
           <br>
@@ -32,6 +275,7 @@
             <input type="file" class="form-control-file" name="file" id="file">
           </div>
         {% endif %}
+
 
 
 

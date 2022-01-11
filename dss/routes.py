@@ -18,7 +18,7 @@ from dss.forms import (RegistrationForm,LoginForm, UpdateAccountForm, PostForm,R
     dispatchMatchingForm, dispatchMatchingQuestionsForm, dispatchMatchingResultsForm,
     LCCForm, RSPForm) 
 from dss.models import (User, Post, RSP, Materials, Questions, Giveoutwaste, Processwaste, Technology, Takeinresource, Supplier, Technologybreakdown, Technologycode, 
-    Dispatchmatchingresults, Dispatchmatchingsupply, Dispatchmatchingdemand)
+    Dispatchmatchingresults, Dispatchmatchingsupply, Dispatchmatchingdemand, Sample, TechnologyDB)
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_mail import Message
 from sqlalchemy import or_, and_
@@ -272,7 +272,7 @@ def recycling_service_provider():
     form.maincat.choices = [(rsp.maincat, rsp.maincat) for rsp in RSP.query.group_by(RSP.maincat)]
     form.subcat.choices = [(rsp.id, rsp.subcat) for rsp in RSP.query.filter_by(maincat=RSP.query.first().maincat).all()]
     #get past technology ID
-    prevEntries = [(waste.id, waste.questionCode + ': ' + waste.description + ' - ' + waste.date.strftime("%d/%m/%Y")) for waste in Processwaste.query.filter_by(userId=int(current_user.id)).all()]
+    prevEntries = [(waste.id, waste.description + ': ' + waste.TechnologyName + ' - ' + waste.date) for waste in TechnologyDB.query.filter_by(userId=int(current_user.id)).all()]
     prevEntries.insert(0,(None,None))
     form.technologyID.choices = prevEntries
     # flash(prevEntries, 'success')
@@ -335,8 +335,16 @@ def rsp(maincat):
 def matching_questions(materialId):
     form = []
     material = Materials.query.filter_by(id=materialId).first()
-    
+    samples = Sample.query.all()
+    result = defaultdict(list)
+    for obj in samples:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    df = pd.DataFrame(result)
+    samplefood=df['FoodItem'].tolist()
     #print(df)
+    #print(samplefood)
     if material.type == '1. Selling Waste':
         giveOutWaste = True
         buyWaste = False
@@ -356,6 +364,10 @@ def matching_questions(materialId):
         questions.append(Questions.query.filter_by(id=id).first())
     
     if request.method == 'POST':
+        
+        print(request.data)
+        print(request.form)
+        #print(request.form.getlist('Q51_Chemical'))
 
         #save file
         if giveOutWaste and request.files["file"]:
@@ -372,12 +384,120 @@ def matching_questions(materialId):
             if giveOutWaste:
                 wasteObj = Waste(materialId, request)
                 questionCode = wasteObj.getId()
+                if questionCode[0:5] == "Error":
+                    flash(questionCode,'danger')
+                    return redirect(url_for("matching_questions", materialId=materialId))
             if processWaste:
-                techObj = Waste(materialId, request)
-                questionCode = techObj.getId()
-            if questionCode[0:5] == "Error":
-                flash(questionCode,'danger')
-                return redirect(url_for("matching_questions", materialId=materialId))
+                description = str(request.form['description'])
+                userId = int(current_user.id)
+                materialId = int(materialId)
+                CRatiomin = int(request.form['Q45_min_C'])
+                CRatiomax = int(request.form['Q45_max_C'])
+                NRatiomin = int(request.form['Q45_min_N'])
+                NRatiomax = int(request.form['Q45_max_N'])
+                Moisturemin = int(request.form['Q46_min_moisture'])
+                Moisturemax = int(request.form['Q46_max_moisture'])
+                pHmin = int(request.form['Q46_min_ph'])
+                pHmax = int(request.form['Q46_max_ph'])
+                cellulosicmin = int(request.form['Q46_min_Cellulosic'])
+                cellulosicmax = int(request.form['Q46_max_Cellulosic'])
+                particleSizemin = int(request.form['Q46_min_Size'])
+                particleSizemax = int(request.form['Q46_max_Size'])
+                if len(request.form.getlist('Q47_1'))==2:
+                    unacceptableshells = 1
+                    unacceptableshellspercent = int(request.form['Q47_1_value'])
+                else:
+                    unacceptableshells = 0
+                    unacceptableshellspercent = 0
+                if len(request.form.getlist('Q47_2'))==2:
+                    unacceptablebones = 1
+                    unacceptablebonespercent = int(request.form['Q47_2_value'])
+                else:
+                    unacceptablebones = 0
+                    unacceptablebonespercent = 0
+                if len(request.form.getlist('Q47_3'))==2:
+                    unacceptablebamboo = 1
+                    unacceptablebamboopercent = int(request.form['Q47_3_value'])
+                else:
+                    unacceptablebamboo = 0
+                    unacceptablebamboopercent = 0
+                if len(request.form.getlist('Q47_4'))==2:
+                    unacceptablebanana = 1
+                    unacceptablebananapercent = int(request.form['Q47_4_value'])
+                else:
+                    unacceptablebanana = 0
+                    unacceptablebananapercent = 0
+                        
+                if len(request.form.getlist('Q47_5'))==2:
+                    unacceptableothers = 1
+                    unacceptableotherspercent = int(request.form['Q47_5_value'])
+                else:
+                    unacceptableothers = 0
+                    unacceptableotherspercent = 0
+                
+                if len(request.form.getlist('Q51_Biogas'))==2:
+                    byproductBiogas = 1
+                    byproductBiogasEfficiency = int(request.form['Q51_Biogas_efficiency'])
+                    byproductBiogasCHFour = int(request.form['Q51_Biogas_ch4'])
+                    byproductBiogasCOTwo = int(request.form['Q51_Biogas_co2'])
+
+                else:
+                    byproductBiogas = 0
+                    byproductBiogasEfficiency = 0
+                    byproductBiogasCHFour = 0
+                    byproductBiogasCOTwo = 0
+
+                if len(request.form.getlist('Q51_Chemical'))==2:
+                    ByproductChemical = 1
+                    ByproductChemicalEfficiency = int(request.form['Q51_Chemical_efficiency'])
+                else:
+                    ByproductChemical = 0
+                    ByproductChemicalEfficiency = 0
+
+                if len(request.form.getlist('Q51_Metal'))==2:
+                    ByproductMetal = 1
+                    ByproductMetalEfficiency = int(request.form['Q51_Metal_efficiency'])
+                else:
+                    ByproductMetal = 0
+                    ByproductMetalEfficiency = 0
+
+                if len(request.form.getlist('Q51_Biochar'))==2:
+                    ByproductBiochar = 1
+                    ByproductBiocharEfficency = int(request.form['Q51_Biochar_efficiency'])
+                else:
+                    ByproductBiochar = 0
+                    ByproductBiocharEfficency = 0
+
+                if len(request.form.getlist('Q51_Digestate'))==2:
+                    ByproductDigestate = 1
+                    ByproductDigestateEfficiency = int(request.form['Q51_Digestate_efficiency'])
+                else:
+                    ByproductDigestate = 0
+                    ByproductDigestateEfficiency = 0
+
+                if len(request.form.getlist('Q51_Oil'))==2:
+                    ByproductOil = 1
+                    ByproductOilEfficiency = int(request.form['Q51_Oil_efficiency'])
+                else:
+                    ByproductOil = 0
+                    ByproductOilEfficiency = 0
+
+                if len(request.form.getlist('Q51_Others'))==2:
+                    ByproductOthers = 1
+                    ByproductOthersEfficiency = int(request.form['Q51_Others_efficiency'])
+                else:
+                    ByproductOthers = 0
+                    ByproductOthersEfficiency = 0
+
+                TechnologyName = str(request.form['Q50_tech'])
+                AdditionalInformation = str(request.form['Q53'])
+                questionCode = "Submitted!"
+
+
+
+
+            
+            
         except Exception:
             traceback.print_exc()
             flash(f'Please ensure that the form is filled in correctly first before submitting','danger')
@@ -403,7 +523,50 @@ def matching_questions(materialId):
             return redirect(url_for("selling_waste"))
 
         elif processWaste:
-            techID = Processwaste(materialId=int(materialId), questionCode=questionCode, reportCode=str(reportCode), userId=int(current_user.id), description=request.form['description'] or None,technologyName=request.form['Q50_tech'], date=datetime.now())
+            techID = TechnologyDB(userId=userId,
+            materialId=materialId,
+            CRatiomin=CRatiomin,
+            CRatiomax=CRatiomax,
+            NRatiomin=NRatiomin,
+            NRatiomax=NRatiomax,
+            Moisturemin=Moisturemin,
+            Moisturemax=Moisturemax,
+            pHmin=pHmin,
+            pHmax=pHmax,
+            cellulosicmin=cellulosicmin,
+            cellulosicmax=cellulosicmax,
+            particleSizemin=particleSizemin,
+            particleSizemax=particleSizemax,
+            unacceptableshells=unacceptableshells,
+            unacceptableshellspercent=unacceptableshellspercent,
+            unacceptablebones=unacceptablebones,
+            unacceptablebonespercent=unacceptablebonespercent,
+            unacceptablebamboo=unacceptablebamboo,
+            unacceptablebamboopercent=unacceptablebamboopercent,
+            unacceptablebanana=unacceptablebanana,
+            unacceptablebananapercent=unacceptablebananapercent,
+            unacceptableothers=unacceptableothers,
+            unacceptableotherspercent=unacceptableotherspercent,
+            TechnologyName=TechnologyName,
+            byproductBiogas=byproductBiogas,
+            byproductBiogasEfficiency=byproductBiogasEfficiency,
+            byproductBiogasCHFour=byproductBiogasCHFour,
+            byproductBiogasCOTwo=byproductBiogasCOTwo,
+            ByproductChemical=ByproductChemical,
+            ByproductChemicalEfficiency=ByproductChemicalEfficiency,
+            ByproductMetal=ByproductMetal,
+            ByproductMetalEfficiency=ByproductMetalEfficiency,
+            ByproductBiochar=ByproductBiochar,
+            ByproductBiocharEfficency=ByproductBiocharEfficency,
+            ByproductDigestate=ByproductDigestate,
+            ByproductDigestateEfficiency=ByproductDigestateEfficiency,
+            ByproductOil=ByproductOil,
+            ByproductOilEfficiency=ByproductOilEfficiency,
+            ByproductOthers=ByproductOthers,
+            ByproductOthersEfficiency=ByproductOthersEfficiency,
+            AdditionalInformation=AdditionalInformation,
+            date=str(datetime.now())[0:19],
+            description=description)
             db.session.add(techID)
             db.session.commit()
             flash('Your response has been recorded!','success')
@@ -417,7 +580,7 @@ def matching_questions(materialId):
             takeinresourceId = Takeinresource.query.order_by(Takeinresource.id.desc()).first().id
             return redirect(url_for("matching_filter_resource", takeinresourceId=takeinresourceId))
 
-    return render_template('matching_questions.html', title="Matching Questions", form=form, questions=questions, material=material, giveOutWaste=giveOutWaste)
+    return render_template('matching_questions.html', title="Matching Questions", form=form, questions=questions, material=material, giveOutWaste=giveOutWaste, samplefood=samplefood, samplefoodlen=len(samplefood), materialId=materialId)
 
 @app.route("/matching/filter_waste/<giveoutwasteId>", methods=['GET','POST'])
 def matching_filter_waste(giveoutwasteId):
@@ -433,7 +596,7 @@ def matching_filter_waste(giveoutwasteId):
     # return render_template('matching_filter_waste.html', title="Matching Filter", form=form)
     wasteID = Giveoutwaste.query.filter_by(id=giveoutwasteId).first().questionCode
     wastematerialID = Giveoutwaste.query.filter_by(id=giveoutwasteId).first().materialId
-    rset = Processwaste.query.all()
+    rset = TechnologyDB.query.all()
     result = defaultdict(list)
     for obj in rset:
         instance = inspect(obj)
@@ -464,54 +627,62 @@ def matching_filter_waste(giveoutwasteId):
     for i in range(len(df)):
         techmaterialID=int(df.loc[i,'materialId'])      
         if wastematerialID==1 and techmaterialID==14:
-            techID = (df.loc[i,'questionCode'])
-            print(df.loc[i,'description'])
-            print(techID)
-            acceptablemeat=techID[1]
-            acceptablefruit=techID[2]
-            acceptabledairy=techID[3]
-            acceptableeggs=techID[4]
-            acceptablebread=techID[5]
-            acceptablerice=techID[6]
-            acceptableuneaten=techID[7]
-            acceptabletea=techID[8]
-            acceptableall=techID[9]
-            acceptableothers=techID[10]
-            CRatiomin=techID[11:13]
-            CRatiomax=techID[13:15]
-            NRatiomin=techID[15:17]
-            NRatiomax=techID[17:19]
-            Moisturemin=techID[19:21]
-            Moisturemax=techID[21:23]
-            pHmin=techID[23:25]
-            pHmax=techID[25:27]
-            cellulosicmin=techID[27:29]
-            cellulosicmax=techID[29:31]
-            particleSizemin=techID[31:33]
-            particleSizemax=techID[33:35]
-            unacceptableshells=techID[35]
-            unacceptablebones=techID[36]
-            unacceptablebamboo=techID[37]
-            unacceptablebanana=techID[38]
-            unacceptableothers=techID[39]
-            byproductBiogas=techID[40]
-            byproductChemical=techID[41]
-            byproductMetal=techID[42]
-            byproductBiochar=techID[43]
-            byproductDigestate=techID[44]
-            byproductOil=techID[45]
-            byproductOthers=techID[46]
-            outputBiogas=techID[47:49]
-            outputDigestate=techID[49:51]
-            outputDeviation=techID[51:53]
+            attrib=['materialId',
+                    'CRatiomin',
+                    'CRatiomax',
+                    'Nratiomin',
+                    'Nratiomax',
+                    'Moisturemin',
+                    'Moisturemax',
+                    'pHmin',
+                    'pHmax',
+                    'cellulosicmin',
+                    'cellulosicmax',
+                    'particleSizemin',
+                    'particleSizemax',
+                    'unacceptableshells',
+                    'unacceptableshells',
+                    'unacceptableshellspercent',
+                    'unacceptablebones',
+                    'unacceptablebonespercent',
+                    'unacceptablebamboo',
+                    'unacceptablebamboopercent',
+                    'unacceptablebanana',
+                    'unacceptablebananapercent',
+                    'unacceptableothers',
+                    'unacceptableotherspercent',
+                    'TechnologyName',
+                    'byproductBiogas',
+                    'byproductBiogasEfficiency',
+                    'byproductBiogasCHFour',
+                    'byproductBiogasCOTwo',
+                    'ByproductChemical',
+                    'ByproductChemicalEfficiency',
+                    'ByproductMetal',
+                    'ByproductMetalEfficiency',
+                    'ByproductBiochar',
+                    'ByproductBiocharEfficency',
+                    'ByproductDigestate',
+                    'ByproductDigestateEfficiency',
+                    'ByproductOil',
+                    'ByproductOilEfficiency',
+                    'ByproductOthers',
+                    'ByproductOthersEfficiency',
+                    'TechnologyName',
+                    'AdditionalInformation']
+            techID = {}
+            #print(df.loc[i,'description'])
+            #print(techID)
+            for at in attrib:
+                techID[at]=df.loc[i,at]
             print('Waste CRatio:'+wCRatio)
             print('Waste NRatio:'+wNRatio)
             print('Waste pH:'+wphValue)
-            print('RSP pH Range '+pHmin+' '+pHmax)
-            print('RSP CRatio'+CRatiomin+' '+CRatiomax)
-            print('RSP NRatio'+NRatiomin+' '+NRatiomax)
+            print('RSP pH Range '+techID['pHmin']+' '+techID['pHmax'])
+            print('RSP CRatio'+techID['CRatiomin']+' '+techID['CRatiomax'])
+            print('RSP NRatio'+techID['NRatiomin']+' '+techID['NRatiomax'])
             
-            if (wCRatio=='__' or (int(wCRatio)>=int(CRatiomin) and int(wCRatio)<=int(CRatiomax))) and ((wNRatio)=='__' or (int(wNRatio)>=int(NRatiomin) and int(wNRatio)<=int(NRatiomax))) and ((wphValue)=='__' or (int(wphValue)>=int(pHmin) and int(wphValue)<=int(pHmax))):
+            if (wCRatio=='__' or (int(wCRatio)>=int(techID['CRatiomin']) and int(wCRatio)<=int(techID['CRatiomax']))) and ((wNRatio)=='__' or (int(wNRatio)>=int(techID['NRatiomin']) and int(wNRatio)<=int(techID['NRatiomax']))) and ((wphValue)=='__' or (int(wphValue)>=int(techID['pHmin']) and int(wphValue)<=int(techID['pHmax']))):
                 counter+=1
                 index=(counter)
                 desc=(df.loc[i,'description'])
@@ -524,8 +695,9 @@ def matching_filter_waste(giveoutwasteId):
 
 @app.route("/matching/filter_recycling/<processwasteId>", methods=['GET','POST'])
 def matching_filter_recycling(processwasteId):
-    techID = Processwaste.query.filter_by(id=processwasteId).first().questionCode
-    techmaterialID = Processwaste.query.filter_by(id=processwasteId).first().materialId
+    techstuff=TechnologyDB.query.filter_by(id=processwasteId).first()
+    
+    techmaterialID = TechnologyDB.query.filter_by(id=processwasteId).first().materialId
     rset = Giveoutwaste.query.all()
     result = defaultdict(list)
     for obj in rset:
@@ -533,55 +705,74 @@ def matching_filter_recycling(processwasteId):
         for key, x in instance.attrs.items():
             result[key].append(x.value)    
     df = pd.DataFrame(result)
+
+    results = defaultdict(list)
+    instance = inspect(techstuff)
+    for key, x in instance.attrs.items():
+        results[key].append(x.value)    
+    #techdf = pd.DataFrame(result)
+    #print(results)
     #print(df)
     counter=0
     result=[]
-    acceptablemeat=techID[1]
-    acceptablemeat=techID[2]
-    acceptablefruit=techID[3]
-    acceptabledairy=techID[4]
-    acceptableeggs=techID[5]
-    acceptablebread=techID[6]
-    acceptablerice=techID[7]
-    acceptableuneaten=techID[8]
-    acceptabletea=techID[9]
-    acceptableall=techID[10]
-    acceptableothers=techID[11]
-    CRatiomin=techID[12:14]
-    CRatiomax=techID[14:16]
-    NRatiomin=techID[16:18]
-    NRatiomax=techID[18:20]
-    Moisturemin=techID[20:22]
-    Moisturemax=techID[22:24]
-    pHmin=techID[24:26]
-    pHmax=techID[26:28]
-    cellulosicmin=techID[28:30]
-    cellulosicmax=techID[30:32]
-    particleSizemin=techID[32:34]
-    particleSizemax=techID[34:36]
-    unacceptableshells=techID[36]
-    unacceptablebones=techID[37]
-    unacceptablebamboo=techID[38]
-    unacceptablebanana=techID[39]
-    unacceptableothers=techID[40]
-    byproductBiogas=techID[41]
-    byproductChemical=techID[42]
-    byproductMetal=techID[43]
-    byproductBiochar=techID[44]
-    byproductDigestate=techID[45]
-    byproductOil=techID[46]
-    byproductOthers=techID[47]
-    outputBiogas=techID[48:50]
-    outputDigestate=techID[50:52]
-    outputDeviation=techID[52:54]
-
-    
+    #TechnologyDB.query.filter_by(id=processwasteId).first()
+    attrib=['materialId',
+                    'CRatiomin',
+                    'CRatiomax',
+                    'NRatiomin',
+                    'NRatiomax',
+                    'Moisturemin',
+                    'Moisturemax',
+                    'pHmin',
+                    'pHmax',
+                    'cellulosicmin',
+                    'cellulosicmax',
+                    'particleSizemin',
+                    'particleSizemax',
+                    'unacceptableshells',
+                    'unacceptableshells',
+                    'unacceptableshellspercent',
+                    'unacceptablebones',
+                    'unacceptablebonespercent',
+                    'unacceptablebamboo',
+                    'unacceptablebamboopercent',
+                    'unacceptablebanana',
+                    'unacceptablebananapercent',
+                    'unacceptableothers',
+                    'unacceptableotherspercent',
+                    'TechnologyName',
+                    'byproductBiogas',
+                    'byproductBiogasEfficiency',
+                    'byproductBiogasCHFour',
+                    'byproductBiogasCOTwo',
+                    'ByproductChemical',
+                    'ByproductChemicalEfficiency',
+                    'ByproductMetal',
+                    'ByproductMetalEfficiency',
+                    'ByproductBiochar',
+                    'ByproductBiocharEfficency',
+                    'ByproductDigestate',
+                    'ByproductDigestateEfficiency',
+                    'ByproductOil',
+                    'ByproductOilEfficiency',
+                    'ByproductOthers',
+                    'ByproductOthersEfficiency',
+                    'TechnologyName',
+                    'AdditionalInformation']
+    techID = {}
+    for at in attrib:
+        #print(results[at][0])
+        techID[at]=results[at][0]
+        
     #print(techmaterialID)
     for i in range(len(df)):
-        wastematerialID=int(df.loc[i,'materialId'])      
-        if techmaterialID==14 and wastematerialID==1:
+        wastematerialID=int(df.loc[i,'materialId'])
+        #print(techmaterialID)
+        #print(wastematerialID)      
+        if int(techmaterialID)==14 and int(wastematerialID)==1:
+            #print("Triggered")
             wasteID = (df.loc[i,'questionCode'])
-            print(wasteID)
+            #print(wasteID)
             homogeneity=wasteID[1]
             wCHNType=wasteID[2]
             wCRatio=wasteID[3:5]
@@ -601,8 +792,8 @@ def matching_filter_recycling(processwasteId):
             #print(wCRatio)
             #print(wNRatio)
             #print(wphValue)
-            #print(pHmin)        
-            if (wCRatio=='__' or (int(wCRatio)>=int(CRatiomin) and int(wCRatio)<=int(CRatiomax))) and ((wNRatio)=='__' or (int(wNRatio)>=int(NRatiomin) and int(wNRatio)<=int(NRatiomax))) and ((wphValue)=='__' or (int(wphValue)>=int(pHmin) and int(wphValue)<=int(pHmax))):
+            #print(techID['pHmin'])        
+            if (wCRatio=='__' or (int(wCRatio)>=int(techID['CRatiomin']) and int(wCRatio)<=int(techID['CRatiomax']))) and ((wNRatio)=='__' or (int(wNRatio)>=int(techID['NRatiomin']) and int(wNRatio)<=int(techID['NRatiomax']))) and ((wphValue)=='__' or (int(wphValue)>=int(techID['pHmin']) and int(wphValue)<=int(techID['pHmax']))):
                 counter+=1
                 index=(counter)
                 desc=(df.loc[i,'description'])
