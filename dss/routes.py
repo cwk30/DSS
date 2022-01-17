@@ -288,6 +288,15 @@ def recycling_service_provider():
     return render_template('recycling_service_provider.html', title="Matching", form=form)    
 
 @app.route("/matching/buying_resources", methods=['GET', 'POST'])
+def buying_resources_selection():
+    if current_user.is_authenticated:
+        pass
+    else: 
+        flash(f'Please log in first','danger')
+        return redirect(url_for("login"))
+    return render_template('buying_resource.html', title="Matching")  
+
+@app.route("/matching/buying_resources/processed", methods=['GET', 'POST'])
 def buying_resources():
     if current_user.is_authenticated:
         pass
@@ -304,7 +313,102 @@ def buying_resources():
             return redirect(url_for("buying_resources"))
         else:
             return redirect(url_for("matching_filter_resource",byproduct=form.dropdown.data))
-    return render_template('buying_resources.html', title="Matching", form=form)   
+    return render_template('buying_resources.html', title="Matching", form=form)
+
+@app.route("/matching/buying_resources/waste", methods=['GET', 'POST'])
+def buying_waste():
+
+    rset = Giveoutwaste.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    df = pd.DataFrame(result)
+
+    
+    counter=0
+    result=[]
+    attrib=['materialId',
+                    'CRatiomin',
+                    'CRatiomax',
+                    'NRatiomin',
+                    'NRatiomax',
+                    'Moisturemin',
+                    'Moisturemax',
+                    'pHmin',
+                    'pHmax',
+                    'cellulosicmin',
+                    'cellulosicmax',
+                    'particleSizemin',
+                    'particleSizemax',
+                    'unacceptableshells',
+                    'unacceptableshells',
+                    'unacceptableshellspercent',
+                    'unacceptablebones',
+                    'unacceptablebonespercent',
+                    'unacceptablebamboo',
+                    'unacceptablebamboopercent',
+                    'unacceptablebanana',
+                    'unacceptablebananapercent',
+                    'unacceptableothers',
+                    'unacceptableotherspercent',
+                    'TechnologyName',
+                    'byproductBiogas',
+                    'byproductBiogasEfficiency',
+                    'byproductBiogasCHFour',
+                    'byproductBiogasCOTwo',
+                    'ByproductChemical',
+                    'ByproductChemicalEfficiency',
+                    'ByproductMetal',
+                    'ByproductMetalEfficiency',
+                    'ByproductBiochar',
+                    'ByproductBiocharEfficency',
+                    'ByproductDigestate',
+                    'ByproductDigestateEfficiency',
+                    'ByproductOil',
+                    'ByproductOilEfficiency',
+                    'ByproductOthers',
+                    'ByproductOthersEfficiency',
+                    'TechnologyName',
+                    'AdditionalInformation']
+
+        
+    #print(techmaterialID)
+    for i in range(len(df)):
+        wastematerialID=int(df.loc[i,'materialId'])
+        #print(techmaterialID)
+        print(wastematerialID)      
+        
+        wasteID = (df.loc[i,'questionCode'])
+        print(wasteID)
+        # homogeneity=wasteID[1]
+        # wCHNType=wasteID[2]
+        # wCRatio=wasteID[3:5]
+        # wHRatio=wasteID[5:7]
+        # wNRatio=wasteID[7:9]
+        # wproteinType=wasteID[9]
+        # wproteinRatio=wasteID[10:12]
+        # wcellulosic=wasteID[12]
+        # wshellAndBones=wasteID[13:15]
+        # wmoistureType=wasteID[15]
+        # wmoistureContent=wasteID[16:18]
+        # wsaltType=wasteID[18]
+        # wsaltContent=wasteID[19:21]
+        # wpHType=wasteID[21]
+        # wphValue=wasteID[22:24]
+        # wparticleSize=wasteID[24]
+        counter+=1
+        index=(counter)
+        desc=(df.loc[i,'description'])
+        supplier=(User.query.filter_by(id=int(df.loc[i,'userId'])).first().username)
+        #print(supplier)
+        rawdate=str(df.loc[i,'date'])
+        rawdate=rawdate[:10]
+        result.append([index,desc,supplier,rawdate])
+    return render_template('matching_results_recycling.html', result=result )
+
+   
 
 @app.route("/materials/<Type>")
 def materials(Type):
@@ -395,14 +499,32 @@ def matching_questions(materialId):
                 CRatiomax = int(request.form['Q45_max_C'])
                 NRatiomin = int(request.form['Q45_min_N'])
                 NRatiomax = int(request.form['Q45_max_N'])
-                Moisturemin = int(request.form['Q46_min_moisture'])
-                Moisturemax = int(request.form['Q46_max_moisture'])
-                pHmin = int(request.form['Q46_min_ph'])
-                pHmax = int(request.form['Q46_max_ph'])
-                cellulosicmin = int(request.form['Q46_min_Cellulosic'])
-                cellulosicmax = int(request.form['Q46_max_Cellulosic'])
-                particleSizemin = int(request.form['Q46_min_Size'])
-                particleSizemax = int(request.form['Q46_max_Size'])
+                if len(request.form.getlist('Q46_moisture'))==2:
+                    Moisturemin = int(request.form['Q46_min_moisture'])
+                    Moisturemax = int(request.form['Q46_max_moisture'])
+                else:
+                    Moisturemin = 0
+                    Moisturemax = 100
+                if len(request.form.getlist('Q46_pH'))==2:
+                    pHmin = int(request.form['Q46_min_ph'])
+                    pHmax = int(request.form['Q46_max_ph'])
+                else:
+                    pHmin = 1
+                    pHmax = 14
+                if len(request.form.getlist('Q46_cellulosic'))==2:
+                    cellulosicmin = int(request.form['Q46_min_Cellulosic'])
+                    cellulosicmax = int(request.form['Q46_max_Cellulosic'])
+                else:
+                    cellulosicmin = 0
+                    cellulosicmax = 100
+                if len(request.form.getlist('Q46_size'))==2:
+                    particleSizemin = int(request.form['Q46_min_Size'])
+                    particleSizemax = int(request.form['Q46_max_Size'])
+                else:
+                    particleSizemin = 0
+                    particleSizemax = 100
+                
+                
                 if len(request.form.getlist('Q47_1'))==2:
                     unacceptableshells = 1
                     unacceptableshellspercent = int(request.form['Q47_1_value'])

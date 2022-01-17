@@ -7,7 +7,7 @@
             <div class="page-breadcrumb bg-white">
                 <div class="row align-items-center">
                     <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-                        <h4 class="page-title">Matching</h4>
+                        <h4 class="page-title">Matching - Buying Resources</h4>
                     </div>
                     <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
                         <div class="d-md-flex">
@@ -30,21 +30,16 @@
                 <div class="row">
                     <div class="col-sm-12">
                         <div class="white-box">
-                            <h3 class="box-title">Select your role</h3>
+                            <h3 class="box-title">What would you like to purchase?</h3>
                             <div class="text-center p-20 upgrade-btn">
-                                <a href="{{ url_for('selling_waste') }}"
+                                <a href="{{ url_for('buying_resources') }}"
                                     class="btn d-grid btn-danger text-white">
-                                    Selling Waste</a>
+                                    Resources from Processed Waste</a>
                             </div>
                             <div class="text-center p-20 upgrade-btn">
-                                <a href="{{ url_for('recycling_service_provider') }}"
+                                <a href="{{ url_for('buying_waste') }}"
                                     class="btn d-grid btn-danger text-white">
-                                    Recycling Service Provider</a>
-                            </div>
-                            <div class="text-center p-20 upgrade-btn">
-                                <a href="{{ url_for('buying_resources_selection') }}"
-                                    class="btn d-grid btn-danger text-white">
-                                    Buying Resources</a>
+                                    Raw Waste</a>
                             </div>
                             
                         </div>
