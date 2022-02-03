@@ -1,5 +1,9 @@
 import traceback
 import secrets
+import requests as r
+import xlsxwriter
+from onemapsg import OneMap
+import json
 from collections import defaultdict
 from sqlalchemy.inspection import inspect
 import os
@@ -33,10 +37,158 @@ from .PyomoSolver import PyomoModel
 from .LCCTest import TechSpecifications
 #bananas test
 
+def distance(start,end):
+    email = "e0175262@u.nus.edu"
+    passw = "Password1"
+
+    locSupply = start
+    locDemand = end
+
+
+    # print(sorted([locSupply,locDemand]))
+    #loc1, loc2 = [locSupply,locDemand].sort()
+
+
+    onemap = OneMap(email,passw)
+    loc1 = onemap.search(locSupply).results[0]
+    loc2 = onemap.search(locDemand).results[0]
+
+    loc1_latlong = ','.join(loc1.lat_long)
+    loc2_latlong = ','.join(loc2.lat_long)
+
+    route = onemap.route(loc1_latlong, loc2_latlong, 'drive')
+    return route.route_summary['total_distance']
+
+def feasibility_check(techid,wasteid):
+    rset = Giveoutwaste.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    waste_df = pd.DataFrame(result)
+
+    rset = TechnologyDB.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    RSP_df = pd.DataFrame(result)
+
+    rset = Materials.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    materials_df = pd.DataFrame(result)
+
+    # try:
+    waste_material_id=waste_df.loc[waste_df['id'] == int(wasteid), 'materialId'].iloc[0]
+    waste_questioncode=waste_df.loc[waste_df['id']==int(wasteid),'questionCode'].iloc[0]
+    tech_material_id=RSP_df.loc[RSP_df['id'] == int(techid), 'materialId'].iloc[0]
+    RSP_df.set_index('id',inplace=True)
+    tech_material=(materials_df.loc[materials_df['id'] == int(tech_material_id), 'material'].iloc[0])
+    waste_material=(materials_df.loc[materials_df['id'] == int(waste_material_id), 'material'].iloc[0])
+    # print(tech_material)
+    # print(waste_material)
+    if tech_material!=waste_material:
+        
+        return 0
+    else:
+        
+        homogeneity=waste_questioncode[1]
+        wCHNType=waste_questioncode[2]
+        wCRatio=waste_questioncode[3:5]
+        wHRatio=waste_questioncode[5:7]
+        wNRatio=waste_questioncode[7:9]
+        wproteinType=waste_questioncode[9]
+        wproteinRatio=waste_questioncode[10:12]
+        wcellulosic=waste_questioncode[12]
+        wshellAndBones=waste_questioncode[13:15]
+        wmoistureType=waste_questioncode[15]
+        wmoistureContent=waste_questioncode[16:18]
+        wsaltType=waste_questioncode[18]
+        wsaltContent=waste_questioncode[19:21]
+        wpHType=waste_questioncode[21]
+        wphValue=waste_questioncode[22:24]
+        wparticleSize=waste_questioncode[24]
+
+        attrib=['materialId',
+                'CRatiomin',
+                'CRatiomax',
+                'NRatiomin',
+                'NRatiomax',
+                'Moisturemin',
+                'Moisturemax',
+                'pHmin',
+                'pHmax',
+                'cellulosicmin',
+                'cellulosicmax',
+                'particleSizemin',
+                'particleSizemax',
+                'unacceptableshells',
+                'unacceptableshells',
+                'unacceptableshellspercent',
+                'unacceptablebones',
+                'unacceptablebonespercent',
+                'unacceptablebamboo',
+                'unacceptablebamboopercent',
+                'unacceptablebanana',
+                'unacceptablebananapercent',
+                'unacceptableothers',
+                'unacceptableotherspercent',
+                'TechnologyName',
+                'byproductBiogas',
+                'byproductBiogasEfficiency',
+                'byproductBiogasCHFour',
+                'byproductBiogasCOTwo',
+                'ByproductChemical',
+                'ByproductChemicalEfficiency',
+                'ByproductMetal',
+                'ByproductMetalEfficiency',
+                'ByproductBiochar',
+                'ByproductBiocharEfficency',
+                'ByproductDigestate',
+                'ByproductDigestateEfficiency',
+                'ByproductOil',
+                'ByproductOilEfficiency',
+                'ByproductOthers',
+                'ByproductOthersEfficiency',
+                'TechnologyName',
+                'AdditionalInformation']
+        techID = {}
+        #print(df.loc[i,'description'])
+        #print(techID)
+        for at in attrib:
+            techID[at]=RSP_df.loc[techid,at]
+        # print('Buyer:'+str(techid))
+        # print('Seller:'+str(wasteid))
+        # print('Waste CRatio:'+wCRatio)
+        # print('Waste NRatio:'+wNRatio)
+        # print('Waste pH:'+wphValue)
+        # print('RSP pH Range '+techID['pHmin']+' '+techID['pHmax'])
+        # print('RSP CRatio'+techID['CRatiomin']+' '+techID['CRatiomax'])
+        # print('RSP NRatio'+techID['NRatiomin']+' '+techID['NRatiomax'])
+        
+        if (wCRatio=='__' or (int(wCRatio)>=int(techID['CRatiomin']) and int(wCRatio)<=int(techID['CRatiomax']))) and ((wNRatio)=='__' or (int(wNRatio)>=int(techID['NRatiomin']) and int(wNRatio)<=int(techID['NRatiomax']))) and ((wphValue)=='__' or (int(wphValue)>=int(techID['pHmin']) and int(wphValue)<=int(techID['pHmax']))):
+            return 1
+        else:
+            return 0
+    # except:
+    #     return 0
+
+
+
+
+    
+
+
 @app.route("/") 
 def landing():
     if current_user.is_authenticated:
-        return render_template('home.html')
+        return render_template('dashboard.html')
     else:
         return render_template('index.html')
 
@@ -51,8 +203,9 @@ def dashboard():
     return render_template('dashboard.html')
 
 @app.route("/home") 
+@login_required
 def home():
-    return render_template('home.html') 
+    return render_template('dashboard.html') 
 
 @app.route("/about")
 def about():
@@ -315,7 +468,7 @@ def buying_resources():
             return redirect(url_for("matching_filter_resource",byproduct=form.dropdown.data))
     return render_template('buying_resources.html', title="Matching", form=form)
 
-@app.route("/matching/buying_resources/waste", methods=['GET', 'POST'])
+@app.route("/matching/filter_resource/waste", methods=['GET', 'POST'])
 def buying_waste():
 
     rset = Giveoutwaste.query.all()
@@ -1089,11 +1242,149 @@ def dispatch_matching_questions_waste():
             flash(f'Please check your inputs','danger')
     return render_template('dispatch_matching_questions_waste.html', title="Dispatch Matching Questions", form=form, recommendedReservePrice=recommendedReservePrice)
 
+@app.route("/dispatch_matching/match", methods=['GET','POST'])
+def dispatch_matching_match():
+    rset = Dispatchmatchingdemand.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    raw_demand = pd.DataFrame(result)
+    rset = Dispatchmatchingsupply.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    raw_supply = pd.DataFrame(result)
+    rset = Materials.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    raw_materials = pd.DataFrame(result)
+    rset = User.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    raw_user = pd.DataFrame(result)
+    rset = Giveoutwaste.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    raw_waste = pd.DataFrame(result)
+    rset = TechnologyDB.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    raw_technology = pd.DataFrame(result)
+    
+    material_list=[]
+    entity_list=[]
+    company_list=[]
+    postal_list=[]
+    long_list=[]
+    lat_list=[]
+    BS_list=[]
+    industry_supply_df=pd.DataFrame(columns=['entity','material','quantity','reserve_price','delivery_fee'])
+    industry_demand_df=pd.DataFrame(columns=['entity','material','quantity','reserve_price'])
+    for i in raw_demand.itertuples():
+        company_list.append(raw_user.loc[raw_user['id'] == int(i.userId), 'username'].iloc[0])
+        entity_list.append(i.takeInResourceId)
+        postal_list.append(i.postalCode)
+        BS_list.append('B')
+        response = r.get('http://developers.onemap.sg/commonapi/search?searchVal='+i.postalCode+'&returnGeom=Y&getAddrDetails=Y&pageNum={1}')
+        response_dict = json.loads(response.text)
+        if response_dict['found']!=0:
+            results = response_dict['results'][0]
+            long_list.append(results['LONGITUDE'])
+            lat_list.append(results['LATITUDE'])
+        else:
+            long_list.append(None)
+            lat_list.append(None)
+        material_id=raw_technology.loc[raw_technology['id'] == int(i.takeInResourceId), 'materialId'].iloc[0]
+        material_entry=raw_materials.loc[raw_materials['id']== int(material_id),'material'].iloc[0]
+        industry_demand_df = industry_demand_df.append({'entity' : i.takeInResourceId, 'material': material_entry, 'quantity': i.quantity, 'reserve_price': i.reservePrice}, ignore_index = True)
+        if material_entry not in material_list:
+            material_list.append(material_entry)
+    for i in raw_supply.itertuples():
+        company_list.append(raw_user.loc[raw_user['id'] == int(i.userId), 'username'].iloc[0])
+        entity_list.append(i.giveOutWasteId)
+        postal_list.append(i.postalCode)
+        BS_list.append('S')
+        response = r.get('http://developers.onemap.sg/commonapi/search?searchVal='+i.postalCode+'&returnGeom=Y&getAddrDetails=Y&pageNum={1}')
+        response_dict = json.loads(response.text)
+        if response_dict['found']!=0:
+            results = response_dict['results'][0]
+            long_list.append(results['LONGITUDE'])
+            lat_list.append(results['LATITUDE'])
+        else:
+            long_list.append(None)
+            lat_list.append(None)
+        material_id=raw_waste.loc[raw_waste['id'] == int(i.giveOutWasteId), 'materialId'].iloc[0]
+        material_entry=raw_materials.loc[raw_materials['id']==int(material_id),'material'].iloc[0]
+        industry_supply_df = industry_supply_df.append({'entity' : i.giveOutWasteId, 'material': material_entry, 'quantity': i.quantity, 'reserve_price': i.reservePrice, 'delivery_fee': i.deliveryFee}, ignore_index = True)
+        if material_entry not in material_list:
+            material_list.append(material_entry)
+    
+    material_df=pd.DataFrame({'material': material_list})
+    entity_df=pd.DataFrame({'entity': entity_list})
+    industry_df=pd.DataFrame({'entity': entity_list, 'company': company_list, 'postal_code': postal_list, 'lat': lat_list, 'lon': long_list, 'BS': BS_list})
+    distance_df= pd.DataFrame(index=range(len(entity_list)),columns=['entity']+entity_list)
+    distance_df=distance_df.assign(entity=entity_list)
+    distance_df=distance_df.set_index('entity')
+    feasible_df = distance_df.copy()
+    for i in industry_df.itertuples():
+        for j in industry_df.itertuples():
+            if i.BS != j.BS:
+                if (i.BS=='B' and (industry_demand_df.loc[industry_demand_df['entity'] == int(i.entity), 'material'].iloc[0]==industry_supply_df.loc[industry_supply_df['entity'] == int(j.entity), 'material'].iloc[0])):
+                    if feasibility_check(i.entity,j.entity)==1:
+                        feasible_df.loc[i.entity,j.entity]=0
+                        distance_df.loc[i.entity,j.entity]=distance(i.postal_code,j.postal_code)
+                        
+                elif (i.BS=='S' and (industry_supply_df.loc[industry_supply_df['entity'] == int(i.entity), 'material'].iloc[0]==industry_demand_df.loc[industry_demand_df['entity'] == int(j.entity), 'material'].iloc[0])):
+                    if feasibility_check(j.entity,i.entity)==1:
+                        feasible_df.loc[i.entity,j.entity]=0
+                        distance_df.loc[i.entity,j.entity]=distance(i.postal_code,j.postal_code)
+    print(feasible_df)
+    # Create a Pandas Excel writer using XlsxWriter as the engine.
+    report_path = 'dss/PyomoSolver/'
+    if not os.path.exists(report_path):
+        os.makedirs(report_path)
+    writer = pd.ExcelWriter(os.path.join(report_path + 'case_data.xlsx'), engine='xlsxwriter')
+
+    # Write each dataframe to a different worksheet.
+    material_df.to_excel(writer, sheet_name='material',index=False)
+    entity_df.to_excel(writer, sheet_name='entity',index=False)
+    industry_df.to_excel(writer, sheet_name='industry',index=False)
+    industry_supply_df.to_excel(writer, sheet_name='industry_supply',index=False)
+    industry_demand_df.to_excel(writer, sheet_name='industry_demand',index=False)
+    feasible_df.to_excel(writer, sheet_name='feasible',index=True)
+    distance_df.to_excel(writer, sheet_name='distance',index=True)
+    
+
+    # Close the Pandas Excel writer and output the Excel file.
+    writer.save()
+
+    solution=PyomoModel.runModel()
+    print(solution)
+    
+
+    return redirect(url_for('dispatch_matching'))
+    
 
 @app.route("/dispatch_matching/questions_resource", methods=['GET','POST'])
 def dispatch_matching_questions_resource():
     form = dispatchMatchingQuestionsForm()
-    prevEntries = [(waste.id, waste.questionCode + ': ' + waste.description + ' - ' + waste.date.strftime("%d/%m/%Y")) for waste in Takeinresource.query.filter_by(userId=int(current_user.id)).all()]
+    prevEntries = [(waste.id, waste.TechnologyName + ': ' + waste.description + ' - ' + waste.date[:10]) for waste in TechnologyDB.query.filter_by(userId=int(current_user.id)).all()]
     prevEntries.insert(0,(None,None))
     form.wasteName.choices = prevEntries
 

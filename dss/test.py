@@ -8,7 +8,7 @@ locDemand = '238858'
 
 
 # print(sorted([locSupply,locDemand]))
-loc1, loc2 = [locSupply,locDemand].sort()
+#loc1, loc2 = [locSupply,locDemand].sort()
 
 
 onemap = OneMap(email,passw)
@@ -20,3 +20,4 @@ loc2_latlong = ','.join(loc2.lat_long)
 
 route = onemap.route(loc1_latlong, loc2_latlong, 'drive')
 print(route.route_summary)
+print(route.route_summary['total_distance'])

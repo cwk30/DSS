@@ -18,7 +18,7 @@ def runModel():
     originalPath = os.getcwd()
     os.chdir('dss/PyomoSolver')
 
-    base_data = DataView.from_excel('demo_case_data.xlsx', ['entity', 'material'])
+    base_data = DataView.from_excel('case_data.xlsx', ['entity', 'material'])
     os.chdir(originalPath)
     
     agent = base_data['entity']
