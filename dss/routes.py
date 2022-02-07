@@ -1338,22 +1338,24 @@ def dispatch_matching_match():
     material_df=pd.DataFrame({'material': material_list})
     entity_df=pd.DataFrame({'entity': entity_list})
     industry_df=pd.DataFrame({'entity': entity_list, 'company': company_list, 'postal_code': postal_list, 'lat': lat_list, 'lon': long_list, 'BS': BS_list})
-    distance_df= pd.DataFrame(index=range(len(entity_list)),columns=['entity']+entity_list)
+    distance_df= pd.DataFrame(index=range(len(entity_list)),columns=['entity']+list(range(len(entity_list))))
     distance_df=distance_df.assign(entity=entity_list)
     distance_df=distance_df.set_index('entity')
     feasible_df = distance_df.copy()
     for i in industry_df.itertuples():
+        counter=0
         for j in industry_df.itertuples():
             if i.BS != j.BS:
-                if (i.BS=='B' and (industry_demand_df.loc[industry_demand_df['entity'] == int(i.entity), 'material'].iloc[0]==industry_supply_df.loc[industry_supply_df['entity'] == int(j.entity), 'material'].iloc[0])):
-                    if feasibility_check(i.entity,j.entity)==1:
-                        feasible_df.loc[i.entity,j.entity]=0
-                        distance_df.loc[i.entity,j.entity]=distance(i.postal_code,j.postal_code)
+                # if (i.BS=='B' and (industry_demand_df.loc[industry_demand_df['entity'] == int(i.entity), 'material'].iloc[0]==industry_supply_df.loc[industry_supply_df['entity'] == int(j.entity), 'material'].iloc[0])):
+                #     if feasibility_check(i.entity,j.entity)==1:
+                #         feasible_df.loc[i.entity,j.entity]=0
+                #         distance_df.loc[i.entity,j.entity]=distance(i.postal_code,j.postal_code)/1000.0
                         
-                elif (i.BS=='S' and (industry_supply_df.loc[industry_supply_df['entity'] == int(i.entity), 'material'].iloc[0]==industry_demand_df.loc[industry_demand_df['entity'] == int(j.entity), 'material'].iloc[0])):
+                if (i.BS=='S' and (industry_supply_df.loc[industry_supply_df['entity'] == int(i.entity), 'material'].iloc[0]==industry_demand_df.loc[industry_demand_df['entity'] == int(j.entity), 'material'].iloc[0])):
                     if feasibility_check(j.entity,i.entity)==1:
-                        feasible_df.loc[i.entity,j.entity]=0
-                        distance_df.loc[i.entity,j.entity]=distance(i.postal_code,j.postal_code)
+                        feasible_df.loc[i.entity,counter]=0
+                        distance_df.loc[i.entity,counter]=distance(i.postal_code,j.postal_code)/1000.0
+            counter+=1
     print(feasible_df)
     # Create a Pandas Excel writer using XlsxWriter as the engine.
     report_path = 'dss/PyomoSolver/'
@@ -1375,7 +1377,15 @@ def dispatch_matching_match():
     writer.save()
 
     solution=PyomoModel.runModel()
-    print(solution)
+    writer = pd.ExcelWriter(os.path.join(report_path + 'solution.xlsx'), engine='xlsxwriter')
+    solution.to_excel(writer, sheet_name='soln',index=True)
+    writer.save()
+
+    solution.reset_index(inplace=True)
+    for i in solution.itertuples():
+        result = Dispatchmatchingresults(supplyId=int(i.producer_id)-len(raw_demand)+1,demandId=int(i.consumer_id)+1,materialId=i.material_id,price=i.price,quantity=i.quantity,date=str(datetime.now())[0:11])
+        db.session.add(result)
+        db.session.commit()
     
 
     return redirect(url_for('dispatch_matching'))
@@ -1407,7 +1417,8 @@ def dispatch_matching_results():
     form = dispatchMatchingResultsForm()
 
     #user change to current user id in the future
-    userId = 113
+    # userId = 113
+    userId = current_user.id
 
 
     form.date.choices = [(Dispatchmatchingresult.date, Dispatchmatchingresult.date) for Dispatchmatchingresult in Dispatchmatchingresults.query.group_by(Dispatchmatchingresults.date)]
@@ -1421,6 +1432,8 @@ def dispatch_matching_results():
         buy = []
         demandSurplus = None
         #get matched buyers
+        print(userId)
+        print(form.buySell.data)
         if form.buySell.data != '2':
             supplyIds = Dispatchmatchingsupply.query.filter_by(userId=userId).all()
             

@@ -270,7 +270,7 @@ class Dispatchmatchingresults(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     supplyId = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     demandId = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    materialId = db.Column(db.Integer, db.ForeignKey('Materials.id'), nullable=False)
+    materialId = db.Column(db.Integer, nullable=False)
     price = db.Column(db.Float(500))
     quantity = db.Column(db.Float(500))
     date = db.Column(db.String(500))      
