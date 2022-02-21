@@ -22,7 +22,7 @@ from dss.forms import (RegistrationForm,LoginForm, UpdateAccountForm, PostForm,R
     dispatchMatchingForm, dispatchMatchingQuestionsForm, dispatchMatchingResultsForm,
     LCCForm, RSPForm) 
 from dss.models import (User, Post, RSP, Materials, Questions, Giveoutwaste, Processwaste, Technology, Takeinresource, Supplier, Technologybreakdown, Technologycode, 
-    Dispatchmatchingresults, Dispatchmatchingsupply, Dispatchmatchingdemand, Sample, TechnologyDB)
+    Dispatchmatchingresults, Dispatchmatchingsupply, Dispatchmatchingdemand, Sample, TechnologyDB, Dispatchmatchinginvestment)
 from flask_login import login_user, current_user, logout_user, login_required
 from flask_mail import Message
 from sqlalchemy import or_, and_
@@ -1244,6 +1244,13 @@ def dispatch_matching_questions_waste():
 
 @app.route("/dispatch_matching/match", methods=['GET','POST'])
 def dispatch_matching_match():
+    rset = Dispatchmatchinginvestment.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    raw_investment = pd.DataFrame(result)
     rset = Dispatchmatchingdemand.query.all()
     result = defaultdict(list)
     for obj in rset:
@@ -1294,8 +1301,16 @@ def dispatch_matching_match():
     long_list=[]
     lat_list=[]
     BS_list=[]
+    invest_entity_list=[]
+    invest_material_list=[]
+    invest_quantity_list=[]
+    invest_rp_list=[]
+    invest_cost_list=[]
+
     industry_supply_df=pd.DataFrame(columns=['entity','material','quantity','reserve_price','delivery_fee'])
     industry_demand_df=pd.DataFrame(columns=['entity','material','quantity','reserve_price'])
+    investment_demand_df=pd.DataFrame(columns=['entity','material','quantity','reserve_price'])
+    investment_cost_df=pd.DataFrame(columns=['entity','invest_cost'])
     for i in raw_demand.itertuples():
         company_list.append(raw_user.loc[raw_user['id'] == int(i.userId), 'username'].iloc[0])
         entity_list.append(i.takeInResourceId)
@@ -1334,12 +1349,19 @@ def dispatch_matching_match():
         industry_supply_df = industry_supply_df.append({'entity' : i.giveOutWasteId, 'material': material_entry, 'quantity': i.quantity, 'reserve_price': i.reservePrice, 'delivery_fee': i.deliveryFee}, ignore_index = True)
         if material_entry not in material_list:
             material_list.append(material_entry)
-    
+    for i in raw_investment.itertuples():
+        invest_entity_list.append('E'+str(i.id))
+        invest_material_list.append(i.material)
+        invest_quantity_list.append(i.capacity)
+        invest_rp_list.append(i.reservePrice)
+        invest_cost_list.append(i.cost)
+    investment_demand_df=pd.DataFrame({'entity':invest_entity_list,'material':invest_material_list,'quantity':invest_quantity_list,'reserve_price':invest_rp_list})
+    investment_cost_df=pd.DataFrame({'entity':invest_entity_list,'invest_cost':invest_cost_list})
     material_df=pd.DataFrame({'material': material_list})
-    entity_df=pd.DataFrame({'entity': entity_list})
+    entity_df=pd.DataFrame({'entity': entity_list+invest_entity_list})
     industry_df=pd.DataFrame({'entity': entity_list, 'company': company_list, 'postal_code': postal_list, 'lat': lat_list, 'lon': long_list, 'BS': BS_list})
-    distance_df= pd.DataFrame(index=range(len(entity_list)),columns=['entity']+list(range(len(entity_list))))
-    distance_df=distance_df.assign(entity=entity_list)
+    distance_df= pd.DataFrame(index=range(len(entity_list)+len(invest_entity_list)),columns=['entity']+list(range(len(entity_list)+len(invest_entity_list))))
+    distance_df=distance_df.assign(entity=entity_list+invest_entity_list)
     distance_df=distance_df.set_index('entity')
     feasible_df = distance_df.copy()
     for i in industry_df.itertuples():
@@ -1356,6 +1378,12 @@ def dispatch_matching_match():
                         feasible_df.loc[i.entity,counter]=0
                         distance_df.loc[i.entity,counter]=distance(i.postal_code,j.postal_code)/1000.0
             counter+=1
+        kcounter=0
+        for k in investment_demand_df.itertuples():
+            if (i.BS=='S' and (industry_supply_df.loc[industry_supply_df['entity'] == int(i.entity), 'material'].iloc[0]==k.material)):
+                feasible_df.loc[i.entity,kcounter+len(industry_df)]=0
+                distance_df.loc[i.entity,kcounter+len(industry_df)]=0
+            kcounter+=1
     print(feasible_df)
     # Create a Pandas Excel writer using XlsxWriter as the engine.
     report_path = 'dss/PyomoSolver/'
@@ -1369,6 +1397,8 @@ def dispatch_matching_match():
     industry_df.to_excel(writer, sheet_name='industry',index=False)
     industry_supply_df.to_excel(writer, sheet_name='industry_supply',index=False)
     industry_demand_df.to_excel(writer, sheet_name='industry_demand',index=False)
+    investment_demand_df.to_excel(writer, sheet_name='investment_demand',index=False)
+    investment_cost_df.to_excel(writer, sheet_name='invest_cost',index=False)
     feasible_df.to_excel(writer, sheet_name='feasible',index=True)
     distance_df.to_excel(writer, sheet_name='distance',index=True)
     
@@ -1376,9 +1406,10 @@ def dispatch_matching_match():
     # Close the Pandas Excel writer and output the Excel file.
     writer.save()
 
-    solution=PyomoModel.runModel()
+    solution, investmentsolution=PyomoModel.runModel()
     writer = pd.ExcelWriter(os.path.join(report_path + 'solution.xlsx'), engine='xlsxwriter')
     solution.to_excel(writer, sheet_name='soln',index=True)
+    investmentsolution.to_excel(writer, sheet_name='investmentsoln',index=True)
     writer.save()
 
     solution.reset_index(inplace=True)
@@ -1507,7 +1538,250 @@ def dispatch_matching_results_savings(date, buySell):
 
     return render_template('dispatch_matching_results_savings.html', title="Dispatch Matching Cost Breakdown", sellBreakdown=sellBreakdown, supplierSurplus=supplierSurplus, buyBreakdown=buyBreakdown, demandSurplus=demandSurplus)
 
+@app.route("/capacity_planning", methods=['GET','POST'])
+def capacity_planning():
+    if current_user.is_authenticated:
+        pass
+    else: 
+        flash(f'Please log in first','danger')
+        return redirect(url_for("login"))
+    rset = Dispatchmatchinginvestment.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    df = pd.DataFrame(result)
+    counter=0
+    result=[]
+    for i in df.itertuples():
+        result.append([i.id,i.name,i.cost,i.material,i.reservePrice,i.capacity])
 
+    
+    return render_template('capacity_planning.html', title="Capacity Planning", result=result)
+
+@app.route("/capacity_planning/budget", methods=['GET','POST'])
+def allocate_budget():
+    form = []
+    if request.method == 'POST':
+        budget=request.form['budget']
+        print(budget)
+        flash('Your response has been recorded!','success')
+        return redirect(url_for('allocate',budget=budget))
+    else:
+        flash(f'Please check your inputs','danger')
+    return render_template('capacity_planning_budget.html', title="Capacity Planning - Budget", form=form)
+
+@app.route("/capacity_planning/allocate/<budget>", methods=['GET','POST'])
+def allocate(budget):
+    rset = Dispatchmatchinginvestment.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    raw_investment = pd.DataFrame(result)
+    rset = Dispatchmatchingdemand.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    raw_demand = pd.DataFrame(result)
+    rset = Dispatchmatchingsupply.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    raw_supply = pd.DataFrame(result)
+    rset = Materials.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    raw_materials = pd.DataFrame(result)
+    rset = User.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    raw_user = pd.DataFrame(result)
+    rset = Giveoutwaste.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    raw_waste = pd.DataFrame(result)
+    rset = TechnologyDB.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    raw_technology = pd.DataFrame(result)
+    
+    material_list=[]
+    entity_list=[]
+    company_list=[]
+    postal_list=[]
+    long_list=[]
+    lat_list=[]
+    BS_list=[]
+    invest_entity_list=[]
+    invest_material_list=[]
+    invest_quantity_list=[]
+    invest_rp_list=[]
+    invest_cost_list=[]
+
+    industry_supply_df=pd.DataFrame(columns=['entity','material','quantity','reserve_price','delivery_fee'])
+    industry_demand_df=pd.DataFrame(columns=['entity','material','quantity','reserve_price'])
+    investment_demand_df=pd.DataFrame(columns=['entity','material','quantity','reserve_price'])
+    investment_cost_df=pd.DataFrame(columns=['entity','invest_cost'])
+    for i in raw_demand.itertuples():
+        company_list.append(raw_user.loc[raw_user['id'] == int(i.userId), 'username'].iloc[0])
+        entity_list.append(i.takeInResourceId)
+        postal_list.append(i.postalCode)
+        BS_list.append('B')
+        response = r.get('http://developers.onemap.sg/commonapi/search?searchVal='+i.postalCode+'&returnGeom=Y&getAddrDetails=Y&pageNum={1}')
+        response_dict = json.loads(response.text)
+        if response_dict['found']!=0:
+            results = response_dict['results'][0]
+            long_list.append(results['LONGITUDE'])
+            lat_list.append(results['LATITUDE'])
+        else:
+            long_list.append(None)
+            lat_list.append(None)
+        material_id=raw_technology.loc[raw_technology['id'] == int(i.takeInResourceId), 'materialId'].iloc[0]
+        material_entry=raw_materials.loc[raw_materials['id']== int(material_id),'material'].iloc[0]
+        industry_demand_df = industry_demand_df.append({'entity' : i.takeInResourceId, 'material': material_entry, 'quantity': i.quantity, 'reserve_price': i.reservePrice}, ignore_index = True)
+        if material_entry not in material_list:
+            material_list.append(material_entry)
+    for i in raw_supply.itertuples():
+        company_list.append(raw_user.loc[raw_user['id'] == int(i.userId), 'username'].iloc[0])
+        entity_list.append(i.giveOutWasteId)
+        postal_list.append(i.postalCode)
+        BS_list.append('S')
+        response = r.get('http://developers.onemap.sg/commonapi/search?searchVal='+i.postalCode+'&returnGeom=Y&getAddrDetails=Y&pageNum={1}')
+        response_dict = json.loads(response.text)
+        if response_dict['found']!=0:
+            results = response_dict['results'][0]
+            long_list.append(results['LONGITUDE'])
+            lat_list.append(results['LATITUDE'])
+        else:
+            long_list.append(None)
+            lat_list.append(None)
+        material_id=raw_waste.loc[raw_waste['id'] == int(i.giveOutWasteId), 'materialId'].iloc[0]
+        material_entry=raw_materials.loc[raw_materials['id']==int(material_id),'material'].iloc[0]
+        industry_supply_df = industry_supply_df.append({'entity' : i.giveOutWasteId, 'material': material_entry, 'quantity': i.quantity, 'reserve_price': i.reservePrice, 'delivery_fee': i.deliveryFee}, ignore_index = True)
+        if material_entry not in material_list:
+            material_list.append(material_entry)
+    for i in raw_investment.itertuples():
+        invest_entity_list.append('E'+str(i.id))
+        invest_material_list.append(i.material)
+        invest_quantity_list.append(i.capacity)
+        invest_rp_list.append(i.reservePrice)
+        invest_cost_list.append(i.cost)
+    investment_demand_df=pd.DataFrame({'entity':invest_entity_list,'material':invest_material_list,'quantity':invest_quantity_list,'reserve_price':invest_rp_list})
+    investment_cost_df=pd.DataFrame({'entity':invest_entity_list,'invest_cost':invest_cost_list})
+    material_df=pd.DataFrame({'material': material_list})
+    entity_df=pd.DataFrame({'entity': entity_list+invest_entity_list})
+    industry_df=pd.DataFrame({'entity': entity_list, 'company': company_list, 'postal_code': postal_list, 'lat': lat_list, 'lon': long_list, 'BS': BS_list})
+    distance_df= pd.DataFrame(index=range(len(entity_list)+len(invest_entity_list)),columns=['entity']+list(range(len(entity_list)+len(invest_entity_list))))
+    distance_df=distance_df.assign(entity=entity_list+invest_entity_list)
+    distance_df=distance_df.set_index('entity')
+    feasible_df = distance_df.copy()
+    for i in industry_df.itertuples():
+        counter=0
+        for j in industry_df.itertuples():
+            if i.BS != j.BS:
+                # if (i.BS=='B' and (industry_demand_df.loc[industry_demand_df['entity'] == int(i.entity), 'material'].iloc[0]==industry_supply_df.loc[industry_supply_df['entity'] == int(j.entity), 'material'].iloc[0])):
+                #     if feasibility_check(i.entity,j.entity)==1:
+                #         feasible_df.loc[i.entity,j.entity]=0
+                #         distance_df.loc[i.entity,j.entity]=distance(i.postal_code,j.postal_code)/1000.0
+                        
+                if (i.BS=='S' and (industry_supply_df.loc[industry_supply_df['entity'] == int(i.entity), 'material'].iloc[0]==industry_demand_df.loc[industry_demand_df['entity'] == int(j.entity), 'material'].iloc[0])):
+                    if feasibility_check(j.entity,i.entity)==1:
+                        feasible_df.loc[i.entity,counter]=0
+                        distance_df.loc[i.entity,counter]=distance(i.postal_code,j.postal_code)/1000.0
+            counter+=1
+        kcounter=0
+        for k in investment_demand_df.itertuples():
+            if (i.BS=='S' and (industry_supply_df.loc[industry_supply_df['entity'] == int(i.entity), 'material'].iloc[0]==k.material)):
+                feasible_df.loc[i.entity,kcounter+len(industry_df)]=0
+                distance_df.loc[i.entity,kcounter+len(industry_df)]=0
+            kcounter+=1
+    print(feasible_df)
+    # Create a Pandas Excel writer using XlsxWriter as the engine.
+    report_path = 'dss/PyomoSolver/'
+    if not os.path.exists(report_path):
+        os.makedirs(report_path)
+    writer = pd.ExcelWriter(os.path.join(report_path + 'case_data.xlsx'), engine='xlsxwriter')
+
+    # Write each dataframe to a different worksheet.
+    material_df.to_excel(writer, sheet_name='material',index=False)
+    entity_df.to_excel(writer, sheet_name='entity',index=False)
+    industry_df.to_excel(writer, sheet_name='industry',index=False)
+    industry_supply_df.to_excel(writer, sheet_name='industry_supply',index=False)
+    industry_demand_df.to_excel(writer, sheet_name='industry_demand',index=False)
+    investment_demand_df.to_excel(writer, sheet_name='investment_demand',index=False)
+    investment_cost_df.to_excel(writer, sheet_name='invest_cost',index=False)
+    feasible_df.to_excel(writer, sheet_name='feasible',index=True)
+    distance_df.to_excel(writer, sheet_name='distance',index=True)
+    
+
+    # Close the Pandas Excel writer and output the Excel file.
+    writer.save()
+
+    solution, investmentsolution=PyomoModel.runModel(budget)
+    writer = pd.ExcelWriter(os.path.join(report_path + 'solution.xlsx'), engine='xlsxwriter')
+    solution.to_excel(writer, sheet_name='soln',index=True)
+    investmentsolution.to_excel(writer, sheet_name='investmentsoln',index=True)
+    writer.save()
+    result=[]
+    count=0
+    investmentsolution=investmentsolution.reset_index()
+    for i in raw_investment.itertuples():
+        result.append([i.id,i.name,i.cost,i.material,i.reservePrice,i.capacity,investmentsolution.at[count,'quantity']])
+        count+=1
+    return render_template('capacity_planning_result.html', title="Capacity Planning - Alloction Results",result=result,budget=budget)
+
+    
+
+        
+    
+
+
+@app.route("/capacity_planning/adding_tech", methods=['GET','POST'])
+def adding_tech():
+    form = []
+    rset = Materials.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    df = pd.DataFrame(result)
+    
+    materiallist=[]
+    for i in df.itertuples():
+        if i.material not in materiallist:
+            materiallist.append(i.material)
+    materiallistlen=len(materiallist)
+
+    if request.method == 'POST':
+        print(request.form)
+        invest = Dispatchmatchinginvestment(name=request.form['name'],cost=request.form['cost'],material=materiallist[int(request.form['material'])],reservePrice=request.form['rp'],capacity=request.form['cap'])
+        db.session.add(invest)
+        db.session.commit()
+        flash('Your response has been recorded!','success')
+        return redirect(url_for('capacity_planning'))
+    else:
+        flash(f'Please check your inputs','danger')
+    return render_template('adding_tech.html', title="Capacity Planning - Adding New Technology",materiallist=materiallist,materiallistlen=materiallistlen,form=form)
 
 
 

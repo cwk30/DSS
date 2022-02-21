@@ -104,6 +104,7 @@ class RSPForm(FlaskForm):
     subcat = SelectField('Subcategory', choices=[])
     submit = SubmitField('Next')
 
+
 class BuyerForm(FlaskForm):
     submit = SubmitField('Next')
 

@@ -366,6 +366,14 @@ class Dispatchmatchingresults(db.Model):
         waste = Giveoutwaste.query.filter_by(id=supply.giveOutWasteId).first()
         return waste.description
 
+class Dispatchmatchinginvestment(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    name = db.Column(db.String)
+    material = db.Column(db.String(500))
+    reservePrice = db.Column(db.String(500))
+    cost = db.Column(db.String(500))
+    capacity = db.Column(db.String(500))
+
 class Dispatchmatchingsupply(db.Model):
     id = db.Column(db.Integer, primary_key = True)
     userId = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)

@@ -1,0 +1,73 @@
+{% extends "newlayout.html" %}
+{% block content %}
+        <div class="page-wrapper">
+            <!-- ============================================================== -->
+            <!-- Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <div class="page-breadcrumb bg-white">
+                <div class="row align-items-center">
+                    <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+                        <h4 class="page-title">Capacity Planning</h4>
+                    </div>
+                    <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
+                        <div class="d-md-flex">
+
+                        </div>
+                    </div>
+                </div>
+                <!-- /.col-lg-12 -->
+            </div>
+            <!-- ============================================================== -->
+            <!-- End Bread crumb and right sidebar toggle -->
+            <!-- ============================================================== -->
+            <!-- ============================================================== -->
+            <!-- Container fluid  -->
+            <!-- ============================================================== -->
+            <div class="container-fluid">
+                <!-- ============================================================== -->
+                <!-- Start Page Content -->
+                <!-- ============================================================== -->
+                
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="white-box">
+                            
+                            
+                            <form class="form-horizontal form-material" method='POST' enctype="multipart/form-data">
+                            
+                                {{form.csrf_token}} 
+                                <div class="text-center p-20 upgrade-btn">
+
+                                    <div class="form-group mb-4">
+                                        <label class="col-md-12 p-0">Budget</label>
+                                        <div class="col-md-12 border-bottom p-0">
+                                            
+                                          $<input
+                                            type="text"
+                                            placeholder="1000000"
+                                            class="form-control p-0 border-0"
+                                            id="budget" name="budget"
+                                          />
+                                        </div>
+                                      </div>
+                                    
+                                    <div class="col-sm-12">
+                                        <button class="btn btn-success">Submit</button>
+                                    </div>
+                                </div>
+                            
+                        </div>
+                    </div>
+                </div>
+                <!-- ============================================================== -->
+                <!-- End PAge Content -->
+                <!-- ============================================================== -->
+                <!-- ============================================================== -->
+                <!-- Right sidebar -->
+                <!-- ============================================================== -->
+                <!-- .right-sidebar -->
+                <!-- ============================================================== -->
+                <!-- End Right sidebar -->
+                <!-- ============================================================== -->
+            </div>
+{% endblock content %}
