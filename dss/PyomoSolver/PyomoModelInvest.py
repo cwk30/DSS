@@ -14,15 +14,15 @@ from .model import BaseModel
 from .data import DataView
 
 
-def runModel():
+def runModel(budget):
     originalPath = os.getcwd()
     os.chdir('dss/PyomoSolver')
     #os.chdir('PyomoSolver')
     
 
     base_data = DataView.from_excel('case_data.xlsx', ['entity', 'material'])
-
-
+    os.chdir(originalPath)
+    
     agent = base_data['entity']
     agent = agent.rename(columns={'entity': 'name'})
 
@@ -34,6 +34,13 @@ def runModel():
 
     demand = base_data['industry_demand']
     demand.index.names = ['agent_id', 'material_id']
+    invest_demand = base_data['investment_demand']
+    invest_demand.index.names = ['agent_id', 'material_id']
+    demand = demand.append(invest_demand)
+
+    invest_cost = base_data['invest_cost']
+    invest_cost.index.names = ['agent_id']
+
 
     distance = base_data['distance']
     distance = distance.reset_index().melt(id_vars='entity')
@@ -62,48 +69,70 @@ def runModel():
     model = ConcreteModel()
     model.dual = Suffix(direction=Suffix.IMPORT)
 
+    # define parameters
+    r_p = supply.reserve_price
+    r_c = demand.reserve_price
+    S_bar = supply.quantity
+    D_bar = demand.quantity
+    mu = distance.distance
+    tau = supply.delivery_fee
+    investment = invest_cost.invest_cost
+
     # declare decision variables
     model.supply = Var(E,domain=NonNegativeReals)
     model.demand = Var(E,domain=NonNegativeReals)
+    model.y = Var(invest_cost.index,domain=Integers)
 
-
-
-    # declare objective
-    r_p = supply.reserve_price
-    r_c = demand.reserve_price
-    mu = distance.distance
-    tau = supply.delivery_fee
-
-    #Objective function
-    # Objective = producer_surplus + consumer_surplus - delivery_fees
+    #Objective function (EQUATION 1)
     model.surplus = Objective(expr = 
         sum(-r_p[i,m] * model.supply[i,j,m] for i,j,m in E)                #producer surplus
         +  sum(r_c[j,m] * model.demand[i,j,m] for i,j,m in E)              #consumer surplus
-        -  sum(mu[i,j] * tau[i,m] * model.demand[i,j,m] for i,j,m in E)    #delivery fees
+        -  sum(mu[i,j] * tau[i,m] * model.supply[i,j,m] for i,j,m in E)    #delivery fees
         ,sense = maximize)
 
-
-    # declare constraints
-    S_bar = supply.quantity
-    D_bar = demand.quantity
-
     # Constraints
-
-    IM = {(i,m) for i,_,m in E if (i,m) in supply.index}
     model.supply_capacity = ConstraintList()
+    model.demand_capacity = ConstraintList()
+    model.demand_limit = ConstraintList()
+    model.investdemand_limit = ConstraintList()
+    model.investment_cost = ConstraintList()   
+
+    # Supply capacity constraint (EQUATION 2)
+    IM = {(i,m) for i,_,m in E if (i,m) in supply.index}
     for i,m in IM:
         E_im = edges.loc[idx[i,:,m], :].index
         x_im = sum( model.supply[i,j,m] for i,j,m in E_im) <= S_bar[i,m]
         model.supply_capacity.add(x_im)
 
-    JM = {(j,m) for _,j,m in edges.index if (j,m) in demand.index}
-    model.demand_capacity = ConstraintList()
+    # Demand capacity constraint (EQUATION 3a)
+    JM = {(j,m) for _,j,m in edges.index if (j,m) not in invest_demand.index}
     for j,m in JM:
         E_jm = edges.loc[idx[:,j,m], :].index
         x_jm = sum(model.demand[i,j,m] for i,j,m in E_jm) <= D_bar[j,m]
         model.demand_capacity.add(x_jm)
 
+    # Demand capacity constraint (EQUATION 3b)
+    JM = {(j,m) for _,j,m in edges.index if (j,m) in invest_demand.index}
+    for j,m in JM:
+        E_jm = edges.loc[idx[:,j,m], :].index
+        x_jm = sum(model.demand[i,j,m] for i,j,m in E_jm) <= D_bar[j,m] * model.y[j]
+        model.demand_capacity.add(x_jm)
 
+        #x_jm = sum(model.demand[i,j,m] for i,j,m in E_jm) >= D_bar[j,m] * model.y[j] * 0.8
+        #model.demand_limit.add(x_jm)
+
+    #M = {m for _,_,m in edges.index}
+    #for m in M:
+    #    E_m = edges.loc[idx[:,:,m], :].index
+    #    x_m = sum(model.demand[i,j,m] for i,j,m in E_m) <= total_industry_supply[m] - total_industry_demand[m]
+    #    model.investdemand_limit.add(x_m)
+
+    # Investment budget (EQUATION 4)
+    cons = sum(investment[j] * model.y[j] for j in invest_cost.index)  <= int(budget)   #budget
+    model.investment_cost.add(cons)
+
+
+    # Market equilibrium constraint (EQUATION 5)
     model.market_equilibrium = ConstraintList()
     for i,j,m in edges.index:
         x_ijm = model.demand[i,j,m] - model.supply[i,j,m] == 0
@@ -113,13 +142,11 @@ def runModel():
 
     SolverFactory('cbc').solve(model).write()
 
-
-
     demand_quantity = []
     for i,j,m in E:
         demand_quantity.append(model.demand[i,j,m]())
 
-    # get market equilibrium
+    # get market equilibrium price
     market_equilibrium_val = []
     for index in model.market_equilibrium:
         market_equilibrium_val.append(-model.dual[model.market_equilibrium[index]])
@@ -131,5 +158,13 @@ def runModel():
         columns = ['price','quantity'],
     )
     soln = soln[soln!=0].dropna()
+        
+    print(soln)
+    investment_decision = []
+    for j in invest_cost.index:
+        investment_decision.append((j,model.y[j]()))
+    investment_decision_df = pd.DataFrame(investment_decision, columns = ['agent_id','quantity']).set_index('agent_id')
     
-    return soln
+    print(investment_decision_df)
+    
+    return soln, investment_decision_df

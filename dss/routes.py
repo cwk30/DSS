@@ -33,6 +33,7 @@ from dss.wasteIdGenerator import Waste
 from dss.dispatchMatchingSavingsBreakdown import CostSavings
 
 from .PyomoSolver import PyomoModel
+from .PyomoSolver import PyomoModelInvest
 
 from .LCCTest import TechSpecifications
 #bananas test
@@ -48,16 +49,18 @@ def distance(start,end):
     # print(sorted([locSupply,locDemand]))
     #loc1, loc2 = [locSupply,locDemand].sort()
 
+    try:
+        onemap = OneMap(email,passw)
+        loc1 = onemap.search(locSupply).results[0]
+        loc2 = onemap.search(locDemand).results[0]
 
-    onemap = OneMap(email,passw)
-    loc1 = onemap.search(locSupply).results[0]
-    loc2 = onemap.search(locDemand).results[0]
-
-    loc1_latlong = ','.join(loc1.lat_long)
-    loc2_latlong = ','.join(loc2.lat_long)
-
-    route = onemap.route(loc1_latlong, loc2_latlong, 'drive')
-    return route.route_summary['total_distance']
+        loc1_latlong = ','.join(loc1.lat_long)
+        loc2_latlong = ','.join(loc2.lat_long)
+    
+        route = onemap.route(loc1_latlong, loc2_latlong, 'drive')
+        return route.route_summary['total_distance']
+    except:
+        return 0
 
 def feasibility_check(techid,wasteid):
     rset = Giveoutwaste.query.all()
@@ -91,91 +94,93 @@ def feasibility_check(techid,wasteid):
     RSP_df.set_index('id',inplace=True)
     tech_material=(materials_df.loc[materials_df['id'] == int(tech_material_id), 'material'].iloc[0])
     waste_material=(materials_df.loc[materials_df['id'] == int(waste_material_id), 'material'].iloc[0])
-    # print(tech_material)
-    # print(waste_material)
-    if tech_material!=waste_material:
-        
+    print(tech_material[0:len(waste_material)])
+    print(waste_material)
+    if tech_material[0:len(waste_material)]!=waste_material:
         return 0
     else:
-        
-        homogeneity=waste_questioncode[1]
-        wCHNType=waste_questioncode[2]
-        wCRatio=waste_questioncode[3:5]
-        wHRatio=waste_questioncode[5:7]
-        wNRatio=waste_questioncode[7:9]
-        wproteinType=waste_questioncode[9]
-        wproteinRatio=waste_questioncode[10:12]
-        wcellulosic=waste_questioncode[12]
-        wshellAndBones=waste_questioncode[13:15]
-        wmoistureType=waste_questioncode[15]
-        wmoistureContent=waste_questioncode[16:18]
-        wsaltType=waste_questioncode[18]
-        wsaltContent=waste_questioncode[19:21]
-        wpHType=waste_questioncode[21]
-        wphValue=waste_questioncode[22:24]
-        wparticleSize=waste_questioncode[24]
+        if tech_material=='Food Waste':
+            homogeneity=waste_questioncode[1]
+            wCHNType=waste_questioncode[2]
+            wCRatio=waste_questioncode[3:5]
+            wHRatio=waste_questioncode[5:7]
+            wNRatio=waste_questioncode[7:9]
+            wproteinType=waste_questioncode[9]
+            wproteinRatio=waste_questioncode[10:12]
+            wcellulosic=waste_questioncode[12]
+            wshellAndBones=waste_questioncode[13:15]
+            wmoistureType=waste_questioncode[15]
+            wmoistureContent=waste_questioncode[16:18]
+            wsaltType=waste_questioncode[18]
+            wsaltContent=waste_questioncode[19:21]
+            wpHType=waste_questioncode[21]
+            wphValue=waste_questioncode[22:24]
+            wparticleSize=waste_questioncode[24]
 
-        attrib=['materialId',
-                'CRatiomin',
-                'CRatiomax',
-                'NRatiomin',
-                'NRatiomax',
-                'Moisturemin',
-                'Moisturemax',
-                'pHmin',
-                'pHmax',
-                'cellulosicmin',
-                'cellulosicmax',
-                'particleSizemin',
-                'particleSizemax',
-                'unacceptableshells',
-                'unacceptableshells',
-                'unacceptableshellspercent',
-                'unacceptablebones',
-                'unacceptablebonespercent',
-                'unacceptablebamboo',
-                'unacceptablebamboopercent',
-                'unacceptablebanana',
-                'unacceptablebananapercent',
-                'unacceptableothers',
-                'unacceptableotherspercent',
-                'TechnologyName',
-                'byproductBiogas',
-                'byproductBiogasEfficiency',
-                'byproductBiogasCHFour',
-                'byproductBiogasCOTwo',
-                'ByproductChemical',
-                'ByproductChemicalEfficiency',
-                'ByproductMetal',
-                'ByproductMetalEfficiency',
-                'ByproductBiochar',
-                'ByproductBiocharEfficency',
-                'ByproductDigestate',
-                'ByproductDigestateEfficiency',
-                'ByproductOil',
-                'ByproductOilEfficiency',
-                'ByproductOthers',
-                'ByproductOthersEfficiency',
-                'TechnologyName',
-                'AdditionalInformation']
-        techID = {}
-        #print(df.loc[i,'description'])
-        #print(techID)
-        for at in attrib:
-            techID[at]=RSP_df.loc[techid,at]
-        # print('Buyer:'+str(techid))
-        # print('Seller:'+str(wasteid))
-        # print('Waste CRatio:'+wCRatio)
-        # print('Waste NRatio:'+wNRatio)
-        # print('Waste pH:'+wphValue)
-        # print('RSP pH Range '+techID['pHmin']+' '+techID['pHmax'])
-        # print('RSP CRatio'+techID['CRatiomin']+' '+techID['CRatiomax'])
-        # print('RSP NRatio'+techID['NRatiomin']+' '+techID['NRatiomax'])
-        
-        if (wCRatio=='__' or (int(wCRatio)>=int(techID['CRatiomin']) and int(wCRatio)<=int(techID['CRatiomax']))) and ((wNRatio)=='__' or (int(wNRatio)>=int(techID['NRatiomin']) and int(wNRatio)<=int(techID['NRatiomax']))) and ((wphValue)=='__' or (int(wphValue)>=int(techID['pHmin']) and int(wphValue)<=int(techID['pHmax']))):
-            return 1
+            attrib=['materialId',
+                    'CRatiomin',
+                    'CRatiomax',
+                    'NRatiomin',
+                    'NRatiomax',
+                    'Moisturemin',
+                    'Moisturemax',
+                    'pHmin',
+                    'pHmax',
+                    'cellulosicmin',
+                    'cellulosicmax',
+                    'particleSizemin',
+                    'particleSizemax',
+                    'unacceptableshells',
+                    'unacceptableshells',
+                    'unacceptableshellspercent',
+                    'unacceptablebones',
+                    'unacceptablebonespercent',
+                    'unacceptablebamboo',
+                    'unacceptablebamboopercent',
+                    'unacceptablebanana',
+                    'unacceptablebananapercent',
+                    'unacceptableothers',
+                    'unacceptableotherspercent',
+                    'TechnologyName',
+                    'byproductBiogas',
+                    'byproductBiogasEfficiency',
+                    'byproductBiogasCHFour',
+                    'byproductBiogasCOTwo',
+                    'ByproductChemical',
+                    'ByproductChemicalEfficiency',
+                    'ByproductMetal',
+                    'ByproductMetalEfficiency',
+                    'ByproductBiochar',
+                    'ByproductBiocharEfficency',
+                    'ByproductDigestate',
+                    'ByproductDigestateEfficiency',
+                    'ByproductOil',
+                    'ByproductOilEfficiency',
+                    'ByproductOthers',
+                    'ByproductOthersEfficiency',
+                    'TechnologyName',
+                    'AdditionalInformation']
+            techID = {}
+            #print(df.loc[i,'description'])
+            #print(techID)
+            for at in attrib:
+                techID[at]=RSP_df.loc[techid,at]
+            # print('Buyer:'+str(techid))
+            # print('Seller:'+str(wasteid))
+            # print('Waste CRatio:'+wCRatio)
+            # print('Waste NRatio:'+wNRatio)
+            # print('Waste pH:'+wphValue)
+            # print('RSP pH Range '+techID['pHmin']+' '+techID['pHmax'])
+            # print('RSP CRatio'+techID['CRatiomin']+' '+techID['CRatiomax'])
+            # print('RSP NRatio'+techID['NRatiomin']+' '+techID['NRatiomax'])
+            
+            if (wCRatio=='__' or (int(wCRatio)>=int(techID['CRatiomin']) and int(wCRatio)<=int(techID['CRatiomax']))) and ((wNRatio)=='__' or (int(wNRatio)>=int(techID['NRatiomin']) and int(wNRatio)<=int(techID['NRatiomax']))) and ((wphValue)=='__' or (int(wphValue)>=int(techID['pHmin']) and int(wphValue)<=int(techID['pHmax']))):
+                return 1
+            else:
+                return 0
         else:
-            return 0
+            print('pass')
+            return 1
     # except:
     #     return 0
 
@@ -645,129 +650,138 @@ def matching_questions(materialId):
                     flash(questionCode,'danger')
                     return redirect(url_for("matching_questions", materialId=materialId))
             if processWaste:
-                description = str(request.form['description'])
-                userId = int(current_user.id)
                 materialId = int(materialId)
-                CRatiomin = int(request.form['Q45_min_C'])
-                CRatiomax = int(request.form['Q45_max_C'])
-                NRatiomin = int(request.form['Q45_min_N'])
-                NRatiomax = int(request.form['Q45_max_N'])
-                if len(request.form.getlist('Q46_moisture'))==2:
-                    Moisturemin = int(request.form['Q46_min_moisture'])
-                    Moisturemax = int(request.form['Q46_max_moisture'])
-                else:
-                    Moisturemin = 0
-                    Moisturemax = 100
-                if len(request.form.getlist('Q46_pH'))==2:
-                    pHmin = int(request.form['Q46_min_ph'])
-                    pHmax = int(request.form['Q46_max_ph'])
-                else:
-                    pHmin = 1
-                    pHmax = 14
-                if len(request.form.getlist('Q46_cellulosic'))==2:
-                    cellulosicmin = int(request.form['Q46_min_Cellulosic'])
-                    cellulosicmax = int(request.form['Q46_max_Cellulosic'])
-                else:
-                    cellulosicmin = 0
-                    cellulosicmax = 100
-                if len(request.form.getlist('Q46_size'))==2:
-                    particleSizemin = int(request.form['Q46_min_Size'])
-                    particleSizemax = int(request.form['Q46_max_Size'])
-                else:
-                    particleSizemin = 0
-                    particleSizemax = 100
-                
-                
-                if len(request.form.getlist('Q47_1'))==2:
-                    unacceptableshells = 1
-                    unacceptableshellspercent = int(request.form['Q47_1_value'])
-                else:
-                    unacceptableshells = 0
-                    unacceptableshellspercent = 0
-                if len(request.form.getlist('Q47_2'))==2:
-                    unacceptablebones = 1
-                    unacceptablebonespercent = int(request.form['Q47_2_value'])
-                else:
-                    unacceptablebones = 0
-                    unacceptablebonespercent = 0
-                if len(request.form.getlist('Q47_3'))==2:
-                    unacceptablebamboo = 1
-                    unacceptablebamboopercent = int(request.form['Q47_3_value'])
-                else:
-                    unacceptablebamboo = 0
-                    unacceptablebamboopercent = 0
-                if len(request.form.getlist('Q47_4'))==2:
-                    unacceptablebanana = 1
-                    unacceptablebananapercent = int(request.form['Q47_4_value'])
-                else:
-                    unacceptablebanana = 0
-                    unacceptablebananapercent = 0
+                if materialId==14:
+                    description = str(request.form['description'])
+                    userId = int(current_user.id)
+                    materialId = int(materialId)
+                    CRatiomin = int(request.form['Q45_min_C'])
+                    CRatiomax = int(request.form['Q45_max_C'])
+                    NRatiomin = int(request.form['Q45_min_N'])
+                    NRatiomax = int(request.form['Q45_max_N'])
+                    if len(request.form.getlist('Q46_moisture'))==2:
+                        Moisturemin = int(request.form['Q46_min_moisture'])
+                        Moisturemax = int(request.form['Q46_max_moisture'])
+                    else:
+                        Moisturemin = 0
+                        Moisturemax = 100
+                    if len(request.form.getlist('Q46_pH'))==2:
+                        pHmin = int(request.form['Q46_min_ph'])
+                        pHmax = int(request.form['Q46_max_ph'])
+                    else:
+                        pHmin = 1
+                        pHmax = 14
+                    if len(request.form.getlist('Q46_cellulosic'))==2:
+                        cellulosicmin = int(request.form['Q46_min_Cellulosic'])
+                        cellulosicmax = int(request.form['Q46_max_Cellulosic'])
+                    else:
+                        cellulosicmin = 0
+                        cellulosicmax = 100
+                    if len(request.form.getlist('Q46_size'))==2:
+                        particleSizemin = int(request.form['Q46_min_Size'])
+                        particleSizemax = int(request.form['Q46_max_Size'])
+                    else:
+                        particleSizemin = 0
+                        particleSizemax = 100
+                    
+                    
+                    if len(request.form.getlist('Q47_1'))==2:
+                        unacceptableshells = 1
+                        unacceptableshellspercent = int(request.form['Q47_1_value'])
+                    else:
+                        unacceptableshells = 0
+                        unacceptableshellspercent = 0
+                    if len(request.form.getlist('Q47_2'))==2:
+                        unacceptablebones = 1
+                        unacceptablebonespercent = int(request.form['Q47_2_value'])
+                    else:
+                        unacceptablebones = 0
+                        unacceptablebonespercent = 0
+                    if len(request.form.getlist('Q47_3'))==2:
+                        unacceptablebamboo = 1
+                        unacceptablebamboopercent = int(request.form['Q47_3_value'])
+                    else:
+                        unacceptablebamboo = 0
+                        unacceptablebamboopercent = 0
+                    if len(request.form.getlist('Q47_4'))==2:
+                        unacceptablebanana = 1
+                        unacceptablebananapercent = int(request.form['Q47_4_value'])
+                    else:
+                        unacceptablebanana = 0
+                        unacceptablebananapercent = 0
+                            
+                    if len(request.form.getlist('Q47_5'))==2:
+                        unacceptableothers = 1
+                        unacceptableotherspercent = int(request.form['Q47_5_value'])
+                    else:
+                        unacceptableothers = 0
+                        unacceptableotherspercent = 0
+                    
+                    if len(request.form.getlist('Q51_Biogas'))==2:
+                        byproductBiogas = 1
+                        byproductBiogasEfficiency = int(request.form['Q51_Biogas_efficiency'])
+                        byproductBiogasCHFour = 0
+                        byproductBiogasCOTwo = 0
                         
-                if len(request.form.getlist('Q47_5'))==2:
-                    unacceptableothers = 1
-                    unacceptableotherspercent = int(request.form['Q47_5_value'])
+
+                    else:
+                        byproductBiogas = 0
+                        byproductBiogasEfficiency = 0
+                        byproductBiogasCHFour = 0
+                        byproductBiogasCOTwo = 0
+
+                    if len(request.form.getlist('Q51_Chemical'))==2:
+                        ByproductChemical = 1
+                        ByproductChemicalEfficiency = int(request.form['Q51_Chemical_efficiency'])
+                    else:
+                        ByproductChemical = 0
+                        ByproductChemicalEfficiency = 0
+
+                    if len(request.form.getlist('Q51_Metal'))==2:
+                        ByproductMetal = 1
+                        ByproductMetalEfficiency = int(request.form['Q51_Metal_efficiency'])
+                    else:
+                        ByproductMetal = 0
+                        ByproductMetalEfficiency = 0
+
+                    if len(request.form.getlist('Q51_Biochar'))==2:
+                        ByproductBiochar = 1
+                        ByproductBiocharEfficency = int(request.form['Q51_Biochar_efficiency'])
+                    else:
+                        ByproductBiochar = 0
+                        ByproductBiocharEfficency = 0
+
+                    if len(request.form.getlist('Q51_Digestate'))==2:
+                        ByproductDigestate = 1
+                        ByproductDigestateEfficiency = int(request.form['Q51_Digestate_efficiency'])
+                    else:
+                        ByproductDigestate = 0
+                        ByproductDigestateEfficiency = 0
+
+                    if len(request.form.getlist('Q51_Oil'))==2:
+                        ByproductOil = 1
+                        ByproductOilEfficiency = int(request.form['Q51_Oil_efficiency'])
+                    else:
+                        ByproductOil = 0
+                        ByproductOilEfficiency = 0
+
+                    if len(request.form.getlist('Q51_Others'))==2:
+                        ByproductOthers = 1
+                        ByproductOthersEfficiency = int(request.form['Q51_Others_efficiency'])
+                    else:
+                        ByproductOthers = 0
+                        ByproductOthersEfficiency = 0
+
+                    TechnologyName = str(request.form['Q50_tech'])
+                    AdditionalInformation = str(request.form['Q53'])
+                    questionCode = "Submitted!"
                 else:
-                    unacceptableothers = 0
-                    unacceptableotherspercent = 0
-                
-                if len(request.form.getlist('Q51_Biogas'))==2:
-                    byproductBiogas = 1
-                    byproductBiogasEfficiency = int(request.form['Q51_Biogas_efficiency'])
-                    byproductBiogasCHFour = int(request.form['Q51_Biogas_ch4'])
-                    byproductBiogasCOTwo = int(request.form['Q51_Biogas_co2'])
-
-                else:
-                    byproductBiogas = 0
-                    byproductBiogasEfficiency = 0
-                    byproductBiogasCHFour = 0
-                    byproductBiogasCOTwo = 0
-
-                if len(request.form.getlist('Q51_Chemical'))==2:
-                    ByproductChemical = 1
-                    ByproductChemicalEfficiency = int(request.form['Q51_Chemical_efficiency'])
-                else:
-                    ByproductChemical = 0
-                    ByproductChemicalEfficiency = 0
-
-                if len(request.form.getlist('Q51_Metal'))==2:
-                    ByproductMetal = 1
-                    ByproductMetalEfficiency = int(request.form['Q51_Metal_efficiency'])
-                else:
-                    ByproductMetal = 0
-                    ByproductMetalEfficiency = 0
-
-                if len(request.form.getlist('Q51_Biochar'))==2:
-                    ByproductBiochar = 1
-                    ByproductBiocharEfficency = int(request.form['Q51_Biochar_efficiency'])
-                else:
-                    ByproductBiochar = 0
-                    ByproductBiocharEfficency = 0
-
-                if len(request.form.getlist('Q51_Digestate'))==2:
-                    ByproductDigestate = 1
-                    ByproductDigestateEfficiency = int(request.form['Q51_Digestate_efficiency'])
-                else:
-                    ByproductDigestate = 0
-                    ByproductDigestateEfficiency = 0
-
-                if len(request.form.getlist('Q51_Oil'))==2:
-                    ByproductOil = 1
-                    ByproductOilEfficiency = int(request.form['Q51_Oil_efficiency'])
-                else:
-                    ByproductOil = 0
-                    ByproductOilEfficiency = 0
-
-                if len(request.form.getlist('Q51_Others'))==2:
-                    ByproductOthers = 1
-                    ByproductOthersEfficiency = int(request.form['Q51_Others_efficiency'])
-                else:
-                    ByproductOthers = 0
-                    ByproductOthersEfficiency = 0
-
-                TechnologyName = str(request.form['Q50_tech'])
-                AdditionalInformation = str(request.form['Q53'])
-                questionCode = "Submitted!"
-
+                    description = str(request.form['description'])
+                    userId = int(current_user.id)
+                    materialId = int(materialId)
+                    TechnologyName = str(request.form['Q50_tech'])
+                    AdditionalInformation = str(request.form['Q53'])
+                    questionCode = "Submitted!"
 
 
 
@@ -798,50 +812,56 @@ def matching_questions(materialId):
             return redirect(url_for("selling_waste"))
 
         elif processWaste:
-            techID = TechnologyDB(userId=userId,
-            materialId=materialId,
-            CRatiomin=CRatiomin,
-            CRatiomax=CRatiomax,
-            NRatiomin=NRatiomin,
-            NRatiomax=NRatiomax,
-            Moisturemin=Moisturemin,
-            Moisturemax=Moisturemax,
-            pHmin=pHmin,
-            pHmax=pHmax,
-            cellulosicmin=cellulosicmin,
-            cellulosicmax=cellulosicmax,
-            particleSizemin=particleSizemin,
-            particleSizemax=particleSizemax,
-            unacceptableshells=unacceptableshells,
-            unacceptableshellspercent=unacceptableshellspercent,
-            unacceptablebones=unacceptablebones,
-            unacceptablebonespercent=unacceptablebonespercent,
-            unacceptablebamboo=unacceptablebamboo,
-            unacceptablebamboopercent=unacceptablebamboopercent,
-            unacceptablebanana=unacceptablebanana,
-            unacceptablebananapercent=unacceptablebananapercent,
-            unacceptableothers=unacceptableothers,
-            unacceptableotherspercent=unacceptableotherspercent,
-            TechnologyName=TechnologyName,
-            byproductBiogas=byproductBiogas,
-            byproductBiogasEfficiency=byproductBiogasEfficiency,
-            byproductBiogasCHFour=byproductBiogasCHFour,
-            byproductBiogasCOTwo=byproductBiogasCOTwo,
-            ByproductChemical=ByproductChemical,
-            ByproductChemicalEfficiency=ByproductChemicalEfficiency,
-            ByproductMetal=ByproductMetal,
-            ByproductMetalEfficiency=ByproductMetalEfficiency,
-            ByproductBiochar=ByproductBiochar,
-            ByproductBiocharEfficency=ByproductBiocharEfficency,
-            ByproductDigestate=ByproductDigestate,
-            ByproductDigestateEfficiency=ByproductDigestateEfficiency,
-            ByproductOil=ByproductOil,
-            ByproductOilEfficiency=ByproductOilEfficiency,
-            ByproductOthers=ByproductOthers,
-            ByproductOthersEfficiency=ByproductOthersEfficiency,
-            AdditionalInformation=AdditionalInformation,
-            date=str(datetime.now())[0:19],
-            description=description)
+            if materialId==14:
+                techID = TechnologyDB(userId=userId,
+                materialId=materialId,
+                CRatiomin=CRatiomin,
+                CRatiomax=CRatiomax,
+                NRatiomin=NRatiomin,
+                NRatiomax=NRatiomax,
+                Moisturemin=Moisturemin,
+                Moisturemax=Moisturemax,
+                pHmin=pHmin,
+                pHmax=pHmax,
+                cellulosicmin=cellulosicmin,
+                cellulosicmax=cellulosicmax,
+                particleSizemin=particleSizemin,
+                particleSizemax=particleSizemax,
+                unacceptableshells=unacceptableshells,
+                unacceptableshellspercent=unacceptableshellspercent,
+                unacceptablebones=unacceptablebones,
+                unacceptablebonespercent=unacceptablebonespercent,
+                unacceptablebamboo=unacceptablebamboo,
+                unacceptablebamboopercent=unacceptablebamboopercent,
+                unacceptablebanana=unacceptablebanana,
+                unacceptablebananapercent=unacceptablebananapercent,
+                unacceptableothers=unacceptableothers,
+                unacceptableotherspercent=unacceptableotherspercent,
+                TechnologyName=TechnologyName,
+                byproductBiogas=byproductBiogas,
+                byproductBiogasEfficiency=byproductBiogasEfficiency,
+                ByproductChemical=ByproductChemical,
+                ByproductChemicalEfficiency=ByproductChemicalEfficiency,
+                ByproductMetal=ByproductMetal,
+                ByproductMetalEfficiency=ByproductMetalEfficiency,
+                ByproductBiochar=ByproductBiochar,
+                ByproductBiocharEfficency=ByproductBiocharEfficency,
+                ByproductDigestate=ByproductDigestate,
+                ByproductDigestateEfficiency=ByproductDigestateEfficiency,
+                ByproductOil=ByproductOil,
+                ByproductOilEfficiency=ByproductOilEfficiency,
+                ByproductOthers=ByproductOthers,
+                ByproductOthersEfficiency=ByproductOthersEfficiency,
+                AdditionalInformation=AdditionalInformation,
+                date=str(datetime.now())[0:19],
+                description=description)
+            else:
+                techID=TechnologyDB(userId=userId,
+                materialId=materialId,
+                AdditionalInformation=AdditionalInformation,
+                TechnologyName=TechnologyName,
+                date=str(datetime.now())[0:19],
+                description=description)
             db.session.add(techID)
             db.session.commit()
             flash('Your response has been recorded!','success')
@@ -878,6 +898,13 @@ def matching_filter_waste(giveoutwasteId):
         for key, x in instance.attrs.items():
             result[key].append(x.value)    
     df = pd.DataFrame(result)
+    rset = Materials.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    materialsdf = pd.DataFrame(result)
     #print(df)
     counter=0
     result=[]
@@ -966,6 +993,21 @@ def matching_filter_waste(giveoutwasteId):
                 rawdate=str(df.loc[i,'date'])
                 rawdate=rawdate[:10]
                 result.append([index,desc,supplier,rawdate])
+        else:
+            counter=0
+            print(techmaterialID)
+            print(materialsdf.loc[wastematerialID-1,'material'])
+            print(materialsdf.loc[int(techmaterialID)-1,'material'][0:len(materialsdf.loc[wastematerialID-1,'material'])])
+            if materialsdf.loc[wastematerialID-1,'material'] == materialsdf.loc[int(techmaterialID)-1,'material'][0:len(materialsdf.loc[wastematerialID-1,'material'])]:
+                counter+=1
+                index=(counter)
+                desc=(df.loc[i,'description'])
+                supplier=(User.query.filter_by(id=int(df.loc[i,'userId'])).first().username)
+                #print(supplier)
+                rawdate=str(df.loc[i,'date'])
+                rawdate=rawdate[:10]
+                result.append([index,desc,supplier,rawdate])
+
     return render_template('matching_results_waste.html', result=result )
 
 @app.route("/matching/filter_recycling/<processwasteId>", methods=['GET','POST'])
@@ -980,7 +1022,13 @@ def matching_filter_recycling(processwasteId):
         for key, x in instance.attrs.items():
             result[key].append(x.value)    
     df = pd.DataFrame(result)
-
+    rset = Materials.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    materialsdf = pd.DataFrame(result)
     results = defaultdict(list)
     instance = inspect(techstuff)
     for key, x in instance.attrs.items():
@@ -1047,7 +1095,7 @@ def matching_filter_recycling(processwasteId):
         if int(techmaterialID)==14 and int(wastematerialID)==1:
             #print("Triggered")
             wasteID = (df.loc[i,'questionCode'])
-            #print(wasteID)
+            print(wasteID)
             homogeneity=wasteID[1]
             wCHNType=wasteID[2]
             wCRatio=wasteID[3:5]
@@ -1064,11 +1112,33 @@ def matching_filter_recycling(processwasteId):
             wpHType=wasteID[21]
             wphValue=wasteID[22:24]
             wparticleSize=wasteID[24]
-            #print(wCRatio)
-            #print(wNRatio)
-            #print(wphValue)
-            #print(techID['pHmin'])        
+            print(wCRatio)
+            print(techID['CRatiomin'])
+            print(techID['CRatiomax'])
+            
+            print(wNRatio)
+            print(techID['NRatiomin'])
+            print(techID['NRatiomax'])
+            
+            print(wphValue)
+            print(techID['pHmin'])
+            print(techID['pHmax'])
+                   
             if (wCRatio=='__' or (int(wCRatio)>=int(techID['CRatiomin']) and int(wCRatio)<=int(techID['CRatiomax']))) and ((wNRatio)=='__' or (int(wNRatio)>=int(techID['NRatiomin']) and int(wNRatio)<=int(techID['NRatiomax']))) and ((wphValue)=='__' or (int(wphValue)>=int(techID['pHmin']) and int(wphValue)<=int(techID['pHmax']))):
+                counter+=1
+                index=(counter)
+                desc=(df.loc[i,'description'])
+                supplier=(User.query.filter_by(id=int(df.loc[i,'userId'])).first().username)
+                #print(supplier)
+                rawdate=str(df.loc[i,'date'])
+                rawdate=rawdate[:10]
+                result.append([index,desc,supplier,rawdate])
+        else:
+            counter=0
+            print(techmaterialID)
+            print(materialsdf.loc[wastematerialID-1,'material'])
+            print(materialsdf.loc[int(techmaterialID)-1,'material'][0:len(materialsdf.loc[wastematerialID-1,'material'])])
+            if materialsdf.loc[wastematerialID-1,'material'] == materialsdf.loc[int(techmaterialID)-1,'material'][0:len(materialsdf.loc[wastematerialID-1,'material'])]:
                 counter+=1
                 index=(counter)
                 desc=(df.loc[i,'description'])
@@ -1301,16 +1371,8 @@ def dispatch_matching_match():
     long_list=[]
     lat_list=[]
     BS_list=[]
-    invest_entity_list=[]
-    invest_material_list=[]
-    invest_quantity_list=[]
-    invest_rp_list=[]
-    invest_cost_list=[]
-
     industry_supply_df=pd.DataFrame(columns=['entity','material','quantity','reserve_price','delivery_fee'])
     industry_demand_df=pd.DataFrame(columns=['entity','material','quantity','reserve_price'])
-    investment_demand_df=pd.DataFrame(columns=['entity','material','quantity','reserve_price'])
-    investment_cost_df=pd.DataFrame(columns=['entity','invest_cost'])
     for i in raw_demand.itertuples():
         company_list.append(raw_user.loc[raw_user['id'] == int(i.userId), 'username'].iloc[0])
         entity_list.append(i.takeInResourceId)
@@ -1349,19 +1411,11 @@ def dispatch_matching_match():
         industry_supply_df = industry_supply_df.append({'entity' : i.giveOutWasteId, 'material': material_entry, 'quantity': i.quantity, 'reserve_price': i.reservePrice, 'delivery_fee': i.deliveryFee}, ignore_index = True)
         if material_entry not in material_list:
             material_list.append(material_entry)
-    for i in raw_investment.itertuples():
-        invest_entity_list.append('E'+str(i.id))
-        invest_material_list.append(i.material)
-        invest_quantity_list.append(i.capacity)
-        invest_rp_list.append(i.reservePrice)
-        invest_cost_list.append(i.cost)
-    investment_demand_df=pd.DataFrame({'entity':invest_entity_list,'material':invest_material_list,'quantity':invest_quantity_list,'reserve_price':invest_rp_list})
-    investment_cost_df=pd.DataFrame({'entity':invest_entity_list,'invest_cost':invest_cost_list})
     material_df=pd.DataFrame({'material': material_list})
-    entity_df=pd.DataFrame({'entity': entity_list+invest_entity_list})
+    entity_df=pd.DataFrame({'entity': entity_list})
     industry_df=pd.DataFrame({'entity': entity_list, 'company': company_list, 'postal_code': postal_list, 'lat': lat_list, 'lon': long_list, 'BS': BS_list})
-    distance_df= pd.DataFrame(index=range(len(entity_list)+len(invest_entity_list)),columns=['entity']+list(range(len(entity_list)+len(invest_entity_list))))
-    distance_df=distance_df.assign(entity=entity_list+invest_entity_list)
+    distance_df= pd.DataFrame(index=range(len(entity_list)),columns=['entity']+list(range(len(entity_list))))
+    distance_df=distance_df.assign(entity=entity_list)
     distance_df=distance_df.set_index('entity')
     feasible_df = distance_df.copy()
     for i in industry_df.itertuples():
@@ -1373,17 +1427,11 @@ def dispatch_matching_match():
                 #         feasible_df.loc[i.entity,j.entity]=0
                 #         distance_df.loc[i.entity,j.entity]=distance(i.postal_code,j.postal_code)/1000.0
                         
-                if (i.BS=='S' and (industry_supply_df.loc[industry_supply_df['entity'] == int(i.entity), 'material'].iloc[0]==industry_demand_df.loc[industry_demand_df['entity'] == int(j.entity), 'material'].iloc[0])):
+                if (i.BS=='S'):
                     if feasibility_check(j.entity,i.entity)==1:
                         feasible_df.loc[i.entity,counter]=0
                         distance_df.loc[i.entity,counter]=distance(i.postal_code,j.postal_code)/1000.0
             counter+=1
-        kcounter=0
-        for k in investment_demand_df.itertuples():
-            if (i.BS=='S' and (industry_supply_df.loc[industry_supply_df['entity'] == int(i.entity), 'material'].iloc[0]==k.material)):
-                feasible_df.loc[i.entity,kcounter+len(industry_df)]=0
-                distance_df.loc[i.entity,kcounter+len(industry_df)]=0
-            kcounter+=1
     print(feasible_df)
     # Create a Pandas Excel writer using XlsxWriter as the engine.
     report_path = 'dss/PyomoSolver/'
@@ -1397,8 +1445,6 @@ def dispatch_matching_match():
     industry_df.to_excel(writer, sheet_name='industry',index=False)
     industry_supply_df.to_excel(writer, sheet_name='industry_supply',index=False)
     industry_demand_df.to_excel(writer, sheet_name='industry_demand',index=False)
-    investment_demand_df.to_excel(writer, sheet_name='investment_demand',index=False)
-    investment_cost_df.to_excel(writer, sheet_name='invest_cost',index=False)
     feasible_df.to_excel(writer, sheet_name='feasible',index=True)
     distance_df.to_excel(writer, sheet_name='distance',index=True)
     
@@ -1406,10 +1452,9 @@ def dispatch_matching_match():
     # Close the Pandas Excel writer and output the Excel file.
     writer.save()
 
-    solution, investmentsolution=PyomoModel.runModel()
+    solution=PyomoModel.runModel()
     writer = pd.ExcelWriter(os.path.join(report_path + 'solution.xlsx'), engine='xlsxwriter')
     solution.to_excel(writer, sheet_name='soln',index=True)
-    investmentsolution.to_excel(writer, sheet_name='investmentsoln',index=True)
     writer.save()
 
     solution.reset_index(inplace=True)
@@ -1419,7 +1464,7 @@ def dispatch_matching_match():
         db.session.commit()
     
 
-    return redirect(url_for('dispatch_matching'))
+    return redirect(url_for('dispatch_matching_results'))
     
 
 @app.route("/dispatch_matching/questions_resource", methods=['GET','POST'])
@@ -1468,16 +1513,17 @@ def dispatch_matching_results():
         if form.buySell.data != '2':
             supplyIds = Dispatchmatchingsupply.query.filter_by(userId=userId).all()
             
+            print(supplyIds)
             for supplyId in supplyIds:
                 sell.extend(Dispatchmatchingresults.query.filter_by(supplyId=supplyId.id, date=form.date.data).all())
-                
+            print(sell)
             #set running number and surplus
             supplierSurplus = 0
             for i in range(len(sell)):
                 sell[i].no = str(i+1)+'.'
                 supplierSurplus += float(sell[i].supplierSurplus())
             supplierSurplus = "{:.2f}".format(supplierSurplus)
-
+            print(supplierSurplus)
         if form.buySell.data != '1':
         #get matched sellers
             demandIds = Dispatchmatchingdemand.query.filter_by(userId=userId).all()
@@ -1489,7 +1535,8 @@ def dispatch_matching_results():
             for i in range(len(buy)):
                 buy[i].no = str(i+1)+'.'
                 demandSurplus += float(buy[i].demandSurplus())
-            demandSurplus = "{:.2f}".format(demandSurplus) 
+            demandSurplus = "{:.2f}".format(demandSurplus)
+            print(demandSurplus) 
                         
         return render_template('dispatch_matching_results.html', title="Dispatch Matching Results", form=form, match=True, sell=sell, buy=buy, date=form.date.data, supplierSurplus=supplierSurplus, demandSurplus=demandSurplus)
 
@@ -1703,14 +1750,14 @@ def allocate(budget):
                 #         feasible_df.loc[i.entity,j.entity]=0
                 #         distance_df.loc[i.entity,j.entity]=distance(i.postal_code,j.postal_code)/1000.0
                         
-                if (i.BS=='S' and (industry_supply_df.loc[industry_supply_df['entity'] == int(i.entity), 'material'].iloc[0]==industry_demand_df.loc[industry_demand_df['entity'] == int(j.entity), 'material'].iloc[0])):
+                if (i.BS=='S'):
                     if feasibility_check(j.entity,i.entity)==1:
                         feasible_df.loc[i.entity,counter]=0
                         distance_df.loc[i.entity,counter]=distance(i.postal_code,j.postal_code)/1000.0
             counter+=1
         kcounter=0
         for k in investment_demand_df.itertuples():
-            if (i.BS=='S' and (industry_supply_df.loc[industry_supply_df['entity'] == int(i.entity), 'material'].iloc[0]==k.material)):
+            if (i.BS=='S' and (industry_supply_df.loc[industry_supply_df['entity'] == int(i.entity), 'material'].iloc[0][0:7]==k.material[0:7])):
                 feasible_df.loc[i.entity,kcounter+len(industry_df)]=0
                 distance_df.loc[i.entity,kcounter+len(industry_df)]=0
             kcounter+=1
@@ -1736,7 +1783,7 @@ def allocate(budget):
     # Close the Pandas Excel writer and output the Excel file.
     writer.save()
 
-    solution, investmentsolution=PyomoModel.runModel(budget)
+    solution, investmentsolution=PyomoModelInvest.runModel(budget)
     writer = pd.ExcelWriter(os.path.join(report_path + 'solution.xlsx'), engine='xlsxwriter')
     solution.to_excel(writer, sheet_name='soln',index=True)
     investmentsolution.to_excel(writer, sheet_name='investmentsoln',index=True)
@@ -1745,7 +1792,7 @@ def allocate(budget):
     count=0
     investmentsolution=investmentsolution.reset_index()
     for i in raw_investment.itertuples():
-        result.append([i.id,i.name,i.cost,i.material,i.reservePrice,i.capacity,investmentsolution.at[count,'quantity']])
+        result.append([i.id,i.name,"{:.2f}".format(i.cost),i.material,"{:.2f}".format(int(i.reservePrice)/1.0),i.capacity,int(investmentsolution.at[count,'quantity']),"{:.2f}".format(int(investmentsolution.at[count,'quantity']*int(i.cost)))])
         count+=1
     return render_template('capacity_planning_result.html', title="Capacity Planning - Alloction Results",result=result,budget=budget)
 

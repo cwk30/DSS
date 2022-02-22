@@ -382,7 +382,7 @@ class Food(Waste):
                     self.pHType = '2'
                     self.phValue = '07'        
                 elif self.formData.form['Q5'] == '3': #not sure
-                    self.pHType = '02'
+                    self.pHType = '2'
                     self.phValue = str(round(ph)).zfill(2) 
         #protein placeholder
         self.cellulosic = self.formData.form['Q6']

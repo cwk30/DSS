@@ -7,7 +7,7 @@
             <div class="page-breadcrumb bg-white">
                 <div class="row align-items-center">
                     <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
-                        <h4 class="page-title">Capacity Planning - ${{budget}}</h4>
+                        <h4 class="page-title">Capacity Planning - Budget ${{budget}}</h4>
                     </div>
                     <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
                         <div class="d-md-flex">
@@ -37,17 +37,18 @@
                                         <tr>
                                             <th class="border-top-0">#</th>
                                             <th class="border-top-0">Name</th>
-                                            <th class="border-top-0">Cost</th>
+                                            <th class="border-top-0">Cost ($)</th>
                                             <th class="border-top-0">Material</th>
-                                            <th class="border-top-0">Reserve Price</th>
+                                            <th class="border-top-0">Reserve Price ($)</th>
                                             <th class="border-top-0">Capacity</th>
-                                            <th class="border-top-0">Recommended Investment Quantity</th>
+                                            <th class="border-top-0">Recommended Quantity</th>
+                                            <th class="border-top-0">Recommended Investment ($)</th>
                                             
                                             
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {% for index, name, cost, material, rp, cap, quantity in result %} 
+                                        {% for index, name, cost, material, rp, cap, price, quantity in result %} 
                                             <tr>
                                                 <td>{{index}}</td>
                                                 <td>{{name}}</td>
@@ -55,6 +56,7 @@
                                                 <td>{{material}}</td>
                                                 <td>{{rp}}</td>
                                                 <td>{{cap}}</td>
+                                                <td>{{price}}</td>
                                                 <td>{{quantity}}</td>
                                                 
                                             </tr>
