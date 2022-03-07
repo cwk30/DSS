@@ -20,7 +20,7 @@ from dss import app, db, bcrypt, mail
 from dss.forms import (RegistrationForm,LoginForm, UpdateAccountForm, PostForm,RequestResetForm, ResetPasswordForm,
     MaterialsForm, FilterForm, maxRowsForm, BuyingForm,
     dispatchMatchingForm, dispatchMatchingQuestionsForm, dispatchMatchingResultsForm,
-    LCCForm, RSPForm) 
+    LCCForm, RSPForm, CPForm) 
 from dss.models import (User, Post, RSP, Materials, Questions, Giveoutwaste, Processwaste, Technology, Takeinresource, Supplier, Technologybreakdown, Technologycode, 
     Dispatchmatchingresults, Dispatchmatchingsupply, Dispatchmatchingdemand, Sample, TechnologyDB, Dispatchmatchinginvestment)
 from flask_login import login_user, current_user, logout_user, login_required
@@ -774,6 +774,7 @@ def matching_questions(materialId):
 
                     TechnologyName = str(request.form['Q50_tech'])
                     AdditionalInformation = str(request.form['Q53'])
+                    cost = int(request.form['cost'])
                     questionCode = "Submitted!"
                 else:
                     description = str(request.form['description'])
@@ -854,14 +855,16 @@ def matching_questions(materialId):
                 ByproductOthersEfficiency=ByproductOthersEfficiency,
                 AdditionalInformation=AdditionalInformation,
                 date=str(datetime.now())[0:19],
-                description=description)
+                description=description,
+                cost=cost)
             else:
                 techID=TechnologyDB(userId=userId,
                 materialId=materialId,
                 AdditionalInformation=AdditionalInformation,
                 TechnologyName=TechnologyName,
                 date=str(datetime.now())[0:19],
-                description=description)
+                description=description,
+                cost=cost)
             db.session.add(techID)
             db.session.commit()
             flash('Your response has been recorded!','success')
@@ -875,7 +878,7 @@ def matching_questions(materialId):
             takeinresourceId = Takeinresource.query.order_by(Takeinresource.id.desc()).first().id
             return redirect(url_for("matching_filter_resource", takeinresourceId=takeinresourceId))
 
-    return render_template('matching_questions.html', title="Matching Questions", form=form, questions=questions, material=material, giveOutWaste=giveOutWaste, samplefood=samplefood, samplefoodlen=len(samplefood), materialId=materialId)
+    return render_template('matching_questions.html', title="Matching Questions", form=form, questions=questions, material=material, giveOutWaste=giveOutWaste, processWaste=processWaste, samplefood=samplefood, samplefoodlen=len(samplefood), materialId=materialId)
 
 @app.route("/matching/filter_waste/<giveoutwasteId>", methods=['GET','POST'])
 def matching_filter_waste(giveoutwasteId):
@@ -1804,7 +1807,7 @@ def allocate(budget):
 
 @app.route("/capacity_planning/adding_tech", methods=['GET','POST'])
 def adding_tech():
-    form = []
+    
     rset = Materials.query.all()
     result = defaultdict(list)
     for obj in rset:
@@ -1812,16 +1815,60 @@ def adding_tech():
         for key, x in instance.attrs.items():
             result[key].append(x.value)    
     df = pd.DataFrame(result)
+
+    rset = User.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    userdf = pd.DataFrame(result)
     
+    rset = TechnologyDB.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    techdf = pd.DataFrame(result)
+    
+    rset = Dispatchmatchingdemand.query.all()
+    result = defaultdict(list)
+    for obj in rset:
+        instance = inspect(obj)
+        for key, x in instance.attrs.items():
+            result[key].append(x.value)    
+    demanddf = pd.DataFrame(result)
+    
+
     materiallist=[]
     for i in df.itertuples():
         if i.material not in materiallist:
             materiallist.append(i.material)
     materiallistlen=len(materiallist)
+    form = CPForm()
+    print(userdf.columns.tolist())
+    #get past technology ID
+    prevEntries = [(tech.takeInResourceId, techdf.loc[techdf['userId'] == int(tech.userId), 'TechnologyName'].iloc[0] + ' - ' + userdf.loc[userdf['id'] == int(tech.userId), 'username'].iloc[0]) for tech in Dispatchmatchingdemand.query.all()]
+    prevEntries.insert(0,(None,None))
+    form.technologyID.choices = prevEntries
+    # flash(prevEntries, 'success')
 
     if request.method == 'POST':
+        print(form.technologyID.data)
         print(request.form)
-        invest = Dispatchmatchinginvestment(name=request.form['name'],cost=request.form['cost'],material=materiallist[int(request.form['material'])],reservePrice=request.form['rp'],capacity=request.form['cap'])
+        print('name ')
+        print(techdf.loc[techdf['id'] == int(form.technologyID.data), 'TechnologyName'])
+        print('cost ')
+        print(techdf.loc[techdf['id'] == int(form.technologyID.data), 'cost'].iloc[0])
+        print('material ')
+        print((techdf.loc[techdf['id'] == int(form.technologyID.data), 'materialId'].iloc[0]))
+        print(df.loc[df['id'] == int(techdf.loc[techdf['id'] == int(form.technologyID.data), 'materialId'].iloc[0]),'material'].iloc[0])
+        print('reserve price ')
+        print(demanddf.loc[demanddf['takeInResourceId'] == int(form.technologyID.data), 'reservePrice'].iloc[0])
+        print('capacity ')
+        print(demanddf.loc[demanddf['takeInResourceId'] == int(form.technologyID.data), 'quantity'].iloc[0])
+        invest = Dispatchmatchinginvestment(name=techdf.loc[techdf['id'] == int(form.technologyID.data), 'TechnologyName'].iloc[0],cost=int(techdf.loc[techdf['id'] == int(form.technologyID.data), 'cost'].iloc[0]),material=df.loc[df['id'] == int(techdf.loc[techdf['id'] == int(form.technologyID.data), 'materialId'].iloc[0]),'material'].iloc[0],reservePrice=demanddf.loc[demanddf['takeInResourceId'] == int(form.technologyID.data), 'reservePrice'].iloc[0],capacity=demanddf.loc[demanddf['takeInResourceId'] == int(form.technologyID.data), 'quantity'].iloc[0])
         db.session.add(invest)
         db.session.commit()
         flash('Your response has been recorded!','success')

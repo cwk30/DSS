@@ -34,70 +34,18 @@
                             <form class="form-horizontal form-material" method='POST' enctype="multipart/form-data">
                             
                             {{form.csrf_token}} 
+                            
+                              <br>
                               <div class="form-group mb-4">
-                                <label class="col-md-12 p-0">Name</label>
+                                <label class="col-md-12 p-0">Select Technology to add</label>
                                 <div class="col-md-12 border-bottom p-0">
-                                    
-                                  <input
-                                    type="text"
-                                    placeholder="Anaerobic Digestion"
-                                    class="form-control p-0 border-0"
-                                    id="name" name="name"
-                                  />
+                                  {{ form.technologyID(class="form-control form-control-sm") }}
                                 </div>
                               </div>
-                              <div class="form-group mb-4">
-                                <label for="example-email" class="col-md-12 p-0"
-                                  >Cost</label
-                                >
-                                <div class="col-md-12 border-bottom p-0">
-                                    <input
-                                      type="text"
-                                      placeholder="300000"
-                                      class="form-control p-0 border-0"
-                                      id="cost" name="cost"
-                                    />
-                                  </div>
-                              </div>
-                              <div class="form-group mb-4">
-                                <label class="col-md-12 p-0">Material</label>
-                                
-                                <select class="form-select
-                                shadow-none
-                                p-0
-                                border-0
-                                form-control-line" id="material" name="material">
-                                  
-                                  {% for i in range(0,materiallistlen) %}
-                                  <option value="{{i}}">{{materiallist[i]}}</option>
-                                  {% endfor %}
-                                </select>
-                              </div>
-                              <div class="form-group mb-4">
-                                <label class="col-md-12 p-0">Expected Reserve Price</label>
-                                <div class="col-md-12 border-bottom p-0">
-                                  <input
-                                    type="text"
-                                    placeholder="41"
-                                    class="form-control p-0 border-0"
-                                    id="rp" name="rp"
-                                  />
-                                </div>
-                              </div>
-                              <div class="form-group mb-4">
-                                <label class="col-md-12 p-0">Capacity</label>
-                                <div class="col-md-12 border-bottom p-0">
-                                    <input
-                                      type="text"
-                                      placeholder="300"
-                                      class="form-control p-0 border-0"
-                                      id="cap" name="cap"
-                                    />
-                                  </div>
-                              </div>
+                              
                               <div class="form-group mb-4">
                                 <div class="col-sm-12">
-                                  <button class="btn btn-success">Submit</button>
+                                  {{ form.submit(class="btn btn-success btn-lg") }}
                                 </div>
                               </div>
                             </form>

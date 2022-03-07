@@ -104,6 +104,9 @@ class RSPForm(FlaskForm):
     subcat = SelectField('Subcategory', choices=[])
     submit = SubmitField('Next')
 
+class CPForm(FlaskForm):
+    technologyID = SelectField('Existing Technology Profile ID', choices=[])
+    submit = SubmitField('Next')
 
 class BuyerForm(FlaskForm):
     submit = SubmitField('Next')

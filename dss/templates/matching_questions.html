@@ -254,6 +254,15 @@ Baking soda pH 9"><IMG SRC="/static/icons/information.png" ALT="logo" WIDTH=15 H
         {% endfor %}
         
         
+        {% if processWaste %}
+        <br>
+          <div class="form-group">
+            <label for="cost" class="col-sm-3 col-form-label">Please input the capital cost of your technology ($):</label>
+                <div class="col-sm-2">
+                  <input type="text" class="form-control" id="cost" name="cost" placeholder="$">
+                </div>
+          </div>
+        {% endif %}
         {% if giveOutWaste %}
         <br>
           <div class="form-group">
@@ -261,7 +270,6 @@ Baking soda pH 9"><IMG SRC="/static/icons/information.png" ALT="logo" WIDTH=15 H
             <input type="file" class="form-control-file" name="file" id="file">
           </div>
         {% endif %}
-
 
 
 
