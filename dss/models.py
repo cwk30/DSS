@@ -113,6 +113,12 @@ class TechnologyDB(db.Model):
     date = db.Column(db.String(100))
     description = db.Column(db.String(100))
     cost = db.Column(db.Integer)
+    capacity = db.Column(db.Integer)
+    url = db.Column(db.String(100))
+    forsale = db.Column(db.Integer)
+    scaling = db.Column(db.Integer)
+    size = db.Column(db.Integer)
+    sizecost = db.Column(db.Integer)
 
 class Materials(db.Model):
     id = db.Column(db.Integer, primary_key = True) 

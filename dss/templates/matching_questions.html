@@ -257,11 +257,69 @@ Baking soda pH 9"><IMG SRC="/static/icons/information.png" ALT="logo" WIDTH=15 H
         {% if processWaste %}
         <br>
           <div class="form-group">
-            <label for="cost" class="col-sm-3 col-form-label">Please input the capital cost of your technology ($):</label>
-                <div class="col-sm-2">
+            <label for="cost" class="form-label">Please input the capital cost of your technology ($):</label>
+                <div class="col-sm-3">
                   <input type="text" class="form-control" id="cost" name="cost" placeholder="$">
                 </div>
           </div>
+        <br>
+          <div class="form-group">
+            <label for="capacity" class="form-label">Please input the monthly capacity of your technology:</label>
+                <div class="col-sm-3">
+                  <input type="text" class="form-control" id="capacity" name="capacity" placeholder="tonnes">
+                </div>
+          </div>
+        <br>
+          <div class="form-group">
+            <label for="URL" class="form-label">Please input your company URL:</label>
+                <div class="col-sm-3">
+                  <input type="text" class="form-control" id="URL" name="URL" placeholder="URL">
+                </div>
+          </div>
+        <br>
+        <div class="form-group">
+          
+          <label class="form-label" for="Q_tech">Is your technology available for sale?</label>
+          <br>
+          <div class="form-check form-check-inline" >
+            <input type="checkbox" class="form-check-input" id="Q_tech" name="Q_tech" value="1" onclick="onlyOne(this,'Q_tech')" data-toggle='collapse' data-target='#Q_tech' aria-expanded="false">
+            <label class="form-check-label" for="Q_tech">Yes</label>
+          </div>
+
+          <div class="form-check form-check-inline">
+              <input type="checkbox" class="form-check-input" id="Q_tech" name="Q_tech" value="2">
+              <label class="form-check-label" for="Q_tech">No</label>
+          </div>
+        </div>
+
+        
+        <div class="collapse" id="Q_tech">
+          <div class="form-group">
+          
+            <label class="form-label" for="Q_scale">Can your tech be scaled?</label>
+            <br>
+            <div class="form-check form-check-inline" >
+              <input type="checkbox" class="form-check-input" id="Q_scale" name="Q_scale" value="1" onclick="onlyOne(this,'Q_scale')" data-toggle='collapse' data-target='#Q_scale' aria-expanded="false">
+              <label class="form-check-label" for="Q_scale">Yes</label>
+            </div>
+  
+            <div class="form-check form-check-inline">
+                <input type="checkbox" class="form-check-input" id="Q_scale" name="Q_scale" value="2">
+                <label class="form-check-label" for="Q_scale">No</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="collapse" id="Q_scale">
+          <div class="form-group">
+            <label for="Q_sizecost" class="form-label">Please input the capacity increase per cost:</label>
+                <div class="col-sm-3">
+                  <input type="text" class="form-control" id="size" name="size" placeholder="Capacity Increase">
+                  <input type="text" class="form-control" id="sizecost" name="sizecost" placeholder="Cost ($)">
+                  
+                </div>
+          </div>
+        </div>
         {% endif %}
         {% if giveOutWaste %}
         <br>

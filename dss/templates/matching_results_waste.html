@@ -38,10 +38,10 @@
                                   </tr>
                               </thead>
                               <tbody>
-                                  {% for index, desc, supplier, date in result %} 
+                                  {% for index, desc, supplier, date, url in result %} 
                                       <tr>
                                           <td>{{index}}</td>
-                                          <td>{{desc}}</td>
+                                          <td><a href="{{url}}">{{desc}}</a></td>
                                           <td>{{supplier}}</td>
                                           <td>{{date}}</td>
                                       </tr>

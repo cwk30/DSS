@@ -775,6 +775,12 @@ def matching_questions(materialId):
                     TechnologyName = str(request.form['Q50_tech'])
                     AdditionalInformation = str(request.form['Q53'])
                     cost = int(request.form['cost'])
+                    capacity = int(request.form['capacity'])
+                    url = str(request.form['URL'])
+                    forsale=int(request.form['Q_tech'])
+                    scaling=int(request.form['Q_scale'])
+                    size=int(request.form['size'])
+                    sizecost=int(request.form['sizecost'])
                     questionCode = "Submitted!"
                 else:
                     description = str(request.form['description'])
@@ -856,7 +862,13 @@ def matching_questions(materialId):
                 AdditionalInformation=AdditionalInformation,
                 date=str(datetime.now())[0:19],
                 description=description,
-                cost=cost)
+                cost=cost,
+                capacity=capacity,
+                url=url,
+                forsale=forsale,
+                scaling=scaling,
+                size=size,
+                sizecost=sizecost)
             else:
                 techID=TechnologyDB(userId=userId,
                 materialId=materialId,
@@ -929,6 +941,7 @@ def matching_filter_waste(giveoutwasteId):
     wparticleSize=wasteID[24]
 
     #print(wastematerialID)
+    print(df)
     for i in range(len(df)):
         techmaterialID=int(df.loc[i,'materialId'])      
         if wastematerialID==1 and techmaterialID==14:
@@ -974,7 +987,8 @@ def matching_filter_waste(giveoutwasteId):
                     'ByproductOthers',
                     'ByproductOthersEfficiency',
                     'TechnologyName',
-                    'AdditionalInformation']
+                    'AdditionalInformation',
+                    'url']
             techID = {}
             #print(df.loc[i,'description'])
             #print(techID)
@@ -995,7 +1009,8 @@ def matching_filter_waste(giveoutwasteId):
                 #print(supplier)
                 rawdate=str(df.loc[i,'date'])
                 rawdate=rawdate[:10]
-                result.append([index,desc,supplier,rawdate])
+                url = df.loc[i,'url']
+                result.append([index,desc,supplier,rawdate,url])
         else:
             counter=0
             print(techmaterialID)
@@ -1009,7 +1024,8 @@ def matching_filter_waste(giveoutwasteId):
                 #print(supplier)
                 rawdate=str(df.loc[i,'date'])
                 rawdate=rawdate[:10]
-                result.append([index,desc,supplier,rawdate])
+                url = df.loc[i,'url']
+                result.append([index,desc,supplier,rawdate,url])
 
     return render_template('matching_results_waste.html', result=result )
 
