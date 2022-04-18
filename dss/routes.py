@@ -778,9 +778,10 @@ def matching_questions(materialId):
                     capacity = int(request.form['capacity'])
                     url = str(request.form['URL'])
                     forsale=int(request.form['Q_tech'])
-                    scaling=int(request.form['Q_scale'])
-                    size=int(request.form['size'])
-                    sizecost=int(request.form['sizecost'])
+                    if forsale == 1:
+                        scaling=int(request.form['Q_scale'])
+                    else:
+                        scaling = 0
                     questionCode = "Submitted!"
                 else:
                     description = str(request.form['description'])
@@ -866,9 +867,7 @@ def matching_questions(materialId):
                 capacity=capacity,
                 url=url,
                 forsale=forsale,
-                scaling=scaling,
-                size=size,
-                sizecost=sizecost)
+                scaling=scaling)
             else:
                 techID=TechnologyDB(userId=userId,
                 materialId=materialId,
@@ -1865,6 +1864,7 @@ def adding_tech():
     form = CPForm()
     print(userdf.columns.tolist())
     #get past technology ID
+    print(techdf.loc[techdf['userId'] == int('140'), 'TechnologyName'])
     prevEntries = [(tech.takeInResourceId, techdf.loc[techdf['userId'] == int(tech.userId), 'TechnologyName'].iloc[0] + ' - ' + userdf.loc[userdf['id'] == int(tech.userId), 'username'].iloc[0]) for tech in Dispatchmatchingdemand.query.all()]
     prevEntries.insert(0,(None,None))
     form.technologyID.choices = prevEntries
